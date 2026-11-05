@@ -1,0 +1,12 @@
+import { expect, test } from "bun:test";
+import { zorgReactie, afspraakReactie, budgetReactie } from "./samen-regelen";
+const zorg = { id: "test", van: "Sanne", soort: "eenmalig", kinderen: ["emma"], tekst: "Ruil", datumLabel: "16 maart", dagen: [16], status: "open" };
+test("eigen ingediend zorgvoorstel wacht alleen op de ander", () => expect(zorgReactie(zorg)).toBe("Wacht op de ander"));
+test("ontvangen zorgvoorstel wacht op jou", () => expect(zorgReactie({ ...zorg, van: "Joris" })).toBe("Wacht op jou"));
+test("afgewezen zorgvoorstel is afgerond", () => expect(zorgReactie({ ...zorg, status: "afgewezen" })).toBe("Afgerond"));
+const afspraak = { id: "a", titel: "Overdracht", tekst: "Praktisch", onderwerp: "Halen & brengen", kind: "Emma", status: "Actief", versies: [], geschiedenis: [], voorstel: { soort: "wijziging", door: "Lotte Jansen", datum: "19 oktober 2026", akkoord: { Sanne: true } } };
+test("al goedgekeurd professioneel voorstel wacht niet opnieuw op jou", () => expect(afspraakReactie(afspraak)).toBe("Wacht op de ander"));
+test("professioneel voorstel zonder jouw akkoord wacht op jou", () => expect(afspraakReactie({ ...afspraak, voorstel: { soort: "wijziging", door: "Lotte Jansen", datum: "19 oktober 2026", akkoord: {} } })).toBe("Wacht op jou"));
+const budget = { id: "b", wat: "Schoenen", kind: "Emma", max: 60, pctSanne: 50, door: "Sanne", aanZet: "Sanne", status: "tegenvoorstel", stappen: [] };
+test("budgettegenvoorstel gebruikt aanZet en niet de oorspronkelijke indiener", () => expect(budgetReactie(budget)).toBe("Wacht op jou"));
+test("goedgekeurd budget telt nooit als actie", () => expect(budgetReactie({ ...budget, status: "akkoord" })).toBe("Afgerond"));

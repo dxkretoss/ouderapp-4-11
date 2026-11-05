@@ -1,0 +1,346 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system — "Ouderschap & Co"
+ * Frosted Glass Warmth: zachte salie/zandtinten, veel witruimte, ronde vormen.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-display: "Nunito", "Nunito Sans", system-ui, sans-serif;
+  --font-body: "Nunito Sans", system-ui, sans-serif;
+  --font-sans: "Nunito Sans", system-ui, sans-serif;
+
+  --color-logo-surface: var(--logo-surface);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent-warm: var(--accent-warm);
+  --color-oker: var(--oker);
+  --color-meter-1: var(--meter-1);
+  --color-meter-2: var(--meter-2);
+  --color-meter-3: var(--meter-3);
+  --color-meter-4: var(--meter-4);
+  --color-meter-5: var(--meter-5);
+  --color-meter-6: var(--meter-6);
+  --color-accent-soft: var(--accent-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-surface: var(--surface);
+  --color-ai-space: var(--ai-space);
+  --color-ai-reply: var(--ai-reply);
+  --color-ai-ink: var(--ai-ink);
+  --color-ai-soft: var(--ai-soft);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  /* Eigen design system — salie & zand, editoriaal en rustig */
+  --logo-surface: oklch(0.978 0.008 85);
+  --radius: 0.875rem;
+  --brand: oklch(0.37 0.055 195);       /* diep logogroen #0C4848 */
+  --brand-soft: oklch(0.94 0.02 160);   /* zacht salie */
+  --oker: oklch(0.66 0.11 80);         /* zacht okergeel */
+  --meter-1: oklch(0.58 0.06 205);
+  --meter-2: oklch(0.7 0.1 135);
+  --meter-3: oklch(0.75 0.12 90);
+  --meter-4: oklch(0.7 0.13 60);
+  --meter-5: oklch(0.6 0.15 35);
+  --meter-6: oklch(0.48 0.14 25);
+  --gradient-meter: linear-gradient(90deg, var(--meter-1), var(--meter-2), var(--meter-3), var(--meter-4), var(--meter-5), var(--meter-6));
+  --accent-warm: oklch(0.62 0.12 38);   /* logo-terracotta #CC6C54 */
+  --accent-soft: oklch(0.93 0.025 80);  /* zand #EDE4D3 */
+  --ink: oklch(0.28 0.01 60);           /* warm antraciet #2F2A26 */
+  --ink-soft: oklch(0.52 0.012 60);
+  --surface: oklch(0.975 0.008 85);
+  --ai-space: #244A3D;
+  --ai-reply: #355B4D;
+  --ai-ink: #FBF8F3;
+  --ai-soft: #DFE8DE;
+
+  --background: oklch(0.978 0.008 80);  /* logo-crème #FBF8F3 */
+  --foreground: var(--ink);
+  --card: oklch(0.99 0.005 85);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.99 0.005 85);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand);
+  --primary-foreground: oklch(0.98 0.006 85);
+  --secondary: var(--accent-soft);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.955 0.01 85);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--accent-soft);
+  --accent-foreground: oklch(0.52 0.11 38);
+  --destructive: oklch(0.55 0.13 30);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.9 0.012 80);
+  --input: oklch(0.9 0.012 80);
+  --ring: var(--brand);
+
+  --duration-fast: 150ms;
+  --duration-base: 240ms;
+  --ease-calm: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Donker thema: warm nachtelijk (espresso/olijf), geen omgekeerde kleuren */
+.dark {
+  color-scheme: dark;
+  --brand: oklch(0.74 0.06 180);
+  --brand-soft: oklch(0.3 0.025 180);
+  --accent-warm: oklch(0.72 0.09 45);
+  --accent-soft: oklch(0.3 0.02 70);
+  --ink: oklch(0.92 0.012 85);
+  --ink-soft: oklch(0.72 0.012 80);
+  --surface: oklch(0.24 0.008 60);
+  --background: oklch(0.2 0.008 60);
+  --card: oklch(0.235 0.009 60);
+  --popover: oklch(0.25 0.009 60);
+  --primary-foreground: oklch(0.18 0.01 60);
+  --muted: oklch(0.27 0.008 60);
+  --accent-foreground: oklch(0.8 0.08 45);
+  --destructive: oklch(0.65 0.13 30);
+  --border: oklch(0.32 0.01 60);
+  --input: oklch(0.32 0.01 60);
+}
+.dark .glas-zacht { background: color-mix(in oklab, var(--card) 85%, transparent); }
+.dark [class*="bg-white"] { background-color: var(--card) !important; }
+.dark .text-white { color: var(--primary-foreground) !important; }
+
+/* Geen glas, geen gradients: vlakke rustige oppervlakken */
+@utility glass {
+  background: var(--card);
+}
+@utility glass-strong {
+  background: var(--background);
+}
+@utility app-canvas {
+  background: var(--background);
+}
+
+/* KindKompas: originele zachte, glasachtige stijl (bewust anders dan de vlakke basis) */
+@utility glas-zacht {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(24px);
+}
+@utility rand-zacht {
+  border-color: rgba(255, 255, 255, 0.7) !important;
+}
+@utility schaduw-zacht {
+  box-shadow: 0 20px 45px -20px color-mix(in oklab, var(--brand) 25%, transparent);
+}
+
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    font-weight: 700 !important;
+    letter-spacing: -0.005em;
+  }
+  body { line-height: 1.6; }
+  button, a { transition: color var(--duration-fast) var(--ease-calm), background-color var(--duration-fast) var(--ease-calm), border-color var(--duration-fast) var(--ease-calm); }
+  [class*="shadow-"] { box-shadow: none !important; }
+  [class*="border-white"] { border-color: var(--color-border) !important; }
+}
+
+@keyframes check-draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+@keyframes rustig-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes vandaag-punt-in { from { opacity: 0; margin-left: -8px; } to { opacity: 1; margin-left: 0; } }
+@utility rustig-in { animation: rustig-in var(--duration-base) var(--ease-calm) both; }
+@utility home-vandaag-punt { animation: vandaag-punt-in 400ms var(--ease-calm) both; }
+
+/* Directe, rustige tikfeedback op alle knoppen en links */
+@layer base {
+  button:not(:disabled), a[href], [role="button"] { -webkit-tap-highlight-color: transparent; transition: transform 120ms var(--ease-calm), background-color 150ms var(--ease-calm), color 150ms var(--ease-calm); }
+  button:not(:disabled):active, [role="button"]:active { transform: scale(0.97); }
+  details > div { animation: rustig-in var(--duration-base) var(--ease-calm) both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-vandaag-punt { animation: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  button:active, [role="button"]:active { transform: none !important; }
+}
+
+/* Home: zachte atmosferische zones */
+@utility home-sfeer {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1400px;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--brand) 9%, var(--background)) 0%, transparent 380px),
+    radial-gradient(ellipse 90% 260px at 50% 620px, color-mix(in oklab, var(--accent-warm) 7%, transparent), transparent);
+}
+@utility momentje-gloed {
+  background: radial-gradient(ellipse at 20% 0%, color-mix(in oklab, var(--accent-warm) 14%, var(--background)), color-mix(in oklab, var(--accent-soft) 60%, var(--background)));
+}
+
+/* Living Home — sfeerlaag bovenaan Home (80% rust, 20% dynamiek) */
+.living { --lh-tint: var(--brand); --lh-warm: var(--accent-warm); overflow: hidden; height: 300px;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--lh-tint) 11%, var(--background)) 0%, transparent 300px); transition: background 1.2s var(--ease-calm); }
+.living.lh-ochtend { --lh-tint: color-mix(in oklab, var(--brand) 70%, oklch(0.92 0.05 220)); }
+.living.lh-avond { --lh-tint: color-mix(in oklab, var(--accent-warm) 65%, var(--brand)); }
+.living.lh-nacht { --lh-tint: color-mix(in oklab, var(--brand) 60%, oklch(0.35 0.04 260)); }
+.living.lh-herfst { --lh-warm: color-mix(in oklab, var(--accent-warm) 85%, oklch(0.7 0.12 60)); }
+.living.lh-winter { --lh-tint: color-mix(in oklab, var(--lh-tint, var(--brand)) 75%, oklch(0.85 0.03 230)); }
+.living.lh-w-zon { background: radial-gradient(ellipse 70% 220px at 85% -40px, color-mix(in oklab, oklch(0.9 0.1 85) 40%, transparent), transparent), linear-gradient(180deg, color-mix(in oklab, var(--lh-tint) 11%, var(--background)), transparent 300px); }
+.living.lh-w-bewolkt { background: linear-gradient(180deg, color-mix(in oklab, var(--muted) 70%, var(--background)), transparent 300px); }
+.living.lh-w-regen { background: linear-gradient(180deg, color-mix(in oklab, oklch(0.75 0.04 230) 22%, var(--background)), transparent 300px); }
+.living.lh-w-onweer { background: linear-gradient(180deg, color-mix(in oklab, oklch(0.5 0.03 260) 22%, var(--background)), transparent 300px); }
+.living.lh-m-verjaardag { --lh-warm: oklch(0.78 0.11 60); }
+.lh-vormen { position: absolute; right: -24px; top: -18px; width: 230px; height: 140px; opacity: .55; }
+.lh-vorm-a { fill: color-mix(in oklab, var(--lh-tint) 22%, transparent); }
+.lh-vorm-b { fill: color-mix(in oklab, var(--lh-warm) 18%, transparent); mix-blend-mode: multiply; }
+.dark .lh-vorm-b { mix-blend-mode: screen; }
+.lh-m-wisseldag .lh-vorm-a { animation: lh-schuif 9s ease-in-out infinite alternate; }
+.lh-m-wisseldag .lh-vorm-b { animation: lh-schuif 9s ease-in-out infinite alternate-reverse; }
+@keyframes lh-schuif { to { transform: translateX(-12px); } }
+.lh-deeltjes { position: absolute; inset: 0 0 auto 0; height: 170px; mask-image: linear-gradient(180deg, #000 40%, transparent); }
+.lh-deeltjes span { position: absolute; top: -12px; display: block; }
+.lh-regen span { width: 1px; height: 12px; background: color-mix(in oklab, oklch(0.6 0.05 230) 45%, transparent); animation: lh-val 1.6s linear infinite; }
+.lh-sneeuw span { width: 4px; height: 4px; border-radius: 9999px; background: color-mix(in oklab, var(--card) 85%, oklch(0.8 0.02 230)); animation: lh-val 9s linear infinite; }
+@keyframes lh-val { to { transform: translateY(190px); } }
+.lh-confetti span { position: absolute; top: -8px; width: 5px; height: 8px; border-radius: 2px; background: var(--lh-warm); opacity: .7; animation: lh-confetti 1.8s var(--ease-calm) forwards; }
+.lh-confetti span:nth-child(odd) { background: var(--brand); }
+@keyframes lh-confetti { to { transform: translateY(150px) rotate(200deg); opacity: 0; } }
+.lh-stil *, .lh-stil { animation: none !important; }
+.lh-stil .lh-deeltjes { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .living *, .living { animation: none !important; }
+  .living .lh-deeltjes, .living .lh-confetti { display: none; }
+}
+
+/* Iconenpalet (Visuele identiteit 2.0): gedempt, harmonieus op ivoor */
+:root {
+  --ic-salie: oklch(0.55 0.05 140);
+  --ic-klei: oklch(0.58 0.09 45);
+  --ic-blauw: oklch(0.56 0.05 240);
+  --ic-lavendel: oklch(0.56 0.05 295);
+  --ic-honing: oklch(0.62 0.09 75);
+  --ic-koraal: oklch(0.62 0.09 25);
+  --ic-taupe: oklch(0.52 0.025 60);
+  --ic-blauwgrijs: oklch(0.53 0.03 230);
+  --ic-groen: oklch(0.55 0.06 155);
+}
+.dark {
+  --ic-salie: oklch(0.76 0.05 140);
+  --ic-klei: oklch(0.76 0.08 45);
+  --ic-blauw: oklch(0.76 0.05 240);
+  --ic-lavendel: oklch(0.77 0.05 295);
+  --ic-honing: oklch(0.8 0.08 75);
+  --ic-koraal: oklch(0.77 0.07 25);
+  --ic-taupe: oklch(0.74 0.02 60);
+  --ic-blauwgrijs: oklch(0.75 0.03 230);
+  --ic-groen: oklch(0.76 0.06 155);
+}
+/* Organische, zachte vorm achter iconen */
+.app-icoon-vorm { border-radius: 9999px; }
+
+/* Terug- en sluitknoppen: één duidelijk gekleurde ronde badge, overal zichtbaar. */
+.knop-kruis {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--brand) 12%, var(--background));
+  border: 1px solid color-mix(in oklab, var(--brand) 38%, transparent);
+  color: var(--brand);
+}
+.knop-kruis:hover { background: color-mix(in oklab, var(--brand) 22%, var(--background)); }
+
+/* Zoekresultaat: het gevonden item licht rustig op */
+.zoekdoel:target, .zoekdoel-aan { outline: 2px solid var(--color-brand); outline-offset: 3px; scroll-margin-top: 6rem; }
+
+/* Professionele leesbaarheid: uitsluitend binnen het eigen werkgebied. */
+.pro-cockpit {
+  --ink-soft: oklch(0.43 0.012 60);
+  --pro-link: oklch(0.43 0.04 140);
+  --pro-status: oklch(0.46 0.075 45);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.dark .pro-cockpit {
+  --ink-soft: oklch(0.78 0.012 80);
+  --pro-link: var(--brand);
+  --pro-status: var(--accent-foreground);
+}
+.pro-cockpit :is(.text-sm, input, textarea) { font-size: 1rem; }
+.pro-cockpit :is(.text-xs, .text-\[11px\]) { font-size: 0.875rem; line-height: 1.55; }
+.pro-cockpit .text-brand { color: var(--pro-link); }
+.pro-cockpit .text-accent-warm { color: var(--pro-status); }
+.pro-cockpit .pro-section-title {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.pro-cockpit :is(.uppercase, h1, h2, h3) { letter-spacing: 0; }
+.pro-cockpit .uppercase { text-transform: none; }
+.pro-cockpit :is(p, dd, li, button, summary) { overflow-wrap: anywhere; }
+.pro-cockpit :is(input, select, textarea) { min-width: 0; max-width: 100%; }
+.pro-cockpit :is([role="tablist"], [aria-label="Dossieronderdelen"]) { max-width: 100%; }
+.pro-cockpit [aria-label="Dossieronderdelen"] button:not([aria-current]) { background: transparent; }
+.pro-cockpit .pro-dossier-context p { margin-top: 0.35rem; }
+.pro-cockpit .pro-dossier-context .pro-section-title { font-size: 1rem; }
+@media (max-width: 639px) {
+  .pro-cockpit .grid-cols-\[minmax\(0\,1fr\)_auto\] { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+  .pro-cockpit .grid-cols-\[minmax\(0\,1fr\)_auto\] > .items-end { align-items: flex-start; }
+}
+
+@keyframes communicatie-smiley {
+  0% { opacity: 0; transform: scale(0.85); }
+  18%, 65% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+.communicatie-smiley { animation: communicatie-smiley 1800ms var(--ease-calm) both; }
+@media (prefers-reduced-motion: reduce) { .communicatie-smiley { animation: none !important; } }
+
+/* The same care surfaces in every Agenda calendar; split days retain both parent tokens. */
+.zorg-ik { background: color-mix(in oklab, var(--brand) 15%, var(--background)); border-bottom: 2px solid var(--brand); }
+.zorg-ander { background: color-mix(in oklab, var(--accent-warm) 18%, var(--background)); border-bottom: 2px solid var(--accent-warm); }
+.zorg-gemengd { background: linear-gradient(90deg, color-mix(in oklab, var(--brand) 15%, var(--background)) 50%, color-mix(in oklab, var(--accent-warm) 18%, var(--background)) 50%); border-bottom: 2px solid var(--ink-soft); }
+.zorg-onbekend { background: var(--card); border-bottom: 2px solid var(--border); }
+.zorg-wissel::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background-image: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in oklab, var(--ink-soft) 18%, transparent) 5px 7px); }
+.zorg-gemengd::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px dashed var(--ink-soft); pointer-events: none; }
