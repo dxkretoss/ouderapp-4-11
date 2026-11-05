@@ -56,6 +56,7 @@ const kindVan = (s) => { const l = kindNamen.filter((n) => s.toLowerCase().inclu
 const euro = (n) => `€ ${n.toFixed(2).replace(".", ",")}`;
 const actieNl = { CREATED: "Aangemaakt", UPDATED: "Gewijzigd", DELETED: "Verwijderd", ACCEPTED: "Geaccepteerd", DECLINED: "Afgewezen", CANCELLED: "Geannuleerd", EXPORTED: "Gegenereerd" };
 function Exporteren() {
+    const { t } = useTranslation();
     const { pro } = Route.useSearch();
     const kijker = (pro && proKijkers[pro]) || { type: "ouder", id: "sanne" };
     const kosten = useKosten();

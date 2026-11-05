@@ -113,62 +113,75 @@ function BerichtenPagina() {
         .sort((a, b) => Number(vk.vastgezet.includes(b.g.id)) - Number(vk.vastgezet.includes(a.g.id)));
     const [naOpen, setNaOpen] = useState(false);
     const nuAfstemmen = useNuAfstemmen();
+    const topicKeyMap = {
+      "Dagelijks": "daily",
+      "School": "school",
+      "Vakantieplanning": "vacationPlanning",
+      "Kosten & betalen": "expensesAndPayment",
+      "Afspraken & overleg": "agreementsAndConsultation",
+      "Gezondheid": "health"
+    };
+    const vertaalOnderwerp = (onderwerp) => {
+      if (!onderwerp) return "";
+      const k = topicKeyMap[onderwerp];
+      return k ? t(`messages.topics.${k}`, onderwerp) : onderwerp;
+    };
+
     if (!actief) {
         return (<AppShell>
         <div className="flex items-start gap-2">
-          <BackButton terug="/"/>
-          <h1 className="flex-1 font-display text-2xl font-extrabold leading-tight">{isEn ? "Messages" : "Berichten"}</h1>
-          <button onClick={() => setZoekOpen((o) => !o)} aria-label={isEn ? "Search in messages" : "Zoeken in berichten"} aria-pressed={zoekOpen} className="mt-1 grid size-9 shrink-0 place-items-center rounded-full border border-border text-ink-soft">
+          <h1 className="flex-1 font-display text-2xl font-extrabold leading-tight">{t("messages.title", "Berichten")}</h1>
+          <button onClick={() => setZoekOpen((o) => !o)} aria-label={t("messages.searchAria", "Zoeken in berichten")} aria-pressed={zoekOpen} className="mt-1 grid size-9 shrink-0 place-items-center rounded-full border border-border text-ink-soft">
             <Search className="size-4" strokeWidth={1.8}/>
           </button>
-          <button onClick={() => setRustOpen(true)} aria-label={vk.rustmodus ? (isEn ? "Quiet mode is active" : "Rustmodus staat aan") : (isEn ? "Configure quiet mode" : "Rustmodus instellen")} className={`relative mt-1 grid size-9 shrink-0 place-items-center rounded-full border ${vk.rustmodus ? "border-brand/40 bg-brand-soft text-brand" : "border-border text-ink-soft"}`}>
+          <button onClick={() => setRustOpen(true)} aria-label={vk.rustmodus ? t("messages.quietModeActive", "Rustmodus staat aan") : t("messages.quietModeConfigure", "Rustmodus instellen")} className={`relative mt-1 grid size-9 shrink-0 place-items-center rounded-full border ${vk.rustmodus ? "border-brand/40 bg-brand-soft text-brand" : "border-border text-ink-soft"}`}>
             <Moon className="size-4" strokeWidth={1.8}/>
             {vk.rustmodus ? <span aria-hidden="true" className="absolute right-1 top-1 size-1.5 rounded-full bg-brand"/> : null}
           </button>
-          <button onClick={() => setNieuwOpen(true)} aria-label={isEn ? "New topic" : "Nieuw onderwerp"} className="mt-1 grid size-9 shrink-0 place-items-center rounded-full border border-border text-brand">
+          <button onClick={() => setNieuwOpen(true)} aria-label={t("messages.newTopic", "Nieuw onderwerp")} className="mt-1 grid size-9 shrink-0 place-items-center rounded-full border border-border text-brand">
             <Plus className="size-4" strokeWidth={1.8}/>
           </button>
         </div>
         <NieuwBericht open={berichtOpen} voorinvul={context.concept} onSluit={() => setBerichtOpen(false)} onStart={(gid, tekst) => { setBerichtOpen(false); setConcept(tekst); forceer((x) => x + 1); setActief(gid); }}/>
         <NuAfstemmenStart open={naOpen} onSluit={() => setNaOpen(false)}/>
         <RustSheet open={rustOpen} onSluit={() => setRustOpen(false)}/>
-        {vk.rustmodus ? <p className="mt-1 text-sm text-ink-soft">{isEn ? `Quiet mode on · no notifications from ${vk.rustVan}:00 to ${vk.rustTot}:00` : `Rustmodus aan · ${vk.rustVan} uur – ${vk.rustTot} uur geen meldingen`}</p> : null}
-        {zoekOpen ? (<input autoFocus value={zoek} onChange={(e) => setZoek(e.target.value)} placeholder={isEn ? "Search by keyword, topic or date" : "Zoek op trefwoord, onderwerp, datum of kind"} aria-label={isEn ? "Search in messages" : "Zoeken in berichten"} className="mt-3 w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm"/>) : null}
+        {vk.rustmodus ? <p className="mt-1 text-sm text-ink-soft">{t("messages.quietModeNotice", "Rustmodus aan · {{from}} uur – {{to}} uur geen meldingen", { from: vk.rustVan, to: vk.rustTot })}</p> : null}
+        {zoekOpen ? (<input autoFocus value={zoek} onChange={(e) => setZoek(e.target.value)} placeholder={t("messages.searchPlaceholder", "Zoek op trefwoord, onderwerp, datum of kind")} aria-label={t("messages.searchAria", "Zoeken in berichten")} className="mt-3 w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm"/>) : null}
         {zoekActief ? null : (<button onClick={() => setNaOpen(true)} className="mt-4 flex w-full items-center gap-3 rounded-md border border-border bg-surface px-3 py-3 text-left">
             <AppIcon functie="afstemmen" maat="sm"/>
             <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">{isEn ? "Quick coordination" : "Snel iets afstemmen"}</span>
-              <span className="block text-xs text-ink-soft">{isEn ? "If something unexpected needs to be arranged today, like a sick child or pickup issue" : "Als iets vandaag geregeld moet worden, zoals een ziek kind of ophalen dat niet lukt"}</span>
+              <span className="block text-sm font-semibold">{t("messages.quickCoordination", "Snel iets afstemmen")}</span>
+              <span className="block text-xs text-ink-soft">{t("messages.quickCoordinationDesc", "Als iets vandaag geregeld moet worden, zoals een ziek kind of ophalen dat niet lukt")}</span>
             </span>
             <ChevronRight className="size-4 text-ink-soft" strokeWidth={1.8}/>
           </button>)}
         {openNuAfstemmen(nuAfstemmen).map((n) => <NuAfstemmenKaart key={n.id} n={n}/>)}
 
         {!zoekActief ? (<div className="mt-5">
-            <h2 className="font-display text-base font-bold">{isEn ? "Messages by topic" : "Berichten per onderwerp"}</h2>
-            <p className="text-xs text-ink-soft">{isEn ? "For regular messages and consultation. Keeps everything organized in one place." : "Voor gewone berichten en overleg. Zo blijft alles overzichtelijk bij elkaar."}</p>
+            <h2 className="font-display text-base font-bold">{t("messages.byTopic", "Berichten per onderwerp")}</h2>
+            <p className="text-xs text-ink-soft">{t("messages.byTopicDesc", "Voor gewone berichten en overleg. Zo blijft alles overzichtelijk bij elkaar.")}</p>
           </div>) : null}
         <div className={!zoekActief ? "mt-2.5 space-y-2.5" : "mt-5 space-y-2.5"}>
           {koppeling ? (<button onClick={() => setActief("__email")} className="flex w-full items-center gap-3 rounded-md border border-border bg-card p-3 text-left">
               <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand"><Mail className="size-5" strokeWidth={1.8}/></div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">{isEn ? "Communication with other parent" : "Communicatie met andere ouder"}</p>
-                <p className="truncate text-xs text-ink-soft">{isEn ? `Via email · ${mails[mails.length - 1]?.tekst ?? "No messages yet"}` : `Via e-mail · ${mails[mails.length - 1]?.tekst ?? "Nog geen berichten"}`}</p>
+                <p className="text-sm font-semibold">{t("messages.communicationWithOtherParent", "Communicatie met andere ouder")}</p>
+                <p className="truncate text-xs text-ink-soft">{t("messages.viaEmail", "Via e-mail · {{text}}", { text: mails[mails.length - 1]?.tekst ?? t("messages.noMessagesYet", "Nog geen berichten") })}</p>
               </div>
             </button>) : null}
           {!koppeling ? (<section className="rounded-lg border border-border bg-card p-4">
-              <p className="font-display text-lg font-bold">{isEn ? "Messages with the other parent" : "Berichten met de andere ouder"}</p>
-              <p className="mt-1 text-sm text-ink-soft">{startSt.uitgenodigd ? (isEn ? "The invitation is ready. As soon as the other parent accepts and connects, you can exchange messages here." : "De uitnodiging staat klaar. Zodra de andere ouder die accepteert en gekoppeld is, kunnen jullie hier berichten uitwisselen.") : (isEn ? "You can exchange messages once the other parent is invited and connected." : "Berichten uitwisselen kan zodra de andere ouder is uitgenodigd en gekoppeld.")} {isEn ? "You can already prepare a topic and a draft; nothing is sent yet." : "Je kunt alvast een onderwerp en een concept voorbereiden; er wordt nog niets verstuurd."}</p>
+              <p className="font-display text-lg font-bold">{t("messages.withOtherParent", "Berichten met de andere ouder")}</p>
+              <p className="mt-1 text-sm text-ink-soft">{startSt.uitgenodigd ? t("messages.inviteHintInvited", "De uitnodiging staat klaar. Zodra de andere ouder die accepteert en gekoppeld is, kunnen jullie hier berichten uitwisselen.") : t("messages.inviteHintNotInvited", "Berichten uitwisselen kan zodra de andere ouder is uitgenodigd en gekoppeld.")} {t("messages.prepareHint", "Je kunt alvast een onderwerp en een concept voorbereiden; er wordt nog niets verstuurd.")}</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                {!startSt.uitgenodigd ? <Link to="/solo" onClick={() => eigenStart.markeer({ uitgenodigd: true })} className="inline-flex min-h-[44px] items-center rounded-xl bg-brand px-4 text-sm font-semibold text-primary-foreground">{isEn ? "Invite other parent" : "Andere ouder uitnodigen"}</Link> : null}
-                <button type="button" onClick={() => setNieuwOpen(true)} className="inline-flex min-h-[44px] items-center rounded-xl border border-brand/40 px-4 text-sm font-semibold text-brand hover:bg-brand-soft">{isEn ? "+ New topic" : "+ Nieuw onderwerp"}</button>
+                {!startSt.uitgenodigd ? <Link to="/solo" onClick={() => eigenStart.markeer({ uitgenodigd: true })} className="inline-flex min-h-[44px] items-center rounded-xl bg-brand px-4 text-sm font-semibold text-primary-foreground">{t("messages.inviteOtherParent", "Andere ouder uitnodigen")}</Link> : null}
+                <button type="button" onClick={() => setNieuwOpen(true)} className="inline-flex min-h-[44px] items-center rounded-xl border border-brand/40 px-4 text-sm font-semibold text-brand hover:bg-brand-soft">{t("messages.newTopicBtn", "+ Nieuw onderwerp")}</button>
               </div>
             </section>) : null}
           {startSt.onderwerpen.map((o) => (<button key={o.id} onClick={() => setActief(o.id)} className="flex w-full items-center gap-3 rounded-md border border-border p-3 text-left">
               <AppIcon functie="berichten" maat="sm"/>
-              <div className="min-w-0 flex-1"><p className="text-sm font-semibold">{o.naam}</p><p className="truncate text-xs text-ink-soft">{isEn ? "Prepared · not sent yet" : "Voorbereid · nog niet verstuurd"}</p></div>
+              <div className="min-w-0 flex-1"><p className="text-sm font-semibold">{o.naam}</p><p className="truncate text-xs text-ink-soft">{t("messages.preparedNotSent", "Voorbereid · nog niet verstuurd")}</p></div>
             </button>))}
-          {zoekActief && !lijst.length && !startSt.onderwerpen.length ? <p className="py-6 text-center text-sm text-ink-soft">{isEn ? `No conversations found for "${zoek.trim()}".` : `Geen gesprekken gevonden voor "${zoek.trim()}".`}</p> : null}
+          {zoekActief && !lijst.length && !startSt.onderwerpen.length ? <p className="py-6 text-center text-sm text-ink-soft">{t("messages.noConversationsFound", 'Geen gesprekken gevonden voor "{{search}}".', { search: zoek.trim() })}</p> : null}
           {!startSt.eigen && lijst.map(({ g, treffer }) => {
                 const vast = vk.vastgezet.includes(g.id);
                 const stil = isGedempt(vk, g.id);
@@ -180,7 +193,7 @@ function BerichtenPagina() {
                 <div className="min-w-0 flex-1">
                   <p className={`flex items-center gap-1.5 text-sm ${g.ongelezen > 0 ? "font-bold text-ink" : "font-semibold"}`}>
                     {vast ? <Pin aria-label="Vastgezet" className="size-3 shrink-0 text-ink-soft" strokeWidth={1.8}/> : null}
-                    <span className="truncate">{g.onderwerp}</span>
+                    <span className="truncate">{vertaalOnderwerp(g.onderwerp)}</span>
                     {stil ? <BellOff aria-label="Meldingen gedempt" className="size-3 shrink-0 text-ink-soft" strokeWidth={1.8}/> : null}
                   </p>
                   <p className={`truncate text-xs ${g.ongelezen > 0 ? "text-ink" : "text-ink-soft"}`}>{treffer ?? g.laatste}</p>
@@ -196,7 +209,7 @@ function BerichtenPagina() {
               {menuVoor === g.id ? (<div className="absolute right-2 top-12 z-10 w-56 rounded-md border border-border bg-background p-1 text-sm">
                   <button onClick={() => { if (!wisselVastgezet(g.id))
                         bevestig("Maximaal drie gesprekken", { uitleg: "Maak eerst een ander gesprek los." }); setMenuVoor(null); }} className="flex w-full items-center gap-2 rounded px-3 py-2.5 text-left hover:bg-brand-soft">
-                    {vast ? <PinOff className="size-4" strokeWidth={1.8}/> : <Pin className="size-4" strokeWidth={1.8}/>}{vast ? "Losmaken" : "Vastzetten"}
+                    {vast ? <PinOff className="size-4" strokeWidth={1.8}/> : <Pin className="size-4" strokeWidth={1.8}/>}{vast ? t("messages.unpin", "Losmaken") : t("messages.pin", "Vastzetten")}
                   </button>
                   {stil ? (<button onClick={() => { dempGesprek(g.id, null); setMenuVoor(null); }} className="flex w-full items-center gap-2 rounded px-3 py-2.5 text-left hover:bg-brand-soft"><Bell className="size-4" strokeWidth={1.8}/>Meldingen weer aan</button>) : [[8, "8 uur"], [24, "1 dag"], [168, "1 week"]].map(([u, l]) => (<button key={u} onClick={() => { dempGesprek(g.id, u); setMenuVoor(null); bevestig(`Gedempt voor ${l}`, { uitleg: "Spoed en overdrachten komen wel door." }); }} className="flex w-full items-center gap-2 rounded px-3 py-2.5 text-left hover:bg-brand-soft"><BellOff className="size-4" strokeWidth={1.8}/>Meldingen dempen · {l}</button>))}
                 </div>) : null}
@@ -205,17 +218,17 @@ function BerichtenPagina() {
         </div>
 
         <div className="mt-4 rounded-md border border-border p-4">
-          <p className="text-sm font-semibold">{isEn ? "Prepare topic" : "Onderwerp voorbereiden"}</p>
+          <p className="text-sm font-semibold">{t("messages.prepareTopic", "Onderwerp voorbereiden")}</p>
           <p className="mt-1 text-xs text-ink-soft">
-            {isEn ? 'For example "Swimming diploma", "Birthday party" or "Parent meeting".' : 'Bijvoorbeeld "Zwemdiploma", "Verjaardagsfeest" of "Rapportgesprek".'}
+            {t("messages.prepareTopicDesc", "Bijvoorbeeld \"Zwemdiploma\", \"Verjaardagsfeest\" of \"Rapportgesprek\".")}
           </p>
           {nieuwOpen ? (<form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); start(); }}>
-              <input autoFocus value={naam} onChange={(e) => setNaam(e.target.value)} placeholder={isEn ? "Topic name" : "Naam van het onderwerp"} className="min-w-0 flex-1 rounded-md border bg-background px-3 py-2.5 text-sm"/>
+              <input autoFocus value={naam} onChange={(e) => setNaam(e.target.value)} placeholder={t("messages.topicName", "Naam van het onderwerp")} className="min-w-0 flex-1 rounded-md border bg-background px-3 py-2.5 text-sm"/>
               <button type="submit" disabled={!naam.trim()} className="rounded-md bg-brand px-4 text-sm font-semibold text-white disabled:opacity-50">
-                {isEn ? "Add" : "Start"}
+                {t("messages.start", "Start")}
               </button>
             </form>) : (<button onClick={() => setNieuwOpen(true)} className="mt-3 w-full rounded-md border border-border bg-card py-2.5 text-sm font-semibold text-brand">
-              {isEn ? "+ Add topic" : "+ Onderwerp"}
+              {t("messages.addTopic", "+ Onderwerp")}
             </button>)}
         </div>
       </AppShell>);
@@ -230,6 +243,7 @@ function BerichtenPagina() {
 }
 /** Nieuw bericht: kiest een bevoegde ontvanger + onderwerp/kind en gebruikt het bestaande gesprekkensysteem. */
 function NieuwBericht({ open, voorinvul, onSluit, onStart }) {
+    const { t } = useTranslation();
     const [ontvanger, setOntvanger] = useState("joris");
     const [onderwerp, setOnderwerp] = useState("nieuw");
     const [nieuwNaam, setNieuwNaam] = useState("");
@@ -255,38 +269,39 @@ function NieuwBericht({ open, voorinvul, onSluit, onStart }) {
     };
     const veld = "mt-1 w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm";
     return (<Sheet open={open} onOpenChange={(o) => !o && onSluit()}>
-      <SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="text-left">
-          <SheetTitle className="font-display text-xl font-medium">Nieuw bericht</SheetTitle>
-          <SheetDescription className="text-xs text-ink-soft">Je kunt alleen iemand kiezen die toegang heeft tot Berichten.</SheetDescription>
+          <SheetTitle className="font-display text-xl font-medium">{t("messages.newMessage", "Nieuw bericht")}</SheetTitle>
+          <SheetDescription className="text-xs text-ink-soft">{t("messages.newMessageDesc", "Je kunt alleen iemand kiezen die toegang heeft tot Berichten.")}</SheetDescription>
         </SheetHeader>
         <div className="mt-3 space-y-3 text-sm">
-          <label className="block"><span className="text-xs font-semibold text-ink-soft">Aan</span>
+          <label className="block"><span className="text-xs font-semibold text-ink-soft">{t("messages.to", "Aan")}</span>
             <select value={ontvanger} onChange={(e) => setOntvanger(e.target.value)} className={veld}>{ontvangers.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}</select>
           </label>
-          <label className="block"><span className="text-xs font-semibold text-ink-soft">Onderwerp</span>
+          <label className="block"><span className="text-xs font-semibold text-ink-soft">{t("messages.subject", "Onderwerp")}</span>
             <select value={onderwerp} onChange={(e) => setOnderwerp(e.target.value)} className={veld}>
-              <option value="nieuw">Nieuw onderwerp…</option>
+              <option value="nieuw">{t("messages.newSubjectOpt", "Nieuw onderwerp…")}</option>
               {gesprekken.map((g) => <option key={g.id} value={g.id}>{g.onderwerp}</option>)}
             </select>
           </label>
           {onderwerp === "nieuw" ? (<>
               <input value={nieuwNaam} onChange={(e) => setNieuwNaam(e.target.value)} placeholder="Bijv. Zwemdiploma" className={veld}/>
-              <label className="block"><span className="text-xs font-semibold text-ink-soft">Over</span>
+              <label className="block"><span className="text-xs font-semibold text-ink-soft">{t("messages.about", "Over")}</span>
                 <select value={kind} onChange={(e) => setKind(e.target.value)} className={veld}><option>Emma & Noah</option><option>Emma</option><option>Noah</option></select>
               </label>
             </>) : null}
-          <label className="block"><span className="text-xs font-semibold text-ink-soft">Bericht</span>
-            <textarea value={tekst} onChange={(e) => setTekst(e.target.value)} rows={4} className={`${veld} resize-none`} placeholder="Schrijf je bericht"/>
+          <label className="block"><span className="text-xs font-semibold text-ink-soft">{t("messages.message", "Bericht")}</span>
+            <textarea value={tekst} onChange={(e) => setTekst(e.target.value)} rows={4} className={`${veld} resize-none`} placeholder={t("messages.writeMessagePlaceholder", "Schrijf je bericht")}/>
           </label>
-          <p className="text-[11px] text-ink-soft">In het gesprek kun je het nog nalezen en laten herformuleren voordat je verstuurt.</p>
-          <button disabled={!kan} onClick={start} className="w-full rounded-md bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40">Verder naar gesprek</button>
+          <p className="text-[11px] text-ink-soft">{t("messages.newMessageHint", "In het gesprek kun je het nog nalezen en laten herformuleren voordat je verstuurt.")}</p>
+          <button disabled={!kan} onClick={start} className="w-full rounded-md bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40">{t("messages.continueToConversation", "Verder naar gesprek")}</button>
         </div>
       </SheetContent>
     </Sheet>);
 }
 const stijlen = ["Rustiger", "Korter", "Neutraler", "Duidelijker", "Meer kindgericht"];
 function Gesprek({ id, concept = "", onTerug, eigen }) {
+    const { t } = useTranslation();
     // Eigen gezin: alleen het eigen onderwerp, geen voorbeeldgesprek of -deelnemers.
     const gesprek = eigen ? { id, onderwerp: eigen.naam, icoon: "💬", berichten: [] } : gesprekken.find((g) => g.id === id);
     const coach = useServerFn(coachBericht);
@@ -562,7 +577,7 @@ function Gesprek({ id, concept = "", onTerug, eigen }) {
 
       <div className="mt-3">
         {eigen || !berichten.length || !vkG.aiSchrijfhulp ? null : samenvatting ? (<div className="rounded-md border border-border bg-card p-3 text-sm">
-            <div className="flex items-center justify-between"><p className="text-xs font-semibold text-ink-soft">Samenvatting · alleen voor jou</p><button onClick={() => setSamenvatting(null)} className="knop-kruis size-7 text-xs" aria-label="Sluiten">✕</button></div>
+            <div className="flex items-center justify-between"><p className="text-xs font-semibold text-ink-soft">{t("messages.summaryOnlyForYou", "Samenvatting · alleen voor jou")}</p><button onClick={() => setSamenvatting(null)} className="knop-kruis size-7 text-xs" aria-label="Sluiten">✕</button></div>
             <p className="mt-1 whitespace-pre-line text-ink">{samenvatting}</p>
           </div>) : (<button onClick={async () => { setVatBezig(true); setFout(null); try {
             setSamenvatting(await vatSamen({ data: { berichten: berichten.map((b) => ({ van: b.van === "sanne" ? "Ik" : "Andere ouder", tekst: b.tekst })) } }));
@@ -573,7 +588,7 @@ function Gesprek({ id, concept = "", onTerug, eigen }) {
         finally {
             setVatBezig(false);
         } }} disabled={vatBezig} className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-ink-soft">
-            {vatBezig ? "Even samenvatten…" : "Vat dit gesprek samen"}
+            {vatBezig ? t("messages.summarizing", "Even samenvatten…") : t("messages.summarizeConversation", "Vat dit gesprek samen")}
           </button>)}
       </div>
 
@@ -584,19 +599,19 @@ function Gesprek({ id, concept = "", onTerug, eigen }) {
               <div className="min-w-0 max-w-[85%] break-words">
                 <div className={`rounded-md px-4 py-2.5 text-sm ${vanMij ? "bg-brand text-primary-foreground" : "border border-border text-ink"}`}>{b.tekst}</div>
                 <p className={`mt-1 text-[11px] text-ink-soft ${vanMij ? "text-right" : ""}`}>
-                  {vanMij ? "Jij" : parents.joris.naam} · {b.tijd}
-                  {" · "}<button type="button" onClick={() => setActiesVoor(actiesVoor === b.id ? null : b.id)} className="font-semibold underline-offset-2 hover:underline">Hier iets mee doen</button>
-                  {!vanMij && vkG.aiSchrijfhulp ? <>{" · "}<button type="button" disabled={bezig} onClick={() => helpAntwoorden(b)} className="font-semibold text-brand underline-offset-2 hover:underline">Help me reageren</button></> : null}
+                  {(vanMij ? t("messages.you", "Jij") : parents.joris.naam)} · {b.tijd}
+                  {" · "}<button type="button" onClick={() => setActiesVoor(actiesVoor === b.id ? null : b.id)} className="font-semibold underline-offset-2 hover:underline">{t("messages.actOnThis", "Hier iets mee doen")}</button>
+                  {!vanMij && vkG.aiSchrijfhulp ? <>{" · "}<button type="button" disabled={bezig} onClick={() => helpAntwoorden(b)} className="font-semibold text-brand underline-offset-2 hover:underline">{t("messages.helpMeRespond", "Help me reageren")}</button></> : null}
                 </p>
                 {!vanMij && mogelijkeOnveiligheid(b.tekst) ? <div className="mt-2 text-sm" role="note"><p className="text-ink">Dit bericht bevat mogelijk bedreigende taal. Je hoeft hier niet direct op te reageren.</p><details className="mt-1 text-xs"><summary className="min-h-11 cursor-pointer text-brand">Hulp en veiligheidsopties</summary><HulpKaart /></details></div> : !vanMij && mogelijkVerwijt(b.tekst) ? <p className="mt-1 text-xs text-ink-soft">Je kunt rustig de tijd nemen om te reageren.</p> : null}
                 {actiesVoor === b.id ? (<div className={`mt-1.5 space-y-1 rounded-md border border-border bg-card p-2 text-xs ${vanMij ? "text-right" : ""}`}>
                     {/* Elke keuze opent alleen de bestaande flow met de tekst vooraf ingevuld; de gebruiker vult aan en bevestigt. */}
                     {herkenPraktisch(b.tekst, suggestieNamen)?.zorg ? <Link to="/zorgregeling" search={{ actie: "wijziging", bron: "berichten", omschrijving: b.tekst }} className="block rounded px-2 py-1.5 font-semibold text-brand hover:bg-brand-soft">Wijziging voorstellen</Link> : <Link to="/agenda" search={agendaVanBericht(b.tekst, suggestieNamen)} className="block rounded px-2 py-1.5 font-semibold text-brand hover:bg-brand-soft">Maak afspraak</Link>}
                     <p className="px-2 pb-1 text-[11px] text-ink-soft">{herkenPraktisch(b.tekst, suggestieNamen)?.persoonlijk ? "Alleen voor je eigen agenda. Controleer de gegevens." : "Wordt eerst een voorstel. Pas na samen akkoord staat het als afspraak vast."}</p>
-                    <Link to="/taken" search={{ taak: b.tekst, berichtId: b.id, gesprekId: id }} className="block rounded px-2 py-1.5 font-semibold text-ink hover:bg-brand-soft">Als taak</Link>
-                    <Link to="/kosten" search={{ uitgave: b.tekst.slice(0, 200) }} className="block rounded px-2 py-1.5 font-semibold text-ink hover:bg-brand-soft">Als kosten</Link>
-                    <Link to="/afspraken" search={{ nieuw: "afspraak", bron: b.tekst }} className="block rounded px-2 py-1.5 font-semibold text-ink hover:bg-brand-soft">Leg dit vast</Link>
-                    {vindDeadline(b.tekst) ? <Link to="/taken" search={{ taak: b.tekst.slice(0, 60), deadline: vindDeadline(b.tekst) }} className="block rounded px-2 py-1.5 font-semibold text-brand hover:bg-brand-soft">Deadline opslaan</Link> : null}
+                    <Link to="/taken" search={{ taak: b.tekst, berichtId: b.id, gesprekId: id }} className="block rounded px-2 py-1.5 font-semibold text-ink hover:bg-brand-soft">{t("messages.asTask", "Als taak")}</Link>
+                    <Link to="/kosten" search={{ uitgave: b.tekst.slice(0, 200) }} className="block rounded px-2 py-1.5 font-semibold text-ink hover:bg-brand-soft">{t("messages.asExpense", "Als kosten")}</Link>
+                    <Link to="/afspraken" search={{ nieuw: "afspraak", bron: b.tekst }} className="block rounded px-2 py-1.5 font-semibold text-ink hover:bg-brand-soft">{t("messages.recordThis", "Leg dit vast")}</Link>
+                    {vindDeadline(b.tekst) ? <Link to="/taken" search={{ taak: b.tekst.slice(0, 60), deadline: vindDeadline(b.tekst) }} className="block rounded px-2 py-1.5 font-semibold text-brand hover:bg-brand-soft">{t("messages.saveDeadline", "Deadline opslaan")}</Link> : null}
                   </div>) : null}
               </div>
             </div>);
@@ -749,31 +764,33 @@ function Gesprek({ id, concept = "", onTerug, eigen }) {
 }
 /** Compact venster voor de bestaande rustmodus; geen omweg via Instellingen. */
 function RustSheet({ open, onSluit }) {
+    const { t } = useTranslation();
     const vk = useVoorkeuren();
     const veld = "mt-1 w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm";
     return (<Sheet open={open} onOpenChange={(o) => !o && onSluit()}>
-      <SheetContent side="bottom" className="left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="text-left">
-          <SheetTitle className="font-display text-xl font-medium">Rustmodus</SheetTitle>
-          <SheetDescription className="text-xs text-ink-soft">Binnen deze tijden krijg je geen meldingen over berichten. Nu afstemmen en overdrachten komen wel door.</SheetDescription>
+          <SheetTitle className="font-display text-xl font-medium">{t("messages.quietModeSheet.title", "Rustmodus")}</SheetTitle>
+          <SheetDescription className="text-xs text-ink-soft">{t("messages.quietModeSheet.desc", "Binnen deze tijden krijg je geen meldingen over berichten. Nu afstemmen en overdrachten komen wel door.")}</SheetDescription>
         </SheetHeader>
         <label className="mt-4 flex items-center justify-between gap-3 text-sm font-semibold">
-          Rustmodus aan
+          {t("messages.quietModeSheet.enable", "Rustmodus aan")}
           <input type="checkbox" checked={vk.rustmodus} onChange={() => zetVoorkeur("rustmodus", !vk.rustmodus)} className="size-5 accent-[var(--brand)]"/>
         </label>
         <div className="mt-3 grid grid-cols-2 gap-3">
-          <label className="block text-xs font-semibold text-ink-soft">Vanaf<input type="time" value={vk.rustVan} onChange={(e) => e.target.value && zetVoorkeur("rustVan", e.target.value)} className={veld}/></label>
-          <label className="block text-xs font-semibold text-ink-soft">Tot<input type="time" value={vk.rustTot} onChange={(e) => e.target.value && zetVoorkeur("rustTot", e.target.value)} className={veld}/></label>
+          <label className="block text-xs font-semibold text-ink-soft">{t("messages.quietModeSheet.from", "Vanaf")}<input type="time" value={vk.rustVan} onChange={(e) => e.target.value && zetVoorkeur("rustVan", e.target.value)} className={veld}/></label>
+          <label className="block text-xs font-semibold text-ink-soft">{t("messages.quietModeSheet.to", "Tot")}<input type="time" value={vk.rustTot} onChange={(e) => e.target.value && zetVoorkeur("rustTot", e.target.value)} className={veld}/></label>
         </div>
-        <button onClick={onSluit} className="mt-5 w-full rounded-md bg-brand py-3 text-sm font-semibold text-primary-foreground">Klaar</button>
+        <button onClick={onSluit} className="mt-5 w-full rounded-md bg-brand py-3 text-sm font-semibold text-primary-foreground">{t("common.done", "Klaar")}</button>
       </SheetContent>
     </Sheet>);
 }
 /** Neutrale hint: blokkeert niets, geeft geen oordeel of juridisch advies. */
 function AfwijkingHint() {
+    const { t } = useTranslation();
     return (<div className="rounded-md border border-border bg-card p-3">
-      <p className="text-sm text-ink">Dit lijkt wellicht af te wijken van jullie afspraak. Wil je er een voorstel van maken?</p>
-      <p className="mt-1 text-[11px] text-ink-soft">Een inschatting van de schrijfhulp, geen vaststelling. Er verandert niets aan jullie afspraken.</p>
-      <Link to="/zorgregeling" search={{ actie: "wijziging", bron: "berichten" }} className="mt-2 inline-flex rounded-md border border-border px-3 py-2 text-xs font-semibold text-brand">Maak er een voorstel van</Link>
+      <p className="text-sm text-ink">{t("messages.deviationHint.title", "Dit lijkt wellicht af te wijken van jullie afspraak. Wil je er een voorstel van maken?")}</p>
+      <p className="mt-1 text-[11px] text-ink-soft">{t("messages.deviationHint.desc", "Een inschatting van de schrijfhulp, geen vaststelling. Er verandert niets aan jullie afspraken.")}</p>
+      <Link to="/zorgregeling" search={{ actie: "wijziging", bron: "berichten" }} className="mt-2 inline-flex rounded-md border border-border px-3 py-2 text-xs font-semibold text-brand">{t("messages.deviationHint.action", "Maak er een voorstel van")}</Link>
     </div>);
 }

@@ -1,5 +1,6 @@
 import { uur } from "@/lib/tijd-tekst";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { accepteerHulp, useHulpVerzoeken } from "@/lib/taken-store";
 import { z } from "zod";
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/verzorger")({
     component: Verzorger,
 });
 function Verzorger() {
+    const { t } = useTranslation();
     const { p: pid, s } = Route.useSearch();
     const kring = useKring();
     if (!pid) {

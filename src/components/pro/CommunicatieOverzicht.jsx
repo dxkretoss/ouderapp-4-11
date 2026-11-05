@@ -22,7 +22,7 @@ export function CommunicatieOverzicht({ gezinnen, onOpen }) {
     </div>
     <Button variant="outline" className="mt-3 h-auto min-h-11 whitespace-normal" onClick={() => setInformatie(true)}><AppIcon functie="slot" vorm="kaal" maat="sm"/>Toestemming voor meelezen</Button>
     <Sheet open={informatie} onOpenChange={setInformatie}>
-      <SheetContent side="bottom" className="pro-cockpit left-1/2 max-h-[85dvh] w-full max-w-lg -translate-x-1/2 overflow-y-auto bg-background">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md pro-cockpit max-h-[85dvh] w-full max-w-lg overflow-y-auto bg-background">
         <SheetHeader><SheetTitle>Toestemming voor meelezen</SheetTitle><SheetDescription>Ouders houden ieder afzonderlijk de keuze.</SheetDescription></SheetHeader>
         <div className="mt-4 space-y-3 text-sm">
           <p>Beide ouders moeten afzonderlijk instemmen. De professional moet daarnaast bevoegd zijn voor dit gezin.</p>

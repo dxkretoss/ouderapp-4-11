@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { kinderen } from "@/lib/demo-data";
 import { useStart, leeftijdTekst } from "@/lib/start-store";
@@ -20,13 +21,14 @@ export const Route = createFileRoute("/kinderen/")({
     component: Kinderen,
 });
 function Kinderen() {
+    const { t } = useTranslation();
     const st = useStart();
     const kring = useKring();
     const betrokkenen = kring.personen.filter((p) => !p.ingetrokken && st.kinderen.some((k) => p.rechten[k.id]));
     const [kindOpen, setKindOpen] = useState(false);
     if (st.eigen)
         return (<AppShell>
-        <PageHeader titel="Kinderen" subtitel="Dezelfde informatie, in beide huizen"/>
+        <PageHeader titel={t("childrenSection.title", "Kinderen")} subtitel={t("childrenSection.subtitle", "Dezelfde informatie, in beide huizen")}/>
         <div className="mt-6 divide-y divide-border border-y border-border">
           {st.kinderen.map((k) => (<Link key={k.id} to="/kinderen/$kindId" params={{ kindId: k.id }} className="flex min-h-14 items-center gap-4 py-3">
               <ProfielBeeld beeld={k.beeld} naam={k.naam} kleur={k.kleur} maat={48}/>
@@ -37,12 +39,12 @@ function Kinderen() {
               <span className="text-xl text-ink-soft">›</span>
             </Link>))}
         </div>
-        {!st.kinderen.length ? <p className="mt-4 text-sm text-ink-soft">Je hebt nog geen kind toegevoegd.</p> : null}
+        {!st.kinderen.length ? <p className="mt-4 text-sm text-ink-soft">{t("childrenSection.noChildrenYet", "Je hebt nog geen kind toegevoegd.")}</p> : null}
         <details className="mt-6 [&_summary::-webkit-details-marker]:hidden">
-          <summary className="flex min-h-[44px] cursor-pointer list-none items-center text-sm font-semibold text-ink-soft">Beheren ›</summary>
+          <summary className="flex min-h-[44px] cursor-pointer list-none items-center text-sm font-semibold text-ink-soft">{t("common.manage", "Beheren")} ›</summary>
           <div className="mt-2 flex flex-wrap gap-2">
-            <button onClick={() => setKindOpen("kind")} className="min-h-[44px] rounded-xl border border-border px-4 text-sm font-semibold">Kind toevoegen</button>
-            <button onClick={() => setKindOpen("familie")} className="min-h-[44px] rounded-xl border border-border px-4 text-sm font-semibold">Familielid of betrokkene toevoegen</button>
+            <button onClick={() => setKindOpen("kind")} className="min-h-[44px] rounded-xl border border-border px-4 text-sm font-semibold">{t("sheets.child.title", "Kind toevoegen")}</button>
+            <button onClick={() => setKindOpen("familie")} className="min-h-[44px] rounded-xl border border-border px-4 text-sm font-semibold">{t("sheets.child.addFamilyMember", "Familielid of betrokkene toevoegen")}</button>
           </div>
           {betrokkenen.length ? <div className="mt-4 divide-y divide-border border-y border-border">
             {betrokkenen.map((p) => <div key={p.id} className="py-3"><p className="text-sm font-semibold">{persoonLabel(p)}</p>{p.contact ? <p className="text-xs text-ink-soft">{p.contact}</p> : null}</div>)}
@@ -51,7 +53,7 @@ function Kinderen() {
         <KindSheet open={!!kindOpen} start={kindOpen || "kind"} onClose={() => setKindOpen(false)}/>
       </AppShell>);
     return (<AppShell>
-      <PageHeader titel="Kinderen" subtitel="Dezelfde informatie, in beide huizen"/>
+      <PageHeader titel={t("childrenSection.title", "Kinderen")} subtitel={t("childrenSection.subtitle", "Dezelfde informatie, in beide huizen")}/>
       <div className="mt-6 space-y-3">
         {kinderen.map((k) => (<Link key={k.id} to="/kinderen/$kindId" params={{ kindId: k.id }} className="block">
             <Card className="flex items-center gap-4">

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -10,6 +11,7 @@ import { useStart } from "@/lib/start-store";
 import { useNavigate } from "@tanstack/react-router";
 // Eigen gezin: eigen momentjes (geen voorbeelddata), met plusje en toevoegformulier.
 function MomentjesPaginaWrap() {
+    const { t } = useTranslation();
     const st = useStart();
     if (st.eigen)
         return <EigenMomentjes />;
@@ -39,7 +41,7 @@ function EigenMomentjes() {
     };
     const knop = (aan) => `min-h-11 rounded-full border px-3 text-sm ${aan ? "border-brand bg-brand-soft font-semibold" : "border-border"}`;
     return (<AppShell>
-      <PageHeader titel="Momentjes" subtitel="Je hoeft er niet altijd bij te zijn om er een beetje bij te zijn" terug="/meer" actie={<button aria-label="Momentje toevoegen" onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
+      <PageHeader titel={t("momentsPage.headerTitle", "Momentjes")} subtitel="Je hoeft er niet altijd bij te zijn om er een beetje bij te zijn" terug="/meer" actie={<button aria-label="Momentje toevoegen" onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
       {nieuw ? (<Card className="mt-4 space-y-3">
           <p className="font-display text-lg font-bold">Nieuw momentje</p>
           <label className="block text-sm font-semibold">Wat wil je bewaren?<textarea value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder="Bijv. eerste keer zelf fietsen" rows={3} className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-normal"/></label>
@@ -87,6 +89,7 @@ function Schakel({ aan, onClick, label, uitleg }) {
     </button>);
 }
 function MomentjesPagina() {
+    const { t } = useTranslation();
     const { lijst, herinnering, professionals } = useMomentjes();
     const [open, setOpen] = useState(false);
     const [filter, setFilter] = useState("alle");

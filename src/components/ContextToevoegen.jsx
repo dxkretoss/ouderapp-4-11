@@ -11,7 +11,7 @@ export function ContextToevoegen({ titel, acties, toegestaan = true, open, onOpe
           <Plus aria-hidden="true" strokeWidth={1.8}/>
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl border-border bg-background px-5 pb-8 pt-4">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-2xl border-border bg-background px-5 pb-8 pt-4">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border"/>
         <SheetHeader className="pr-8 text-left">
           <SheetTitle className="font-display text-xl font-medium text-ink">{titel}</SheetTitle>

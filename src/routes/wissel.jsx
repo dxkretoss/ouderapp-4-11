@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/wissel")({
 const startLijst = meeneemLijst;
 const dagen = ["ma 16", "di 17", "wo 18", "do 19", "vr 20", "za 21", "zo 22", "ma 23", "di 24", "wo 25"];
 function Wissel() {
+    const { t } = useTranslation();
     const { actie } = Route.useSearch();
     const { klaar } = useWissel();
     const [soort, setSoort] = useState(actie ?? null);

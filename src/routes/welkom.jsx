@@ -45,7 +45,7 @@ function Welkom() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (naam.trim()) setStap(2);
+              if (naam.trim()) setStap(1);
             }}
           >
             <h1 className="font-display text-2xl font-bold">{t("onboarding.welcomeTitle", "Fijn dat je er bent.")}</h1>
@@ -64,7 +64,7 @@ function Welkom() {
               {t("common.continue", "Verder")}
             </button>
           </form>
-        ) : stap === 2 ? (
+        ) : stap === 1 ? (
           <>
             <h1 className="font-display text-2xl font-bold">{t("onboarding.photoAvatarTitle", "Een foto of avatar?")}</h1>
             <p className="mt-1 text-sm text-ink-soft">
@@ -75,13 +75,13 @@ function Welkom() {
                 beeld={beeld}
                 naam={naam}
                 onKies={(b) => {
-                  if (!b && !beeld) setStap(1);
+                  if (!b && !beeld) setStap(2);
                   else setBeeld(b);
                 }}
               />
             </div>
             {beeld ? (
-              <button className={knop} onClick={() => setStap(1)}>
+              <button className={knop} onClick={() => setStap(2)}>
                 {t("common.continue", "Verder")}
               </button>
             ) : null}
@@ -118,7 +118,7 @@ function Welkom() {
             >
               {t("onboarding.startAction", "Naar mijn Home")}
             </button>
-            <button type="button" onClick={() => setStap(2)} className="mt-3 block w-full text-center text-xs font-semibold text-ink-soft hover:text-ink cursor-pointer">
+            <button type="button" onClick={() => setStap(1)} className="mt-3 block w-full text-center text-xs font-semibold text-ink-soft hover:text-ink cursor-pointer">
               {t("onboarding.back", "Terug")}
             </button>
           </>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/begeleider-gesprek")({
 const IKZELF = "Sanne";
 const ANDERE = "Joris";
 function BegeleiderGesprek() {
+    const { t } = useTranslation();
     const werk = useProWerk();
     const { met = "prive", pro: proId } = Route.useSearch();
     const navigate = Route.useNavigate();
@@ -43,7 +45,7 @@ function BegeleiderGesprek() {
     }
     if (!pro) {
         return (<AppShell>
-        <PageHeader titel="Gesprek met begeleider" terug="/contact"/>
+        <PageHeader titel={t("guideConversationPage.headerTitle", "Gesprek met begeleider")} terug="/contact"/>
         <p className="mt-6 text-sm text-ink-soft">Er is nu geen begeleider die je via de app kunt bereiken.</p>
       </AppShell>);
     }

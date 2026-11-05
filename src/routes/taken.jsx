@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { createFileRoute } from "@tanstack/react-router";
@@ -19,6 +20,7 @@ function TakenWrap() {
     return <Taken />;
 }
 function EigenTaken() {
+    const { t } = useTranslation();
     const st = useStart();
     useTaken(); // herbereken bij wijzigingen
     const nav = useNavigate();
@@ -39,25 +41,25 @@ function EigenTaken() {
         setNieuw(false);
     };
     return (<AppShell>
-      <PageHeader titel="Taken" subtitel="Wie regelt wat en wat moet nog gebeuren." actie={<button aria-label="Nieuwe taak" onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
+      <PageHeader titel={t("tasks.headerTitle", "Taken")} subtitel={t("tasks.headerSubtitle", "Wie regelt wat en wat moet nog gebeuren.")} actie={<button aria-label={t("tasks.newTaskAria", "Nieuwe taak")} onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
       {nieuw ? (<Card className="mt-4 space-y-3">
-          <p className="font-display text-lg font-bold">Nieuwe taak</p>
-          <label className="block text-sm font-semibold">Wat moet er gebeuren?<input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder="Bijv. schoolformulier invullen" className={`mt-1 w-full font-normal ${veld}`}/></label>
-          {st.kinderen.length ? (<fieldset><legend className="text-sm font-semibold">Voor wie?</legend><div className="mt-1 flex flex-wrap gap-2">
+          <p className="font-display text-lg font-bold">{t("tasks.newTask", "Nieuwe taak")}</p>
+          <label className="block text-sm font-semibold">{t("tasks.whatNeedsDoing", "Wat moet er gebeuren?")}<input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder={t("tasks.placeholder", "Bijv. schoolformulier invullen")} className={`mt-1 w-full font-normal ${veld}`}/></label>
+          {st.kinderen.length ? (<fieldset><legend className="text-sm font-semibold">{t("tasks.forWhom", "Voor wie?")}</legend><div className="mt-1 flex flex-wrap gap-2">
               {st.kinderen.map((k) => <button key={k.id} onClick={() => setKind(k.id)} aria-pressed={kind === k.id} className={knop(kind === k.id)}>{k.naam}</button>)}
-              {st.kinderen.length > 1 ? <button onClick={() => setKind("alle")} aria-pressed={kind === "alle"} className={knop(kind === "alle")}>Alle kinderen</button> : null}
+              {st.kinderen.length > 1 ? <button onClick={() => setKind("alle")} aria-pressed={kind === "alle"} className={knop(kind === "alle")}>{t("tasks.allChildren", "Alle kinderen")}</button> : null}
             </div></fieldset>) : null}
           <HulpKnop voorstel={{ kind, wat: tekst }}/>
           <div className="flex gap-2">
-            <button onClick={opslaan} className="min-h-11 flex-1 rounded-full bg-brand text-sm font-semibold text-primary-foreground">Toevoegen</button>
-            <button onClick={() => setNieuw(false)} className="min-h-11 px-3 text-sm text-ink-soft">Annuleren</button>
+            <button onClick={opslaan} className="min-h-11 flex-1 rounded-full bg-brand text-sm font-semibold text-primary-foreground">{t("tasks.add", "Toevoegen")}</button>
+            <button onClick={() => setNieuw(false)} className="min-h-11 px-3 text-sm text-ink-soft">{t("tasks.cancel", "Annuleren")}</button>
           </div>
         </Card>) : null}
       {!lijst.length && !nieuw ? (<div className="mt-10 flex flex-col items-center text-center">
-          <p className="font-display text-lg font-bold">Hier is het nog rustig</p>
-          <p className="mt-1 max-w-xs text-sm text-ink-soft">Hier komen de taken voor de kinderen, zoals inschrijven of iets regelen.</p>
-          <button onClick={() => setNieuw(true)} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">Eerste taak toevoegen</button>
-          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">Terug naar Menu</button>
+          <p className="font-display text-lg font-bold">{t("tasks.emptyTitle", "Hier is het nog rustig")}</p>
+          <p className="mt-1 max-w-xs text-sm text-ink-soft">{t("tasks.emptyDesc", "Hier komen de taken voor de kinderen, zoals inschrijven of iets regelen.")}</p>
+          <button onClick={() => setNieuw(true)} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">{t("tasks.addFirstTask", "Eerste taak toevoegen")}</button>
+          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">{t("tasks.backToMenu", "Terug naar Menu")}</button>
         </div>) : null}
       {actief.length ? (<ul className="mt-4 divide-y divide-border rounded-md border border-border bg-card">
           {actief.map((t) => (<li key={t.id} className="flex items-center gap-3 px-3 py-3">
@@ -97,6 +99,7 @@ const DAG = 86_400_000;
 /** Later = deadline meer dan drie weken weg. */
 const isLater = (t) => !!t.deadline && new Date(t.deadline).getTime() - Date.now() > 21 * DAG;
 function Taken() {
+    const { t } = useTranslation();
     const { taken } = useTaken();
     const zoek = Route.useSearch();
     const [nieuw, setNieuw] = useState(!!zoek.taak || !!zoek.deadline);
@@ -119,15 +122,15 @@ function Taken() {
 
       {nieuw ? <NieuweTaak onKlaar={() => setNieuw(false)}/> : null}
 
-      {voorJou.length ? <Groep titel="Voor jou">{voorJou.map(rij)}</Groep> : null}
-      {nogAfstemmen.length ? <Groep titel="Nog afstemmen">{nogAfstemmen.map(rij)}</Groep> : null}
-      {andereOuder.length ? <Groep titel="Bij de andere ouder">{andereOuder.map(rij)}</Groep> : null}
-      {later.length ? <Groep titel="Later">{later.map(rij)}</Groep> : null}
-      {!actief.length ? <p className="mt-6 text-sm text-ink-soft">Alles is geregeld.</p> : null}
+      {voorJou.length ? <Groep titel={t("tasks.forYou", "Voor jou")}>{voorJou.map(rij)}</Groep> : null}
+      {nogAfstemmen.length ? <Groep titel={t("tasks.toCoordinate", "Nog afstemmen")}>{nogAfstemmen.map(rij)}</Groep> : null}
+      {andereOuder.length ? <Groep titel={t("tasks.withOtherParent", "Bij de andere ouder")}>{andereOuder.map(rij)}</Groep> : null}
+      {later.length ? <Groep titel={t("tasks.later", "Later")}>{later.map(rij)}</Groep> : null}
+      {!actief.length ? <p className="mt-6 text-sm text-ink-soft">{t("tasks.allDone", "Alles is geregeld.")}</p> : null}
 
       {klaar.length ? (<div className="mt-4">
-          <button onClick={() => setAfgerond(!afgerond)} className="min-h-11 text-sm font-semibold text-brand">{afgerond ? "Verberg afgeronde taken" : "Bekijk afgeronde taken ›"}</button>
-          {afgerond ? <Groep titel="Afgerond">{klaar.map(rij)}</Groep> : null}
+          <button onClick={() => setAfgerond(!afgerond)} className="min-h-11 text-sm font-semibold text-brand">{afgerond ? t("tasks.hideCompleted", "Verberg afgeronde taken") : t("tasks.viewCompleted", "Bekijk afgeronde taken ›")}</button>
+          {afgerond ? <Groep titel={t("tasks.completed", "Afgerond")}>{klaar.map(rij)}</Groep> : null}
         </div>) : null}
 
     </AppShell>);
@@ -139,6 +142,7 @@ function Groep({ titel, children }) {
     </section>);
 }
 function TaakRij({ t, open, onOpen }) {
+    const { t: trans } = useTranslation();
     const [overdragen, setOverdragen] = useState(false);
     const sub = [kindTekst(t.kind), t.contactStatus ? contactStatusLabel[t.contactStatus] : null, t.deadline ? `vóór ${datumTekst(t.deadline)}` : t.wie && t.wie !== "sanne" ? `${wieNaam(t.wie)} regelt dit` : !t.wie ? "Nog niemand" : null].filter(Boolean).join(" · ");
     return (<li id={`item-${t.id}`} className="zoekdoel px-3 py-3">
@@ -154,16 +158,17 @@ function TaakRij({ t, open, onOpen }) {
       </div>
       {open ? (<div className="ml-9 mt-2 space-y-1 text-xs">
           <p className="text-ink-soft">{taakWieTekst(t.wie)}{t.herhaling !== "eenmalig" ? ` · ${t.herhaling === "aangepast" ? t.herhalingTekst ?? "Terugkerend" : herhalingLabel[t.herhaling]}` : ""}{t.herinnerDagen ? ` · herinnering ${t.herinnerDagen} ${t.herinnerDagen === 1 ? "dag" : "dagen"} vooraf` : ""}</p>
-          {t.overdragenAan ? (<p><button onClick={() => annuleerOverdracht(t.id)} className="min-h-11 font-semibold text-brand">Vraag intrekken</button>{import.meta.env.DEV ? <> · <button onClick={() => accepteerOverdracht(t.id)} className="text-ink-soft underline">Voorbeeld: accepteren</button></> : null}</p>) : overdragen ? (<div className="flex flex-wrap gap-2">
+          {t.overdragenAan ? (<p><button onClick={() => annuleerOverdracht(t.id)} className="min-h-11 font-semibold text-brand">{trans("tasks.cancelRequest", "Vraag intrekken")}</button>{import.meta.env.DEV ? <> · <button onClick={() => accepteerOverdracht(t.id)} className="text-ink-soft underline">Voorbeeld: accepteren</button></> : null}</p>) : overdragen ? (<div className="flex flex-wrap gap-2">
               {taakKandidaten(t).filter((k) => k.id !== t.wie).map((k) => (<button key={k.id} onClick={() => { vraagOverdracht(t.id, k.id); setOverdragen(false); }} className="min-h-11 rounded-full border border-border px-3 font-semibold">{k.naam}</button>))}
               <button onClick={() => setOverdragen(false)} className="min-h-11 px-2 text-ink-soft">Annuleren</button>
-            </div>) : !t.klaar ? <button onClick={() => setOverdragen(true)} className="min-h-11 font-semibold text-brand">Taak overdragen</button> : null}
-          {t.berichtId && t.gesprekId ? <Button asChild variant="link" className="h-auto min-h-11 px-0 text-xs"><Link to="/berichten" search={{ gesprek: t.gesprekId }}>Oorspronkelijk gesprek bekijken</Link></Button> : null}
+            </div>) : !t.klaar ? <button onClick={() => setOverdragen(true)} className="min-h-11 font-semibold text-brand">{trans("tasks.transferTask", "Taak overdragen")}</button> : null}
+          {t.berichtId && t.gesprekId ? <Button asChild variant="link" className="h-auto min-h-11 px-0 text-xs"><Link to="/berichten" search={{ gesprek: t.gesprekId }}>{trans("tasks.viewOriginalConversation", "Oorspronkelijk gesprek bekijken")}</Link></Button> : null}
           <GeschiedenisKnop soort="afspraak" itemId={t.id} naam={t.tekst}/>
         </div>) : null}
     </li>);
 }
 function NieuweTaak({ onKlaar }) {
+    const { t } = useTranslation();
     const { taak: voorinvul, deadline: voorDeadline, kind: voorKind, dag, berichtId, gesprekId } = Route.useSearch();
     const [tekst, setTekst] = useState(voorinvul ?? "");
     const [kind, setKind] = useState(voorKind ?? (berichtId ? "" : "emma"));
@@ -192,27 +197,27 @@ function NieuweTaak({ onKlaar }) {
       <fieldset><legend className="text-sm font-semibold">Voor wie?</legend><div className="mt-1 flex flex-wrap gap-2">
         {[["emma", "Emma"], ["noah", "Noah"], ["beide", "Beide kinderen"]].map(([k, l]) => <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k} className={knop(kind === k)}>{l}</button>)}
       </div></fieldset>
-      <fieldset><legend className="text-sm font-semibold">Wie regelt dit?</legend><div className="mt-1 flex flex-wrap gap-2">
-        <button onClick={() => setWie("sanne")} aria-pressed={wie === "sanne"} className={knop(wie === "sanne")}>Ik</button>
+      <fieldset><legend className="text-sm font-semibold">{t("tasks.whoArrangesThis", "Wie regelt dit?")}</legend><div className="mt-1 flex flex-wrap gap-2">
+        <button onClick={() => setWie("sanne")} aria-pressed={wie === "sanne"} className={knop(wie === "sanne")}>{t("tasks.iArrange", "Ik")}</button>
         {ander ? <button onClick={() => setWie("joris")} aria-pressed={wie === "joris"} className={knop(wie === "joris")}>{ander.naam}</button> : null}
-        <button onClick={() => setWie("")} aria-pressed={wie === ""} className={knop(wie === "")}>Nog afstemmen</button>
+        <button onClick={() => setWie("")} aria-pressed={wie === ""} className={knop(wie === "")}>{t("tasks.stillCoordinate", "Nog afstemmen")}</button>
       </div></fieldset>
-      <fieldset><legend className="text-sm font-semibold">Wanneer?</legend><div className="mt-1 flex flex-wrap gap-2">
-        <button onClick={() => setMetDatum(true)} aria-pressed={metDatum} className={knop(metDatum)}>Datum</button>
-        <button onClick={() => setMetDatum(false)} aria-pressed={!metDatum} className={knop(!metDatum)}>Geen datum</button>
+      <fieldset><legend className="text-sm font-semibold">{t("tasks.when", "Wanneer?")}</legend><div className="mt-1 flex flex-wrap gap-2">
+        <button onClick={() => setMetDatum(true)} aria-pressed={metDatum} className={knop(metDatum)}>{t("tasks.dateBtn", "Datum")}</button>
+        <button onClick={() => setMetDatum(false)} aria-pressed={!metDatum} className={knop(!metDatum)}>{t("tasks.noDateBtn", "Geen datum")}</button>
       </div>
         {metDatum ? <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} aria-label="Datum" className={`mt-2 w-full ${veld}`}/> : null}
-        {metDatum && deadline ? <select value={herinner} onChange={(e) => setHerinner(Number(e.target.value))} aria-label="Herinner mij" className={`mt-2 w-full ${veld}`}><option value={0}>Geen herinnering</option><option value={1}>1 dag vooraf</option><option value={3}>3 dagen vooraf</option><option value={7}>1 week vooraf</option></select> : null}
+        {metDatum && deadline ? <select value={herinner} onChange={(e) => setHerinner(Number(e.target.value))} aria-label="Herinner mij" className={`mt-2 w-full ${veld}`}><option value={0}>{t("tasks.noReminder", "Geen herinnering")}</option><option value={1}>{t("tasks.reminder1Day", "1 dag vooraf")}</option><option value={3}>{t("tasks.reminder3Days", "3 dagen vooraf")}</option><option value={7}>{t("tasks.reminder1Week", "1 week vooraf")}</option></select> : null}
       </fieldset>
       <fieldset><legend className="text-sm font-semibold">Herhaling?</legend><div className="mt-1 flex flex-wrap gap-2">
-        <button onClick={() => setHerhaling("eenmalig")} aria-pressed={herhaling === "eenmalig"} className={knop(herhaling === "eenmalig")}>Eenmalig</button>
-        <button onClick={() => setHerhaling(herhaling === "eenmalig" ? "wekelijks" : herhaling)} aria-pressed={herhaling !== "eenmalig"} className={knop(herhaling !== "eenmalig")}>Terugkerend</button>
+        <button onClick={() => setHerhaling("eenmalig")} aria-pressed={herhaling === "eenmalig"} className={knop(herhaling === "eenmalig")}>{t("tasks.singleTime", "Eenmalig")}</button>
+        <button onClick={() => setHerhaling(herhaling === "eenmalig" ? "wekelijks" : herhaling)} aria-pressed={herhaling !== "eenmalig"} className={knop(herhaling !== "eenmalig")}>{t("tasks.recurring", "Terugkerend")}</button>
       </div>
         {herhaling !== "eenmalig" ? <select value={herhaling} onChange={(e) => setHerhaling(e.target.value)} aria-label="Hoe vaak" className={`mt-2 w-full ${veld}`}>{["wekelijks", "maandelijks", "jaarlijks", "aangepast"].map((h) => <option key={h} value={h}>{herhalingLabel[h]}</option>)}</select> : null}
-        {herhaling === "aangepast" ? <input value={herhalingTekst} onChange={(e) => setHerhalingTekst(e.target.value)} placeholder="Bijv. elk half jaar" className={`mt-2 w-full ${veld}`}/> : null}
+        {herhaling === "aangepast" ? <input value={herhalingTekst} onChange={(e) => setHerhalingTekst(e.target.value)} placeholder={t("tasks.repetitionPlaceholder", "Bijv. elk half jaar")} className={`mt-2 w-full ${veld}`}/> : null}
       </fieldset>
       <HulpKnop voorstel={{ kind, wat: tekst, ...(metDatum && deadline ? { datum: deadline } : {}) }}/>
-      <button onClick={opslaan} disabled={!tekst.trim() || !kind || (!!dag && metDatum && !deadline)} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">Taak toevoegen</button>
+      <button onClick={opslaan} disabled={!tekst.trim() || !kind || (!!dag && metDatum && !deadline)} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">{t("tasks.addTaskBtn", "Taak toevoegen")}</button>
       <button onClick={onKlaar} className="min-h-11 w-full text-sm font-semibold text-ink-soft">Annuleren</button>
     </Card>);
 }

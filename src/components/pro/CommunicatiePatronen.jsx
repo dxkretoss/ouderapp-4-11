@@ -48,7 +48,7 @@ export function CommunicatiePatronen() {
     <Button variant="outline" className="mt-3 h-auto min-h-11 whitespace-normal" onClick={() => setToestemming(true)}><AppIcon functie="slot" vorm="kaal" maat="sm"/>AI-analyse van communicatiepatronen</Button>
 
     <Sheet open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-      <SheetContent side="bottom" className="pro-cockpit left-1/2 max-h-[85dvh] w-full max-w-lg -translate-x-1/2 overflow-y-auto bg-background">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md pro-cockpit max-h-[85dvh] w-full max-w-lg overflow-y-auto bg-background">
         <SheetHeader><SheetTitle>{open?.titel}</SheetTitle><SheetDescription>Periode: {periode} · Nog niet beschikbaar</SheetDescription></SheetHeader>
         <div className="mt-4 space-y-3 text-sm">
           <p>Onvoldoende informatie om een betrouwbaar patroon vast te stellen.</p>
@@ -63,7 +63,7 @@ export function CommunicatiePatronen() {
     </Sheet>
 
     <Sheet open={toestemming} onOpenChange={setToestemming}>
-      <SheetContent side="bottom" className="pro-cockpit left-1/2 max-h-[85dvh] w-full max-w-lg -translate-x-1/2 overflow-y-auto bg-background">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md pro-cockpit max-h-[85dvh] w-full max-w-lg overflow-y-auto bg-background">
         <SheetHeader><SheetTitle>AI-analyse van communicatiepatronen</SheetTitle><SheetDescription>Een afzonderlijke keuze, los van meelezen.</SheetDescription></SheetHeader>
         <div className="mt-4 space-y-3 text-sm">
           <p>Toestemming om mee te lezen is geen toestemming voor AI-analyse. Beide ouders kiezen hier ieder afzonderlijk voor.</p>

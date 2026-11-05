@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useServerFn } from "@tanstack/react-start";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export const heeftVeiligheidsafspraken = () => afsprakenState().some((a) => a.ve
 const chip = (actief) => `rounded-full border px-3.5 py-2 text-xs font-semibold ${actief ? "border-brand bg-brand-soft text-brand" : "border-border bg-card text-ink"}`;
 /** Compacte keuze: hoe willen jullie deze afspraak regelen? Alle keuzes zijn gelijkwaardig. */
 export function AanwezigheidKiezer({ open, onSluit, onKies }) {
+    const { t } = useTranslation();
     const [keuze, setKeuze] = useState(null);
     const [wieGaat, setWieGaat] = useState(null);
     const [contactWie, setContactWie] = useState(null);
@@ -31,38 +33,38 @@ export function AanwezigheidKiezer({ open, onSluit, onKies }) {
         setContactWie(null);
         onSluit();
     } }}>
-      <SheetContent side="bottom" className="left-1/2 max-h-[85vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="text-left">
-          <SheetTitle className="font-display text-xl font-medium">Hoe willen jullie deze afspraak regelen?</SheetTitle>
-          <SheetDescription className="text-xs text-ink-soft">Maak samen een praktische afspraak over wie erbij is. Dit gaat niet over wie ergens naartoe mag.</SheetDescription>
+          <SheetTitle className="font-display text-xl font-medium">{t("attendanceModal.howToArrange", "Hoe willen jullie deze afspraak regelen?")}</SheetTitle>
+          <SheetDescription className="text-xs text-ink-soft">{t("attendanceModal.practicalNotice", "Maak samen een praktische afspraak over wie erbij is. Dit gaat niet over wie ergens naartoe mag.")}</SheetDescription>
         </SheetHeader>
         {veilig ? <p className="mt-3 rounded-md bg-muted p-2.5 text-xs text-ink-soft">Er zijn afspraken over veilig contact. Kies wat daarbij past.</p> : null}
         <div className="mt-4 flex flex-wrap gap-2">
           {Object.keys(keuzeLabel).map((k) => (<button key={k} onClick={() => setKeuze(k)} className={chip(keuze === k)}>{keuzeLabel[k]}</button>))}
         </div>
-        {keuze === "samen" ? <p className="mt-3 text-sm text-ink-soft">Je stelt voor om samen naar deze afspraak te gaan. De andere ouder ontvangt een rustig voorstel.</p> : null}
+        {keuze === "samen" ? <p className="mt-3 text-sm text-ink-soft">{t("attendanceModal.togetherDesc", "Je stelt voor om samen naar deze afspraak te gaan. De andere ouder ontvangt een rustig voorstel.")}</p> : null}
         {keuze === "een" ? (<div className="mt-4">
-            <p className="text-sm font-semibold">Wie zou naar deze afspraak kunnen gaan?</p>
+            <p className="text-sm font-semibold">{t("attendanceModal.oneOfUsDesc", "Wie zou naar deze afspraak kunnen gaan?")}</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <button onClick={() => setWieGaat("sanne")} className={chip(wieGaat === "sanne")}>Ik kan gaan</button>
-              <button onClick={() => setWieGaat("joris")} className={chip(wieGaat === "joris")}>Ik wil voorstellen dat de andere ouder gaat</button>
-              <button onClick={() => setWieGaat("onbekend")} className={chip(wieGaat === "onbekend")}>Nog niet bekend</button>
+              <button onClick={() => setWieGaat("sanne")} className={chip(wieGaat === "sanne")}>{t("attendanceModal.iCanGo", "Ik kan gaan")}</button>
+              <button onClick={() => setWieGaat("joris")} className={chip(wieGaat === "joris")}>{t("attendanceModal.proposeOtherGoes", "Ik wil voorstellen dat de andere ouder gaat")}</button>
+              <button onClick={() => setWieGaat("onbekend")} className={chip(wieGaat === "onbekend")}>{t("attendanceModal.notKnownYet", "Nog niet bekend")}</button>
             </div>
             <p className="mt-2 text-xs text-ink-soft">Dit is een praktische verdeling. De andere ouder is daarmee niet uitgesloten van aanwezigheid.</p>
           </div>) : null}
         {keuze === "afzonderlijk" ? (<div className="mt-4">
-            <p className="text-sm font-semibold">Liever afzonderlijk deelnemen?</p>
+            <p className="text-sm font-semibold">{t("attendanceModal.preferSeparate", "Liever afzonderlijk deelnemen?")}</p>
             <p className="mt-1 text-xs text-ink-soft">Jullie kunnen vragen of een afzonderlijk gesprek mogelijk is. School of de betrokken organisatie bepaalt wat er kan.</p>
-            <p className="mt-3 text-sm font-semibold">Wie neemt hierover contact op?</p>
+            <p className="mt-3 text-sm font-semibold">{t("attendanceModal.whoContacts", "Wie neemt hierover contact op?")}</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <button onClick={() => setContactWie("sanne")} className={chip(contactWie === "sanne")}>Ik neem contact op</button>
-              <button onClick={() => setContactWie("joris")} className={chip(contactWie === "joris")}>Ik vraag de andere ouder om contact op te nemen</button>
-              <button onClick={() => setContactWie("nog")} className={chip(contactWie === "nog")}>Nog afstemmen</button>
+              <button onClick={() => setContactWie("sanne")} className={chip(contactWie === "sanne")}>{t("attendanceModal.iWillContact", "Ik neem contact op")}</button>
+              <button onClick={() => setContactWie("joris")} className={chip(contactWie === "joris")}>{t("attendanceModal.askOtherToContact", "Ik vraag de andere ouder om contact op te nemen")}</button>
+              <button onClick={() => setContactWie("nog")} className={chip(contactWie === "nog")}>{t("attendanceModal.coordinateLater", "Nog afstemmen")}</button>
             </div>
           </div>) : null}
         {keuze === "later" ? <p className="mt-3 text-sm text-ink-soft">De afspraak staat gewoon in de agenda. Jullie stemmen de aanwezigheid later af.</p> : null}
         <Button disabled={!klaar} onClick={bevestig} className="mt-5 min-h-11 w-full bg-brand text-primary-foreground shadow-none">
-          {keuze === "later" ? "Bewaren" : "Voorstel versturen"}
+          {keuze === "later" ? t("common.save", "Bewaren") : t("attendanceModal.sendProposal", "Voorstel versturen")}
         </Button>
       </SheetContent>
     </Sheet>);

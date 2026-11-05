@@ -2,6 +2,7 @@ import { Mijlpalen, useMijlpalenLijst, voegMijlpaal } from "@/components/Mijlpal
 import { BewerkPotlood } from "@/components/ui-kit";
 import { useKring, adresboek, persoonLabel } from "@/lib/kring-store";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { useState } from "react";
 import { documenten, kindbank, kinderen, useGezondheid, bewaarGezondheid } from "@/lib/demo-data";
@@ -40,8 +41,9 @@ export const Route = createFileRoute("/kinderen/$kindId")({
     component: KindProfielWrap,
 });
 function KindNietGevonden() {
+    const { t } = useTranslation();
     return (<AppShell>
-      <PageHeader titel="Kind niet gevonden" terug="/kinderen"/>
+      <PageHeader titel={t("childProfile.notFoundTitle", "Kind niet gevonden")} terug="/kinderen"/>
     </AppShell>);
 }
 function KindProfielWrap() {
@@ -56,6 +58,7 @@ function KindProfielWrap() {
     return <EigenProfiel kindId={k.id} naam={k.naam} geboortedatum={k.geboortedatum} leeftijd={leeftijd} kleur={k.kleur} beeld={k.beeld}/>;
 }
 function EigenProfiel({ kindId, naam, geboortedatum, leeftijd, kleur, beeld }) {
+    const { t } = useTranslation();
     const st = useStart();
     const [gezagOpen, setGezagOpen] = useState(false);
     const [beeldOpen, setBeeldOpen] = useState(false);
@@ -70,8 +73,8 @@ function EigenProfiel({ kindId, naam, geboortedatum, leeftijd, kleur, beeld }) {
           <span aria-hidden="true" className="absolute -bottom-0.5 -right-0.5 grid size-6 place-items-center rounded-full border border-border bg-card"><AppIcon functie="notitie" maat="sm" vorm="kaal"/></span>
         </button>
         <Sheet open={beeldOpen} onOpenChange={setBeeldOpen}>
-          <SheetContent side="bottom" className="max-h-[92vh] overflow-y-auto rounded-t-3xl bg-background">
-            <SheetHeader><SheetTitle className="font-display">Foto of avatar van {k.naam}</SheetTitle></SheetHeader>
+          <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[92vh] overflow-y-auto rounded-t-3xl bg-background">
+            <SheetHeader><SheetTitle className="font-display">{t("childProfile.photoOrAvatarTitle", "Foto of avatar van {{name}}", { name: k.naam })}</SheetTitle></SheetHeader>
             <div className="px-4 pb-6"><BeeldKiezer beeld={beeld} naam={k.naam} overslaanTekst="Sluiten" onKies={(b) => { if (!b && !beeld) {
         setBeeldOpen(false);
         return;
@@ -79,18 +82,18 @@ function EigenProfiel({ kindId, naam, geboortedatum, leeftijd, kleur, beeld }) {
           </SheetContent>
         </Sheet>
         <div>
-          <p className="text-xs text-ink-soft">Kleur van {k.naam}</p>
+          <p className="text-xs text-ink-soft">{t("childProfile.colorOf", "Kleur van {{name}}", { name: k.naam })}</p>
           <div className="mt-1 flex gap-2" role="group" aria-label={`Kleur van ${k.naam} kiezen`}>
             {kindKleuren.map((c) => (<button key={c.id} onClick={() => { start.zetKindKleur(kindId, c.hex); bevestig("Kleur opgeslagen"); }} aria-label={`Kleur ${c.id}`} aria-pressed={kleurHex === c.hex} className="size-8 rounded-full border-2" style={{ backgroundColor: c.hex, borderColor: kleurHex === c.hex ? c.hex : "transparent", opacity: kleurHex === c.hex ? 1 : 0.45 }}/>))}
           </div>
         </div>
       </div>
       <dl className="mt-6 divide-y divide-border border-y border-border text-sm">
-        <div className="flex justify-between py-3"><dt className="text-ink-soft">Naam</dt><dd className="font-semibold">{k.naam}</dd></div>
-        <div className="flex justify-between py-3"><dt className="text-ink-soft">Geboortedatum</dt><dd>{k.geboortedatum ? new Date(k.geboortedatum).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "Nog niet ingevuld"}</dd></div>
-        <div className="flex items-start justify-between gap-4 py-3"><dt className="text-ink-soft">Gezag</dt><dd className="text-right">
+        <div className="flex justify-between py-3"><dt className="text-ink-soft">{t("childProfile.nameLabel", "Naam")}</dt><dd className="font-semibold">{k.naam}</dd></div>
+        <div className="flex justify-between py-3"><dt className="text-ink-soft">{t("childProfile.birthDateLabel", "Geboortedatum")}</dt><dd>{k.geboortedatum ? new Date(k.geboortedatum).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "Nog niet ingevuld"}</dd></div>
+        <div className="flex items-start justify-between gap-4 py-3"><dt className="text-ink-soft">{t("childProfile.custodyLabel", "Gezag")}</dt><dd className="text-right">
           {g ? <><span className="font-semibold">{gezagKeuzes.find((x) => x.id === g.situatie)?.naam}</span><span className="block text-xs text-ink-soft">Ingevuld door {g.ingevuldDoor} · nog niet bevestigd door de andere ouder</span></> : "Nog niet ingevuld"}
-          <button onClick={() => setGezagOpen(true)} className="mt-1 block min-h-[44px] w-full text-right text-xs font-semibold text-brand">{g ? "Wijzigen" : "Invullen"}</button>
+          <button onClick={() => setGezagOpen(true)} className="mt-1 block min-h-[44px] w-full text-right text-xs font-semibold text-brand">{g ? t("childProfile.edit", "Wijzigen") : t("childProfile.fillIn", "Invullen")}</button>
         </dd></div>
       </dl>
       <p className="mt-4 text-sm text-ink-soft">School, gezondheid en belangrijke personen voor {k.naam} kun je later aanvullen. Hier staan nu de gegevens die je bij de start hebt ingevuld. Gezag is alleen informatie en verandert niets aan toegang.</p>
@@ -98,6 +101,7 @@ function EigenProfiel({ kindId, naam, geboortedatum, leeftijd, kleur, beeld }) {
     </AppShell>);
 }
 function KindProfiel() {
+    const { t } = useTranslation();
     const { kindId } = Route.useParams();
     const k = kinderen.find((x) => x.id === kindId);
     const b = kindbank[kindId];
@@ -173,7 +177,7 @@ function KindProfiel() {
       </button>);
     };
     return (<AppShell>
-      <PageHeader titel={`Alles over ${k.naam}`} subtitel="Eén plek voor alle praktische informatie" terug="/kinderen"/>
+      <PageHeader titel={t("childProfile.allAbout", "Alles over {{name}}", { name: k.naam })} subtitel={t("childProfile.allAboutSub", "Eén plek voor alle praktische informatie")} terug="/kinderen"/>
       <Card className="relative mt-5 flex items-center gap-4 pr-12">
         <img src={k.avatar} alt={k.naam} className="size-16 rounded-lg object-cover"/>
         <div className="min-w-0">
@@ -192,7 +196,7 @@ function KindProfiel() {
         <Link to="/kring/$kindId" params={{ kindId: k.id }} className="flex min-h-14 items-center gap-3 py-2.5">
           <AppIcon functie="contact" maat="md"/>
           <span className="min-w-0 flex-1">
-            <span className="block font-display text-sm font-bold">Belangrijke personen</span>
+            <span className="block font-display text-sm font-bold">{t("childProfile.keyPersons", "Belangrijke personen")}</span>
             <span className="block truncate text-xs text-ink-soft">{mensen.length} {mensen.length === 1 ? "persoon" : "mensen"} · {mensen.slice(0, 2).join(" · ")}{mensen.length > 2 ? ` en ${mensen.length - 2} meer` : ""}</span>
           </span>
           <span aria-hidden className="text-lg text-ink-soft">›</span>
@@ -208,7 +212,7 @@ function KindProfiel() {
           </div>) : null}
       </div>
 
-      <h2 className="mt-6 text-xs font-semibold text-ink-soft">Praktische informatie</h2>
+      <h2 className="mt-6 text-xs font-semibold text-ink-soft">{t("childProfile.practicalInfo", "Praktische informatie")}</h2>
       <div className="mt-1 divide-y divide-border border-y border-border">
         {groepen.map((g) => (<div key={g.id} id={`onderdeel-${g.id}`} className="scroll-mt-20">
             <Rij id={g.id} icoon={<Pictogram waarde={g.icoon} maat="md"/>} titel={g.titel} samenvatting={g.samenvatting}/>
@@ -221,8 +225,8 @@ function KindProfiel() {
                 {g.id === "gezondheid" ? (gezondheidConcept ? <form className="space-y-3 border-t border-border pt-3" onSubmit={(e) => { e.preventDefault(); bewaarGezondheid(kindId, gezondheidConcept); setGezondheidConcept(null); setGezondheidOpgeslagen(true); }}>
                     {Object.entries({ huisarts: "Huisarts", tandarts: "Tandarts", apotheek: "Apotheek", allergieen: "Allergieën", medicatie: "Medicatie", verzekering: "Zorgverzekering", bijzonderheden: "Bijzonderheden" }).map(([veld, label]) => <label key={veld} className="block text-xs font-semibold">{label}<textarea aria-label={label} value={gezondheidConcept[veld]} onChange={(e) => setGezondheidConcept((v) => v ? { ...v, [veld]: e.target.value } : v)} rows={2} className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-normal"/></label>)}
                     <p className="text-xs text-ink-soft">Je deelt dit met de andere ouder. Mensen uit de kring zien alleen de gegevens waarvoor ze toestemming hebben.</p>
-                    <div className="flex flex-wrap gap-2"><Button type="submit" className="min-h-11 bg-brand text-primary-foreground shadow-none">Gezondheid opslaan</Button><Button type="button" variant="ghost" onClick={() => setGezondheidConcept(null)}>Annuleren</Button></div>
-                  </form> : <><Button variant="ghost" className="min-h-11 gap-1.5 text-brand" onClick={() => { setGezondheidConcept({ ...medisch }); setGezondheidOpgeslagen(false); }}><AppIcon functie="notitie" maat="sm" vorm="kaal"/>Gezondheid aanpassen</Button>{gezondheidOpgeslagen ? <p role="status" className="text-xs text-brand">Gezondheid bijgewerkt.</p> : null}<MedischGezag kindId={k.id} naam={k.naam} leeftijd={k.leeftijd}/></>) : null}
+                    <div className="flex flex-wrap gap-2"><Button type="submit" className="min-h-11 bg-brand text-primary-foreground shadow-none">{t("childProfile.saveHealth", "Gezondheid opslaan")}</Button><Button type="button" variant="ghost" onClick={() => setGezondheidConcept(null)}>Annuleren</Button></div>
+                  </form> : <><Button variant="ghost" className="min-h-11 gap-1.5 text-brand" onClick={() => { setGezondheidConcept({ ...medisch }); setGezondheidOpgeslagen(false); }}><AppIcon functie="notitie" maat="sm" vorm="kaal"/>{t("childProfile.editHealth", "Gezondheid aanpassen")}</Button>{gezondheidOpgeslagen ? <p role="status" className="text-xs text-brand">{t("childProfile.healthUpdated", "Gezondheid bijgewerkt.")}</p> : null}<MedischGezag kindId={k.id} naam={k.naam} leeftijd={k.leeftijd}/></>) : null}
               </div>) : null}
           </div>))}
 
@@ -237,11 +241,11 @@ function KindProfiel() {
         <div id="onderdeel-feest">
           <Rij id="feest" icoon={<AppIcon functie="feest" maat="md"/>} titel="Verjaardag & feestjes" samenvatting={`Jarig ${k.geboortedatum} · cadeaulijst ${cadeaus.length}`}/>
           {open === "feest" ? (<div className="mb-3 space-y-2">
-              <Button asChild variant="ghost" className="min-h-11 w-full justify-between"><Link to="/planning" search={{ toevoegen: "bijzonder", periode: `Verjaardag ${k.naam}` }}>Wie viert wanneer?<span aria-hidden>›</span></Link></Button>
-              <Button asChild variant="ghost" className="min-h-11 w-full justify-between"><Link to="/taken" search={{ taak: `Traktatie voor school · ${k.naam}`, kind: k.id }}>Traktatie voor school<span aria-hidden>›</span></Link></Button>
-              <Button asChild variant="ghost" className="min-h-11 w-full justify-between"><Link to="/taken" search={{ taak: `Uitnodigingen kinderfeestje · ${k.naam}`, kind: k.id }}>Uitnodigingen kinderfeestje<span aria-hidden>›</span></Link></Button>
+              <Button asChild variant="ghost" className="min-h-11 w-full justify-between"><Link to="/planning" search={{ toevoegen: "bijzonder", periode: `Verjaardag ${k.naam}` }}>{t("childProfile.whoCelebratesWhen", "Wie viert wanneer?")}<span aria-hidden>›</span></Link></Button>
+              <Button asChild variant="ghost" className="min-h-11 w-full justify-between"><Link to="/taken" search={{ taak: `Traktatie voor school · ${k.naam}`, kind: k.id }}>{t("childProfile.schoolTreats", "Traktatie voor school")}<span aria-hidden>›</span></Link></Button>
+              <Button asChild variant="ghost" className="min-h-11 w-full justify-between"><Link to="/taken" search={{ taak: `Uitnodigingen kinderfeestje · ${k.naam}`, kind: k.id }}>{t("childProfile.partyInvites", "Uitnodigingen kinderfeestje")}<span aria-hidden>›</span></Link></Button>
               <div className="border-t border-border pt-3">
-                <p className="font-display text-sm font-bold">Cadeaulijst</p>
+                <p className="font-display text-sm font-bold">{t("childProfile.wishlistTitle", "Cadeaulijst")}</p>
                 <div className="mt-2 space-y-2">
                   <div className="flex gap-2">
                     <input value={nieuwCadeau} onChange={(e) => setNieuwCadeau(e.target.value)} placeholder={`Wens van ${k.naam}`} className="flex-1 rounded-md bg-white/60 px-3 py-2 text-sm"/>
@@ -252,7 +256,7 @@ function KindProfiel() {
                   </div>
                   {cadeaus.map((c) => (<div key={c.id} className="flex items-center justify-between gap-3 rounded-md bg-white/60 px-3 py-2 text-sm">
                       <div><p className="flex items-center gap-1.5 font-medium"><AppIcon functie="cadeau" maat="sm" vorm="kaal"/>{c.tekst}</p>{c.door ? <p className="text-xs text-ink-soft">Gekocht door {c.door}</p> : null}</div>
-                      {!c.door ? <button onClick={() => setCadeaus((l) => l.map((x) => (x.id === c.id ? { ...x, door: "Sanne (jij)" } : x)))} className="shrink-0 rounded-full bg-brand-soft px-3 py-1.5 text-xs font-semibold text-brand">Ik koop dit</button> : null}
+                      {!c.door ? <button onClick={() => setCadeaus((l) => l.map((x) => (x.id === c.id ? { ...x, door: "Sanne (jij)" } : x)))} className="shrink-0 rounded-full bg-brand-soft px-3 py-1.5 text-xs font-semibold text-brand">{t("childProfile.iBuyThis", "Ik koop dit")}</button> : null}
                     </div>))}
                   <p className="text-[11px] text-ink-soft">Zo krijgt {k.naam} geen twee keer hetzelfde cadeau.</p>
                 </div>
@@ -263,8 +267,8 @@ function KindProfiel() {
 
       <section className="mt-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-display font-bold">{k.naam}'s momenten</h2>
-          <button onClick={() => setToevoegen((v) => !v)} className="min-h-11 text-xs font-semibold text-brand">+ Moment toevoegen</button>
+          <h2 className="font-display font-bold">{t("childProfile.momentsOf", "{{name}}'s momenten", { name: k.naam })}</h2>
+          <button onClick={() => setToevoegen((v) => !v)} className="min-h-11 text-xs font-semibold text-brand">{t("childProfile.addMoment", "+ Moment toevoegen")}</button>
         </div>
         {toevoegen ? (<div className="mt-2 space-y-2 border-y border-border py-3">
             <Button variant="ghost" className="min-h-11 w-full justify-between" onClick={() => { setToevoegen(false); setDeelOpen(true); }}>Momentje delen (met foto)<span aria-hidden>›</span></Button>
@@ -278,9 +282,9 @@ function KindProfiel() {
           {zichtbaar.map((x) => x.soort === "Momentje"
             ? <div key={`momentje-${x.m.id}`}><p className="mb-1 text-[11px] font-semibold text-ink-soft">Momentje</p><MomentjeKaart m={x.m}/></div>
             : <div key={`mijlpaal-${x.p.id}`} className="flex items-start gap-2 border-b border-border pb-3"><AppIcon functie="mijlpaal" maat="sm"/><div><p className="text-sm font-semibold">{x.p.tekst}</p><p className="text-[11px] text-ink-soft">Mijlpaal · {x.p.jaar}</p></div></div>)}
-          {momenten.length === 0 ? <p className="text-sm text-ink-soft">Hier komen de mooie momenten van {k.naam}. <button type="button" onClick={() => setDeelOpen(true)} className="font-semibold text-brand">Deel het eerste momentje</button></p> : null}
+          {momenten.length === 0 ? <p className="text-sm text-ink-soft">Hier komen de mooie momenten van {k.naam}. <button type="button" onClick={() => setDeelOpen(true)} className="font-semibold text-brand">{t("childProfile.shareFirstMoment", "Deel het eerste momentje")}</button></p> : null}
         </div>
-        {momenten.length > 4 || alleMomenten ? (<button onClick={() => setAlleMomenten((v) => !v)} className="mt-3 min-h-11 text-sm font-semibold text-brand">{alleMomenten ? "Minder tonen" : "Bekijk alle momenten ›"}</button>) : null}
+        {momenten.length > 4 || alleMomenten ? (<button onClick={() => setAlleMomenten((v) => !v)} className="mt-3 min-h-11 text-sm font-semibold text-brand">{alleMomenten ? t("childProfile.showLess", "Minder tonen") : t("childProfile.viewAllMoments", "Bekijk alle momenten ›")}</button>) : null}
         {alleMomenten ? <Mijlpalen kindId={k.id} naam={k.naam} momentjesPerJaar={mijn.reduce((acc, m) => { const j = m.datum ? Number(m.datum.slice(0, 4)) : NaN; return Number.isFinite(j) ? { ...acc, [j]: (acc[j] ?? 0) + 1 } : acc; }, {})}/> : null}
       </section>
       <DeelMomentje open={deelOpen} onSluit={() => setDeelOpen(false)} kindId={k.id}/>

@@ -91,7 +91,7 @@ const Sidebar = React.forwardRef(({ side = "left", variant = "sidebar", collapsi
     }
     if (isMobile) {
         return (<Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetContent data-sidebar="sidebar" data-mobile="true" className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden" style={{
+          <SheetContent data-sidebar="sidebar" data-mobile="true" className="inset-x-0 mx-auto w-full max-w-md w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden" style={{
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
             }} side={side}>
             <SheetHeader className="sr-only">

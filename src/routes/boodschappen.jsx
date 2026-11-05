@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
@@ -12,6 +13,7 @@ import { AppIcon } from "@/components/AppIcon";
 import { useNavigate } from "@tanstack/react-router";
 // Eigen gezin: eigen lijstje (geen voorbeelddata), met plusje en toevoegformulier.
 function BoodschappenWrap() {
+    const { t } = useTranslation();
     const st = useStart();
     if (st.eigen)
         return <EigenBoodschappen />;
@@ -87,6 +89,7 @@ export const Route = createFileRoute("/boodschappen")({
 });
 const veld = "rounded-md border border-border bg-background px-3 py-2 text-sm";
 function Boodschappen() {
+    const { t } = useTranslation();
     // Dezelfde lijst en statussen als voorheen onder Taken (verplaatst, niet gekopieerd).
     const data = useLijst([
         { tekst: "Regenlaarzen maat 30", wie: "Nodig", kind: "Noah", klaar: false },

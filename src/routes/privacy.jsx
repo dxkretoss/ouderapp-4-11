@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { kinderen, professionals } from "@/lib/demo-data";
 import { niveau, onderdelen, periodeTekst, persoonLabel, rechtenSamenvatting, useKring } from "@/lib/kring-store";

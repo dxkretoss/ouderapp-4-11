@@ -5,6 +5,7 @@ import { BewerkPotlood, FilterBalk } from "@/components/ui-kit";
 import { kindNamen, uitzonderingenVan, useZorg, zorgDag } from "@/lib/zorg-store";
 import { z } from "zod";
 import { CalendarRange, Repeat2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { ContextToevoegen } from "@/components/ContextToevoegen";
 import { parents } from "@/lib/demo-data";
@@ -30,6 +31,7 @@ function ZorgregelingWrap() {
 const weekdag = ["zaterdag", "zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag"];
 const VANDAAG = 12;
 function Zorgregeling() {
+    const { t } = useTranslation();
     const router = useRouter();
     const zoek = Route.useSearch();
     const actie = zoek.actie === "regeling" || zoek.actie === "wijziging" ? zoek.actie : undefined;
@@ -59,32 +61,50 @@ function Zorgregeling() {
     const zelfde = nuBij.every((x) => x.o === nuBij[0].o);
     const nuOuder = maand[VANDAAG - 1].ouder;
     const wissel = maand.find((d) => d.datum > VANDAAG && d.ouder !== nuOuder);
-    const naam = (o) => (o === "sanne" ? "jou" : parents[o].naam);
+    const naam = (o) => (o === "sanne" ? t("care.with", { name: "jou", defaultValue: "jou" }) : parents[o].naam);
     const open = (a) => router.navigate({ to: "/zorgregeling", search: { actie: a, bron: "zorgregeling" } });
     const dag = gekozen ? maand[gekozen - 1] : undefined;
     return (<AppShell>
-      <PageHeader titel="Verdeling van de week" subtitel="Bekijk wanneer de kinderen bij jou of de andere ouder zijn." terug="/" actie={<div className="flex items-center gap-1">
-          <BewerkPotlood onClick={() => open("regeling")} label="Vaste verdeling aanpassen"/>
-          <ContextToevoegen titel="Wat wil je aanpassen?" acties={[
-                { titel: "Een dag anders verdelen", uitleg: "Bijvoorbeeld een extra dag of weekend.", icoon: Repeat2, onKies: () => open("wijziging") },
-                { titel: "De vaste verdeling aanpassen", uitleg: "Bijvoorbeeld andere vaste dagen of een ander wisselmoment.", icoon: CalendarRange, onKies: () => open("regeling") },
-            ]}/>
-        </div>}/>
+      <PageHeader
+        titel={t("care.title", "Verdeling van de week")}
+        subtitel={t("care.subtitle", "Bekijk wanneer de kinderen bij jou of de andere ouder zijn.")}
+        terug="/"
+        actie={<div className="flex items-center gap-1">
+          <BewerkPotlood onClick={() => open("regeling")} label={t("care.editRecurringSchedule", "Vaste verdeling aanpassen")}/>
+          <ContextToevoegen
+            titel={t("contextToevoegen.care.title", "Wat wil je aanpassen?")}
+            acties={[
+              {
+                titel: t("contextToevoegen.care.changeDayTitle", "Een dag anders verdelen"),
+                uitleg: t("contextToevoegen.care.changeDayDesc", "Bijvoorbeeld een extra dag of weekend."),
+                icoon: Repeat2,
+                onKies: () => open("wijziging"),
+              },
+              {
+                titel: t("contextToevoegen.care.changeScheduleTitle", "De vaste verdeling aanpassen"),
+                uitleg: t("contextToevoegen.care.changeScheduleDesc", "Bijvoorbeeld andere vaste dagen of een ander wisselmoment."),
+                icoon: CalendarRange,
+                onKies: () => open("regeling"),
+              },
+            ]}
+          />
+        </div>}
+      />
       <ZorgAfstemmen startActie={actie} kind={kind} doel={zoek.voorstel} voorstelType={zoek.type} bronOmschrijving={zoek.omschrijving} sluit={() => router.navigate({ to: "/zorgregeling", search: {}, replace: true })}/>
       <div className="mt-4 grid grid-cols-2 gap-4 border-y border-border py-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-soft">Nu</p>
-          <p className="mt-1 text-sm font-semibold">{zelfde ? `Emma en Noah zijn bij ${naam(nuBij[0].o)}` : nuBij.map((x) => `${kindNamen[x.k]} bij ${naam(x.o)}`).join(" · ")}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-soft">{t("care.now", "Nu")}</p>
+          <p className="mt-1 text-sm font-semibold">{zelfde ? t("care.kidsWith", { kids: "Emma en Noah", name: naam(nuBij[0].o), defaultValue: `Emma en Noah zijn bij ${naam(nuBij[0].o)}` }) : nuBij.map((x) => `${kindNamen[x.k]} bij ${naam(x.o)}`).join(" · ")}</p>
         </div>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-soft">Volgende wissel</p>
-          {wissel ? <p className="mt-1 text-sm font-semibold">{weekdag[(wissel.datum - 1) % 7][0].toUpperCase() + weekdag[(wissel.datum - 1) % 7].slice(1)} {wissel.datum} maart · 14:30 uur → naar {parents[wissel.ouder].naam}</p> : <p className="mt-1 text-sm text-ink-soft">Deze maand geen wissel meer</p>}
-          <Link to="/overdracht" className="mt-1 inline-block text-xs font-semibold text-brand">Overdracht voorbereiden ›</Link>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-soft">{t("care.nextSwitch", "Volgende wissel")}</p>
+          {wissel ? <p className="mt-1 text-sm font-semibold">{weekdag[(wissel.datum - 1) % 7][0].toUpperCase() + weekdag[(wissel.datum - 1) % 7].slice(1)} {wissel.datum} maart · 14:30 uur → naar {parents[wissel.ouder].naam}</p> : <p className="mt-1 text-sm text-ink-soft">{t("care.noMoreSwitchesThisMonth", "Deze maand geen wissel meer")}</p>}
+          <Link to="/overdracht" className="mt-1 inline-block text-xs font-semibold text-brand">{t("care.prepareHandover", "Overdracht voorbereiden ›")}</Link>
         </div>
       </div>
       <FilterBalk className="mt-4" opties={[{ id: "emma", label: "Emma" }, { id: "noah", label: "Noah" }]} waarde={kind} onChange={(k) => { setKind(k); setGekozen(null); }}/>
       <div className="mt-3">
-        <div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">Bestaande verdeling · maart · {kindNamen[kind]}</p><Button variant="outline" size="sm" onClick={() => open("wijziging")}>Wijziging voorstellen</Button></div>
+        <div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">{t("care.existingSchedule", { month: "maart", name: kindNamen[kind], defaultValue: `Bestaande verdeling · maart · ${kindNamen[kind]}` })}</p><Button variant="outline" size="sm" onClick={() => open("wijziging")}>{t("care.proposeChange", "Wijziging voorstellen")}</Button></div>
         <div className="mt-2 grid grid-cols-7 gap-1 text-center">
           {dagen.map((d) => <span key={d} className="text-[11px] font-semibold text-ink-soft">{d}</span>)}
           {Array.from({ length: leeg }).map((_, i) => <span key={`l${i}`}/>)}

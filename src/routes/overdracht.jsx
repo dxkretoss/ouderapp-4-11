@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { SlimmeMeeLijst } from "@/components/SlimmeMeeLijst";
 import { VasteRoutines } from "@/components/VasteRoutines";
 import { useEffect, useState } from "react";
@@ -47,6 +48,7 @@ function Chips({ opties, waarde, onKies, multi }) {
     </div>);
 }
 function Overdracht() {
+    const { t } = useTranslation();
     const [tab, setTab] = useState("meegeven");
     const [kindId, setKindId] = useState(kinderen[0]?.id ?? "emma");
     const kind = kinderen.find((k) => k.id === kindId);
@@ -91,7 +93,7 @@ function Overdracht() {
     if (!kind)
         return null;
     return (<AppShell>
-      <PageHeader titel="Overdracht" subtitel="Twee huizen, maar de belangrijke informatie verhuist mee."/>
+      <PageHeader titel={t("handover.headerTitle", "Overdracht")} subtitel={t("handover.headerSubtitle", "Twee huizen, maar de belangrijke informatie verhuist mee.")}/>
       <SlimmeMeeLijst momentId="w1"/>
       <OnderwegStatus momentId="w1"/>
       <IkBenLater momentId="w1"/>
@@ -100,20 +102,20 @@ function Overdracht() {
 
       <div className="mt-5 grid grid-cols-2 gap-1 rounded-full bg-white/60 p-1 text-sm font-semibold">
         {["meegeven", "terugblik"].map((t) => (<button key={t} onClick={() => setTab(t)} className={`rounded-full py-2 ${tab === t ? "bg-white shadow-sm" : "text-ink-soft"}`}>
-            {t === "meegeven" ? "Meegeven" : "Terugblik"}
+            {t === "meegeven" ? t("handover.tabShare", "Meegeven") : t("handover.tabReview", "Terugblik")}
           </button>))}
       </div>
 
       {tab === "meegeven" ? (<div className="mt-5 space-y-4">
           <Card className="bg-brand-soft/60">
             <p className="text-sm"><b>Vrijdag 14:30 uur</b> · Basisschool De Boomgaard</p>
-            <p className="mt-1 text-sm text-ink-soft">Morgen gaan de kinderen naar Joris. Is er iets wat fijn is om mee te geven? Duurt ongeveer een minuut — alles is optioneel.</p>
+            <p className="mt-1 text-sm text-ink-soft">{t("handover.handoverTimeNotice", "Morgen gaan de kinderen naar Joris. Is er iets wat fijn is om mee te geven? Duurt ongeveer een minuut — alles is optioneel.")}</p>
           </Card>
 
           {verstuurd && (<Card className="border-brand">
               <p className="font-semibold"><TekenLabel waarde="💚 Meegegeven aan Joris"/></p>
-              <p className="text-sm text-ink-soft">Joris ziet je overdracht vóór het wisselmoment.</p>
-              <button onClick={() => setVerstuurd(false)} className="mt-2 text-sm font-semibold text-brand">Nog een kind invullen</button>
+              <p className="text-sm text-ink-soft">{t("handover.sharedSuccessDesc", "Joris ziet je overdracht vóór het wisselmoment.")}</p>
+              <button onClick={() => setVerstuurd(false)} className="mt-2 text-sm font-semibold text-brand">{t("handover.fillAnotherChild", "Nog een kind invullen")}</button>
             </Card>)}
 
           <div className="flex gap-2">
@@ -124,7 +126,7 @@ function Overdracht() {
           </div>
 
           <Card className="space-y-4">
-            {nieuweInfo.length ? <section className="space-y-2" aria-label="Wat is er nieuw"><p className="text-sm font-semibold">Wat is er nieuw voor {kind.naam}?</p><p className="text-xs text-ink-soft">Wil je dit meenemen in de overdracht? Je kiest zelf wat je deelt.</p>{nieuweInfo.map((e) => <label key={e.eventId} className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={notitie.split("\n").includes(`${e.itemNaam}${e.wijzigingen.length ? ` · ${e.wijzigingen.map((w) => `${w.veld}: ${w.nieuw}`).join("; ")}` : " · toegevoegd"}`)} onChange={(event) => { const regel = `${e.itemNaam}${e.wijzigingen.length ? ` · ${e.wijzigingen.map((w) => `${w.veld}: ${w.nieuw}`).join("; ")}` : " · toegevoegd"}`; setNotitie((v) => event.target.checked ? [v, regel].filter(Boolean).join("\n") : v.split("\n").filter((r) => r !== regel).join("\n")); }}/>{e.itemNaam}</label>)}</section> : null}
+            {nieuweInfo.length ? <section className="space-y-2" aria-label="Wat is er nieuw"><p className="text-sm font-semibold">Wat is er nieuw voor {kind.naam}?</p><p className="text-xs text-ink-soft">{t("handover.includeInHandoverQuestion", "Wil je dit meenemen in de overdracht? Je kiest zelf wat je deelt.")}</p>{nieuweInfo.map((e) => <label key={e.eventId} className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={notitie.split("\n").includes(`${e.itemNaam}${e.wijzigingen.length ? ` · ${e.wijzigingen.map((w) => `${w.veld}: ${w.nieuw}`).join("; ")}` : " · toegevoegd"}`)} onChange={(event) => { const regel = `${e.itemNaam}${e.wijzigingen.length ? ` · ${e.wijzigingen.map((w) => `${w.veld}: ${w.nieuw}`).join("; ")}` : " · toegevoegd"}`; setNotitie((v) => event.target.checked ? [v, regel].filter(Boolean).join("\n") : v.split("\n").filter((r) => r !== regel).join("\n")); }}/>{e.itemNaam}</label>)}</section> : null}
             <div>
               <p className="mb-2 text-sm font-semibold">Hoe gaat het met {kind.naam}?</p>
               <Chips opties={stemmingen} waarde={stemming ? [stemming] : []} onKies={(v) => setStemming(v === stemming ? undefined : v)}/>
@@ -134,7 +136,7 @@ function Overdracht() {
               <Chips opties={slaap} waarde={slaapV ? [slaapV] : []} onKies={(v) => setSlaap(v === slaapV ? undefined : v)}/>
             </div>
             <div>
-              <p className="mb-2 text-sm font-semibold">Iets om op te letten?</p>
+              <p className="mb-2 text-sm font-semibold">{t("handover.anythingToNote", "Iets om op te letten?")}</p>
               <Chips multi opties={jong ? onderwerpenJong : onderwerpenOud} waarde={onderwerpen} onKies={(v) => setOnderwerpen(onderwerpen.includes(v) ? onderwerpen.filter((o) => o !== v) : [...onderwerpen, v])}/>
             </div>
             <textarea value={notitie} onChange={(e) => setNotitie(e.target.value)} rows={2} placeholder={`Is er iets fijns of belangrijks dat Joris moet weten? (optioneel)`} className="w-full rounded-md border border-white/70 bg-white/80 p-3 text-sm"/>
@@ -147,14 +149,14 @@ function Overdracht() {
           </Card>
 
           <Card className="space-y-2">
-            <p className="text-sm font-semibold">Na het wisselmoment: hoe ging de overgang voor {kind.naam}?</p>
+            <p className="text-sm font-semibold">{t("handover.afterHandoverQuestion", "Na het wisselmoment: hoe ging de overgang voor")} {kind.naam}?</p>
             <Chips opties={overgang} waarde={overgangV ? [overgangV] : []} onKies={(v) => setOvergang(v === overgangV ? undefined : v)}/>
-            <p className="text-xs text-ink-soft">Dit gaat over hoe {kind.naam} het ervaart — niet over de andere ouder.</p>
+            <p className="text-xs text-ink-soft">{t("handover.childExperienceNotice", "Dit gaat over hoe {{name}} het ervaart — niet over de andere ouder.", { name: kind.naam })}</p>
           </Card>
 
-          <button onClick={versturen} className="w-full rounded-full bg-brand py-3.5 font-semibold text-primary-foreground">Meegeven aan Joris</button>
+          <button onClick={versturen} className="w-full rounded-full bg-brand py-3.5 font-semibold text-primary-foreground">{t("handover.sendToOtherBtn", "Meegeven aan Joris")}</button>
         </div>) : (<div className="mt-5 space-y-4">
-          <p className="text-sm text-ink-soft">Een neutraal overzicht van jouw eigen eerdere notities. Alleen voor jou zichtbaar. Er worden geen conclusies getrokken.</p>
+          <p className="text-sm text-ink-soft">{t("handover.privateNotesNotice", "Een neutraal overzicht van jouw eigen eerdere notities. Alleen voor jou zichtbaar. Er worden geen conclusies getrokken.")}</p>
           <div className="flex gap-2">
             {[{ id: "alle", naam: "Allebei" }, ...kinderen].map((k) => (<button key={k.id} onClick={() => setFilter(k.id)} className={`rounded-full px-3 py-1.5 text-sm font-semibold ${filter === k.id ? "bg-white shadow-sm" : "bg-surface text-ink-soft"}`}>{k.naam}</button>))}
           </div>

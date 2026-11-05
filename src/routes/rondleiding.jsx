@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/rondleiding")({
     component: Rondleiding,
 });
 function Rondleiding() {
+    const { t } = useTranslation();
     const s = useStart();
     const [i, setI] = useState(0);
     const kids = s.eigen && s.kinderen.length ? s.kinderen.map((k) => k.naam).join(" & ") : "je kinderen";
@@ -33,7 +35,7 @@ function Rondleiding() {
     const stap = stappen[i];
     const laatste = i === stappen.length - 1;
     return (<AppShell>
-      <PageHeader titel="Rondleiding" subtitel={s.eigen && s.naam ? `Welkom ${s.naam}, we lopen samen door de app` : "Stap voor stap door de app"} terug="/meer"/>
+      <PageHeader titel={t("tourPage.headerTitle", "Rondleiding")} subtitel={s.eigen && s.naam ? `Welkom ${s.naam}, we lopen samen door de app` : "Stap voor stap door de app"} terug="/meer"/>
       <p className="mt-5 text-xs text-ink-soft">Stap {i + 1} van {stappen.length}</p>
       <div className="mt-2 flex gap-1" aria-hidden>
         {stappen.map((_, n) => <span key={n} className={`h-1 flex-1 rounded-full ${n <= i ? "bg-brand" : "bg-border"}`}/>)}

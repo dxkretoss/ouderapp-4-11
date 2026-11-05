@@ -18,13 +18,14 @@ export function EigenLeeg({
   extra,
   toevoegLabel,
   onToevoeg,
+  terug,
 }) {
   const { t } = useTranslation();
 
   return (
     <AppShell>
       <div className="flex items-start gap-3">
-        <BackButton terug="/" />
+        {terug ? <BackButton terug={terug} /> : null}
         <h1 className="flex-1 font-display text-2xl font-extrabold leading-tight">{titel}</h1>
         {onToevoeg ? (
           <button

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { MoreHorizontal } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/AppShell";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/activiteiten")({
     component: ActiviteitenPagina,
 });
 function ActiviteitenPagina() {
+    const { t } = useTranslation();
     const zoek = Route.useSearch();
     const { lijst, gelezen } = useActiviteiten();
     const [filter, setFilter] = useState("nieuw");
@@ -34,11 +36,11 @@ function ActiviteitenPagina() {
     const groepen = perCategorie(zichtbaar);
     const lees = (a) => zetVoorkeur("activiteitGelezen", [...new Set([...gelezen, ...markeerIds(a)])]);
     return (<AppShell>
-      <PageHeader titel="Activiteiten" terug="/"/>
+      <PageHeader titel={t("activitiesPage.headerTitle", "Activiteiten")} terug="/"/>
       <VoorstellenOverzicht />
       {zoek.onderdeel !== "regelen" ? <>
-      <FilterBalk className="mt-3" opties={[{ id: "nieuw", label: "Nieuw" }, { id: "alles", label: "Alles" }]} waarde={filter} onChange={setFilter}/>
-      {groepen.length === 0 ? (<p className="mt-8 text-center text-sm text-ink-soft">Alles bijgewerkt. Er is niets nieuws.</p>) : groepen.map((g) => (<section key={g.categorie} className="mt-5" aria-label={categorieTitel[g.categorie]}>
+      <FilterBalk className="mt-3" opties={[{ id: "nieuw", label: t("activitiesPage.tabNew", "Nieuw") }, { id: "alles", label: t("activitiesPage.tabAll", "Alles") }]} waarde={filter} onChange={setFilter}/>
+      {groepen.length === 0 ? (<p className="mt-8 text-center text-sm text-ink-soft">{t("activitiesPage.allCaughtUp", "Alles bijgewerkt. Er is niets nieuws.")}</p>) : groepen.map((g) => (<section key={g.categorie} className="mt-5" aria-label={categorieTitel[g.categorie]}>
           <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-soft">{categorieTitel[g.categorie]}</h2>
           <ul className="mt-1 divide-y divide-border">
             {g.items.map((a) => <Rij key={a.id} a={a} gelezen={isGelezen(a, gelezen)} onOpen={() => { lees(a); setOpen(a); }} onLees={() => lees(a)}/>)}
@@ -49,6 +51,7 @@ function ActiviteitenPagina() {
     </AppShell>);
 }
 function Rij({ a, gelezen, onOpen, onLees }) {
+    const { t } = useTranslation();
     return (<li className="flex items-center gap-2">
       <button onClick={onOpen} className="flex min-h-[56px] min-w-0 flex-1 items-center gap-3 py-2 text-left">
         <AppIcon functie={a.icoon} maat="sm"/>
@@ -64,20 +67,21 @@ function Rij({ a, gelezen, onOpen, onLees }) {
           <MoreHorizontal className="size-4" aria-hidden="true"/>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-60 p-1">
-          {!gelezen ? <button onClick={onLees} className="min-h-11 w-full rounded px-3 text-left text-sm">Gelezen</button> : null}
+          {!gelezen ? <button onClick={onLees} className="min-h-11 w-full rounded px-3 text-left text-sm">{t("activitiesPage.read", "Gelezen")}</button> : null}
           <div className="px-3 py-2 text-sm text-ink-soft">
-            <p className="font-semibold">Later herinneren</p>
-            <p className="text-xs">Nog niet beschikbaar. Dit vraagt een veilige herinnering via de server.</p>
+            <p className="font-semibold">{t("activitiesPage.remindLater", "Later herinneren")}</p>
+            <p className="text-xs">{t("activitiesPage.remindLaterNotAvailable", "Nog niet beschikbaar. Dit vraagt een veilige herinnering via de server.")}</p>
           </div>
-          {a.verzoek ? <p className="px-3 pb-2 text-xs text-ink-soft">Dit verzoek blijft openstaan tot je hebt gereageerd.</p> : null}
+          {a.verzoek ? <p className="px-3 pb-2 text-xs text-ink-soft">{t("activitiesPage.requestPendingNotice", "Dit verzoek blijft openstaan tot je hebt gereageerd.")}</p> : null}
         </PopoverContent>
       </Popover>
     </li>);
 }
 function Details({ a, onClose }) {
+    const { t } = useTranslation();
     const router = useRouter();
     return (<Sheet open={!!a} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto">
         {a ? (<>
             <SheetHeader className="text-left">
               <SheetTitle className="font-display text-lg">{a.titel}</SheetTitle>
@@ -97,7 +101,7 @@ function Details({ a, onClose }) {
                 {a.details.map((d) => <div key={d.label} className="contents"><dt className="text-ink-soft">{d.label}</dt><dd>{d.waarde}</dd></div>)}
               </dl>) : null}
             <button onClick={() => { onClose(); router.navigate({ href: a.naar }); }} className="mt-4 flex min-h-11 w-full items-center justify-center rounded-md bg-brand px-4 text-sm font-semibold text-primary-foreground">
-              {a.verzoek ? "Bekijken en reageren" : "Openen"}
+              {a.verzoek ? t("activitiesPage.viewAndRespond", "Bekijken en reageren") : t("activitiesPage.open", "Openen")}
             </button>
           </>) : null}
       </SheetContent>

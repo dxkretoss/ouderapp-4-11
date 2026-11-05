@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { AppIcon } from "@/components/AppIcon";
@@ -42,6 +43,7 @@ function Rij({ to, i, t, u }) {
 // Op dit moment heeft geen enkele betrokken professional toegang tot Berichten, dus deze rij blijft verborgen.
 const organisatie = (naam) => professionals.find((p) => p.naam.startsWith(naam))?.organisatie;
 function Contact() {
+    const { t } = useTranslation();
     const werk = useProWerk();
     const bereikbaar = bereikbareBegeleiders(GEZIN_DOSSIER, werk);
     const [gezamenlijk, setGezamenlijk] = useState(startGezamenlijk);

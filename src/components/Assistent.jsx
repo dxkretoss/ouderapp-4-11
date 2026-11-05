@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useServerFn } from "@tanstack/react-start";
 import { Mic, Search, Square, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -25,11 +26,45 @@ function bouwContext(regio, pagina) {
         "Documenten (Menu → Documenten):", ...documenten.map((d) => `- ${d.naam} · ${d.categorie} · ${d.kind}`),
     ].join("\n");
 }
-const knopLabel = {
-    wissel_ruil: "Ruil openen", extra_nacht: "Voorstel openen", tijd_wisselmoment: "Voorstel versturen", afspraak_toevoegen: "Afspraak openen",
-    afspraak_wijzigen: "Agenda openen", afspraak_maken: "Voorstel openen", document_zoeken: "Naar documenten", kring_toevoegen: "Persoon toevoegen",
-    ziek: "Ziekmelding openen", vakantie: "Naar vakanties", taak_toevoegen: "Taak openen", momentje: "Momentje openen", kosten: "Kosten openen", bericht: "Berichten openen",
+const tipKeyMap = {
+  "Wanneer is het volgende wisselmoment?": "nextHandover",
+  "Wanneer begint de herfstvakantie?": "autumnHoliday",
+  "Ik wil vrijdag ruilen.": "swapFriday",
+  "Voeg zwemles iedere woensdag toe.": "addSwimming",
+  "Waar staat het ouderschapsplan?": "wherePlan",
+  "Wie haalt Emma vrijdag op?": "whoPicksUp",
+  "Wat staat er deze week?": "thisWeek",
+  "Hoeveel moet ik nog betalen?": "howMuchPay",
+  "Zet de schoolreis bij kosten.": "schoolTripCost",
+  "Ik wil een bericht sturen over de ouderavond.": "messageParentEvening",
+  "Wie heeft Kerst?": "whoHasChristmas"
 };
+
+const getTipLabel = (tip, t) => {
+  const k = tipKeyMap[tip];
+  return k ? t(`assistant.tips.${k}`, tip) : tip;
+};
+
+const getKnopLabel = (actie, t) => {
+  const map = {
+    wissel_ruil: t("assistant.actions.swap", "Ruil openen"),
+    extra_nacht: t("assistant.actions.extraNight", "Voorstel openen"),
+    tijd_wisselmoment: t("assistant.actions.sendProposal", "Voorstel versturen"),
+    afspraak_toevoegen: t("assistant.actions.openAppointment", "Afspraak openen"),
+    afspraak_wijzigen: t("assistant.actions.openCalendar", "Agenda openen"),
+    afspraak_maken: t("assistant.actions.openProposal", "Voorstel openen"),
+    document_zoeken: t("assistant.actions.toDocuments", "Naar documenten"),
+    kring_toevoegen: t("assistant.actions.addPerson", "Persoon toevoegen"),
+    ziek: t("assistant.actions.sickReport", "Ziekmelding openen"),
+    vakantie: t("assistant.actions.toHolidays", "Naar vakanties"),
+    taak_toevoegen: t("assistant.actions.openTask", "Taak openen"),
+    momentje: t("assistant.actions.openMoment", "Momentje openen"),
+    kosten: t("assistant.actions.openExpenses", "Kosten openen"),
+    bericht: t("assistant.actions.openMessages", "Berichten openen"),
+  };
+  return map[actie] ?? t("common.open", "Openen");
+};
+
 const perPagina = {
     Agenda: ["Wat staat er deze week?", "Voeg zwemles iedere woensdag toe."],
     Kosten: ["Hoeveel moet ik nog betalen?", "Zet de schoolreis bij kosten."],
@@ -39,6 +74,7 @@ const perPagina = {
     "Verdeling van de week": ["Ik wil vrijdag ruilen.", "Wanneer is het volgende wisselmoment?"],
 };
 export function Assistent({ pagina } = {}) {
+    const { t } = useTranslation();
     const tips = (pagina && perPagina[pagina]) || voorbeelden;
     const router = useRouter();
     const regio = useRegio();
@@ -130,15 +166,15 @@ export function Assistent({ pagina } = {}) {
     };
     const aanpassen = () => { setAntwoord(null); setTimeout(() => invoer.current?.focus(), 0); };
     return (<>
-      <button onClick={() => setOpen(true)} aria-label="Zoeken of iets regelen" className="grid size-9 place-items-center rounded-full border border-border text-ink-soft">
+      <button onClick={() => setOpen(true)} aria-label={t("assistant.openAria", "Zoeken of iets regelen")} className="grid size-9 place-items-center rounded-full border border-border text-ink-soft">
         <Search className="size-4" strokeWidth={1.8}/>
       </button>
       <Sheet open={open} onOpenChange={(o) => { if (!o && rec.current?.state === "recording")
         rec.current.stop(); setOpen(o); }}>
-        <SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
           <SheetHeader className="pr-8 text-left">
-            <SheetTitle className="font-display text-xl font-medium">Waar kan ik je mee helpen?</SheetTitle>
-            <SheetDescription className="text-xs">Ik zoek in je eigen gegevens en open de juiste plek. Ik verander zelf niets; jij bevestigt altijd.</SheetDescription>
+            <SheetTitle className="font-display text-xl font-medium">{t("assistant.title", "Waar kan ik je mee helpen?")}</SheetTitle>
+            <SheetDescription className="text-xs">{t("assistant.desc", "Ik zoek in je eigen gegevens en open de juiste plek. Ik verander zelf niets; jij bevestigt altijd.")}</SheetDescription>
           </SheetHeader>
 
           <form className="mt-4 flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); setUitSpraak(false); stel(); }}>
@@ -146,25 +182,25 @@ export function Assistent({ pagina } = {}) {
         e.preventDefault();
         setUitSpraak(false);
         stel();
-    } }} placeholder="Typ of spreek je vraag in" aria-label="Je vraag" className="min-w-0 flex-1 resize-none rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none"/>
-            {bezig === "opnemen" ? (<button type="button" onClick={() => rec.current?.stop()} aria-label="Opname stoppen" className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-warm text-primary-foreground"><Square className="size-4"/></button>) : (<button type="button" onClick={startOpname} disabled={!!bezig} aria-label="Inspreken" className="grid size-10 shrink-0 place-items-center rounded-full border border-brand/40 text-brand disabled:opacity-40"><Mic className="size-4"/></button>)}
+    } }} placeholder={t("assistant.inputPlaceholder", "Typ of spreek je vraag in")} aria-label={t("assistant.inputAria", "Je vraag")} className="min-w-0 flex-1 resize-none rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none"/>
+            {bezig === "opnemen" ? (<button type="button" onClick={() => rec.current?.stop()} aria-label={t("assistant.stopRecordingAria", "Opname stoppen")} className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-warm text-primary-foreground"><Square className="size-4"/></button>) : (<button type="button" onClick={startOpname} disabled={!!bezig} aria-label={t("assistant.recordAria", "Inspreken")} className="grid size-10 shrink-0 place-items-center rounded-full border border-brand/40 text-brand disabled:opacity-40"><Mic className="size-4"/></button>)}
           </form>
-          {bezig === "opnemen" ? <p role="status" className="mt-2 flex items-center gap-2 text-xs font-semibold text-accent-warm"><span className="size-2 animate-pulse rounded-full bg-accent-warm"/> Ik luister… tik op het vierkantje om te stoppen</p> : null}
-          {bezig === "omzetten" ? <p role="status" className="mt-2 text-xs text-ink-soft">Spraak omzetten naar tekst…</p> : null}
+          {bezig === "opnemen" ? <p role="status" className="mt-2 flex items-center gap-2 text-xs font-semibold text-accent-warm"><span className="size-2 animate-pulse rounded-full bg-accent-warm"/> {t("assistant.listening", "Ik luister… tik op het vierkantje om te stoppen")}</p> : null}
+          {bezig === "omzetten" ? <p role="status" className="mt-2 text-xs text-ink-soft">{t("assistant.converting", "Spraak omzetten naar tekst…")}</p> : null}
           {!antwoord && !bezig ? <DirectGevonden zoek={vraag} kies={(d) => { setOpen(false); router.navigate({ to: d.to, search: d.search, ...(d.hash ? { hash: d.hash } : {}) }); }}/> : null}
           {uitSpraak && vraag && !bezig ? (<div className="mt-3 rounded-md border border-border bg-card p-3 text-sm">
-              <p className="text-xs text-ink-soft">Dit heb ik verstaan. Klopt het niet helemaal? Pas de tekst hierboven aan.</p>
+              <p className="text-xs text-ink-soft">{t("assistant.voiceConfirmationPrompt", "Dit heb ik verstaan. Klopt het niet helemaal? Pas de tekst hierboven aan.")}</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                <button onClick={() => { setVraag(""); setUitSpraak(false); invoer.current?.focus(); }} className="rounded-md border border-border py-2 text-sm font-semibold text-ink-soft">Wissen</button>
-                <button onClick={() => { setUitSpraak(false); stel(); }} className="rounded-md bg-brand py-2 text-sm font-semibold text-primary-foreground">Ja, ga verder</button>
+                <button onClick={() => { setVraag(""); setUitSpraak(false); invoer.current?.focus(); }} className="rounded-md border border-border py-2 text-sm font-semibold text-ink-soft">{t("assistant.clear", "Wissen")}</button>
+                <button onClick={() => { setUitSpraak(false); stel(); }} className="rounded-md bg-brand py-2 text-sm font-semibold text-primary-foreground">{t("assistant.confirmContinue", "Ja, ga verder")}</button>
               </div>
             </div>) : null}
 
-          {bezig === "denken" ? <p role="status" className="mt-4 flex items-center gap-2 text-sm text-ink-soft"><Loader2 className="size-4 animate-spin"/> Even kijken…</p> : null}
+          {bezig === "denken" ? <p role="status" className="mt-4 flex items-center gap-2 text-sm text-ink-soft"><Loader2 className="size-4 animate-spin"/> {t("assistant.thinking", "Even kijken…")}</p> : null}
           {fout ? <p role="alert" className="mt-3 rounded-md bg-secondary px-3 py-2 text-xs text-ink">{fout}</p> : null}
 
           {antwoord ? (<div className="mt-4 rounded-md border border-border bg-card p-4">
-              {antwoord.actie !== "geen" && antwoord.actie !== "verduidelijk" ? <p className="mb-1 font-display text-base">Dit wil je regelen</p> : null}
+              {antwoord.actie !== "geen" && antwoord.actie !== "verduidelijk" ? <p className="mb-1 font-display text-base">{t("assistant.actionHeading", "Dit wil je regelen")}</p> : null}
               <p className="text-sm leading-relaxed">{antwoord.antwoord}</p>
               {antwoord.actie === "verduidelijk" && antwoord.opties.length ? (<div className="mt-3 flex flex-wrap gap-2">
                   {antwoord.opties.map((o) => <button key={o} onClick={() => { const nv = `${vraag.trim()} — ${o}`; setVraag(nv); stel(nv); }} className="rounded-full border border-brand/40 px-3 py-1.5 text-xs font-semibold text-brand">{o}</button>)}
@@ -173,22 +209,23 @@ export function Assistent({ pagina } = {}) {
                   {antwoord.samenvatting.length ? (<dl className="mt-3 divide-y divide-border border-y border-border text-sm">
                       {antwoord.samenvatting.map((s) => <div key={s.label} className="flex justify-between gap-3 py-2"><dt className="text-ink-soft">{s.label}</dt><dd className="text-right font-semibold">{s.waarde}</dd></div>)}
                     </dl>) : null}
-                  <p className="mt-3 text-[11px] text-ink-soft">Er is nog niets veranderd. Je controleert alles op de volgende pagina en verstuurt of bewaart het zelf.</p>
+                  <p className="mt-3 text-[11px] text-ink-soft">{t("assistant.nothingChangedNotice", "Er is nog niets veranderd. Je controleert alles op de volgende pagina en verstuurt of bewaart het zelf.")}</p>
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <button onClick={aanpassen} className="rounded-md border border-border py-2.5 text-sm font-semibold text-ink-soft">Aanpassen</button>
-                    <button onClick={() => openFlow(antwoord)} className="rounded-md bg-brand py-2.5 text-sm font-semibold text-primary-foreground">{knopLabel[antwoord.actie] ?? "Openen"}</button>
+                    <button onClick={aanpassen} className="rounded-md border border-border py-2.5 text-sm font-semibold text-ink-soft">{t("assistant.adjust", "Aanpassen")}</button>
+                    <button onClick={() => openFlow(antwoord)} className="rounded-md bg-brand py-2.5 text-sm font-semibold text-primary-foreground">{getKnopLabel(antwoord.actie, t)}</button>
                   </div>
                 </>) : null}
             </div>) : null}
 
           {!antwoord && !bezig && !vraag ? (<div className="mt-4 flex flex-wrap gap-2">
-              {tips.map((v) => <button key={v} onClick={() => { setVraag(v); stel(v); }} className="rounded-full border border-border bg-card px-3 py-1.5 text-xs text-ink-soft">{v}</button>)}
+              {tips.map((v) => <button key={v} onClick={() => { setVraag(getTipLabel(v, t)); stel(v); }} className="rounded-full border border-border bg-card px-3 py-1.5 text-xs text-ink-soft">{getTipLabel(v, t)}</button>)}
             </div>) : null}
         </SheetContent>
       </Sheet>
     </>);
 }
 function DirectGevonden({ zoek, kies }) {
+    const { t } = useTranslation();
     const q = zoek.trim().toLowerCase();
     if (q.length < 2)
         return null;
@@ -224,10 +261,10 @@ function DirectGevonden({ zoek, kies }) {
     if (!res.length)
         return null;
     return (<div className="mt-3">
-      <p className="text-xs font-semibold text-ink-soft">Direct gevonden</p>
+      <p className="text-xs font-semibold text-ink-soft">{t("assistant.instantMatches", "Direct gevonden")}</p>
       <ul className="mt-1 space-y-1">
         {res.map((r, i) => (<li key={i}><button type="button" onClick={() => kies(r)} className="w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted">{r.label}<span className="block text-[11px] text-ink-soft">{r.soort}</span></button></li>))}
       </ul>
-      <p className="mt-1 text-[11px] text-ink-soft">Druk op Enter om het Co te vragen.</p>
+      <p className="mt-1 text-[11px] text-ink-soft">{t("assistant.pressEnterToAsk", "Druk op Enter om het Co te vragen.")}</p>
     </div>);
 }

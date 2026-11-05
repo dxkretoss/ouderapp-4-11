@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { appDocumenten } from "@/lib/juridische-bronnen";
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/juridisch")({
     component: JuridischPagina,
 });
 function JuridischPagina() {
+    const { t } = useTranslation();
     return (<AppShell>
       <PageHeader titel="Juridisch & privacy" subtitel="Rustig na te lezen, wanneer je wilt" terug="/juridische-hulp"/>
       <div className="mt-6 divide-y divide-border border-y border-border">

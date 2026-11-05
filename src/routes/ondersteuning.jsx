@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppIcon } from "@/components/AppIcon";
@@ -28,6 +29,7 @@ const betrokken = [
 const onderdeelLabel = { Zorgregeling: "Verdeling van de week", Planning: "Agenda", Documenten: "Geselecteerde documenten", Communicatie: "Berichten tussen ouders", Afspraken: "Afspraken", Besluiten: "Besluiten", Kosten: "Kosten" };
 const alleOnderdelen = Object.keys(onderdeelLabel);
 function Ondersteuning() {
+    const { t } = useTranslation();
     const router = useRouter();
     const [open, setOpen] = useState(null);
     const eigen = !!useStart().eigen;

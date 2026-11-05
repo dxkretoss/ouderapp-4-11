@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { VakantieFormulier, Reistoestemming } from "@/components/AgendaVakanties";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/vakantie/$id")({
     component: VakantiePagina,
 });
 function VakantiePagina() {
+    const { t } = useTranslation();
     const { id } = Route.useParams();
     const v = useVakanties().find((x) => x.id === id);
     const k = useKeuzeTeksten();

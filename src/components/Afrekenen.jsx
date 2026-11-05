@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AppShell } from "@/components/AppShell";
 import { AppIcon } from "@/components/AppIcon";
 import { Button } from "@/components/ui/button";
@@ -90,14 +91,15 @@ export function Afrekenen({ periode, onTerug, onBerekening, startVerzoek = false
   </AfrekenInhoud>;
 }
 function AfrekenInhoud({ v, optie, setOptie, onTerug, onBerekening, children }) {
+    const { t } = useTranslation();
     const saldo = berekenSaldo(useKosten());
     const bedrag = v?.bedrag ?? Math.abs(saldo.netto);
     const ontvanger = v?.aan ?? (saldo.netto >= 0 ? "sanne" : "joris");
     const betaler = v?.van ?? (saldo.netto >= 0 ? "joris" : "sanne");
     const klaar = v?.status === "afgerond" || v?.status === "ontvangst-bevestigd";
-    return <AppShell><div className="flex items-center gap-3"><Button variant="outline" size="icon" className="knop-kruis size-11" aria-label="Terug" onClick={onTerug}>‹</Button><h1 className="font-display text-2xl font-extrabold">Afrekenen</h1></div>
-    <section className="mt-5 border-y border-border py-4"><p className="font-display text-3xl font-extrabold tabular-nums">{euro(bedrag)}</p><p className="mt-1 text-sm">{naam(betaler)} betaalt aan {naam(ontvanger)}</p><Badge toon={klaar ? "klaar" : "actie"} className="mt-2">{verrekeningStatus(v?.status ?? "nog-te-betalen")}</Badge><div><Button variant="link" onClick={onBerekening} className="min-h-11 px-0">Bekijk berekening ›</Button></div><Kopieer label="Bedrag" waarde={bedrag.toFixed(2).replace(".", ",")}/><Kopieer label="Ontvanger" waarde={naam(ontvanger)}/></section>
-    {!klaar && bedrag > 0 ? <div className="mt-4 divide-y divide-border border-y border-border">{[{ id: "verzoek", tekst: "Betalen via betaalverzoek", icoon: "betaalverzoek" }, { id: "bank", tekst: "Bankoverschrijving", icoon: "kosten" }, { id: "betaald", tekst: "Ik heb al betaald", icoon: "akkoord" }].map((o) => <Button variant="ghost" key={o.id} aria-expanded={optie === o.id} onClick={() => setOptie(o.id)} className="h-auto min-h-14 w-full justify-start gap-3 whitespace-normal rounded-none px-0 text-left"><AppIcon functie={o.icoon} maat="sm"/><span className="flex-1">{o.tekst}</span><span className="text-brand" aria-hidden>›</span></Button>)}</div> : null}
+    return <AppShell><div className="flex items-center gap-3"><Button variant="outline" size="icon" className="knop-kruis size-11" aria-label="Terug" onClick={onTerug}>‹</Button><h1 className="font-display text-2xl font-extrabold">{t("expenses.settle", "Afrekenen")}</h1></div>
+    <section className="mt-5 border-y border-border py-4"><p className="font-display text-3xl font-extrabold tabular-nums">{euro(bedrag)}</p><p className="mt-1 text-sm">{naam(betaler)} betaalt aan {naam(ontvanger)}</p><Badge toon={klaar ? "klaar" : "actie"} className="mt-2">{verrekeningStatus(v?.status ?? "nog-te-betalen")}</Badge><div><Button variant="link" onClick={onBerekening} className="min-h-11 px-0">{t("expenses.viewCalculation", "Bekijk berekening ›")}</Button></div><Kopieer label={t("expenses.modal.amount", "Bedrag")} waarde={bedrag.toFixed(2).replace(".", ",")}/><Kopieer label="Ontvanger" waarde={naam(ontvanger)}/></section>
+    {!klaar && bedrag > 0 ? <div className="mt-4 divide-y divide-border border-y border-border">{[{ id: "verzoek", tekst: t("expenses.paymentRequest", "Betalen via betaalverzoek"), icoon: "betaalverzoek" }, { id: "bank", tekst: t("expenses.bankTransfer", "Bankoverschrijving"), icoon: "kosten" }, { id: "betaald", tekst: t("expenses.alreadyPaid", "Ik heb al betaald"), icoon: "akkoord" }].map((o) => <Button variant="ghost" key={o.id} aria-expanded={optie === o.id} onClick={() => setOptie(o.id)} className="h-auto min-h-14 w-full justify-start gap-3 whitespace-normal rounded-none px-0 text-left"><AppIcon functie={o.icoon} maat="sm"/><span className="flex-1">{o.tekst}</span><span className="text-brand" aria-hidden>›</span></Button>)}</div> : null}
     {children}
   </AppShell>;
 }

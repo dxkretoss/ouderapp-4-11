@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { uur } from "@/lib/tijd-tekst";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { z } from "zod";
@@ -47,6 +48,7 @@ function Rij({ icoon, titel, sub, extra, onClick }) {
         : <div className="flex items-center gap-3 py-3">{inhoud}</div>;
 }
 function KringPagina() {
+    const { t } = useTranslation();
     const { kindId } = Route.useParams();
     const kind = kinderen.find((k) => k.id === kindId);
     const kring = useKring();

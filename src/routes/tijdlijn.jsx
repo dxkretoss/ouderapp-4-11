@@ -32,6 +32,7 @@ function vanAudit(g) {
     return { key: g.eventId, wanneer: new Date(g.moment), heeftTijd: true, cat: c[0], icoon: c[1], kop: eventKop(g), titel: g.itemNaam, detail: w && g.wijzigingen.length === 1 ? `${w.oud} → ${w.nieuw}` : undefined };
 }
 function Tijdlijn() {
+    const { t } = useTranslation();
     const audit = useAudit();
     const afspraken = useAfspraken();
     const regels = [

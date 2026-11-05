@@ -38,6 +38,7 @@ const knop = "rounded-md border border-border px-3 py-2 text-left text-sm";
 const primair = "rounded-md bg-brand px-4 py-2 text-sm font-semibold text-primary-foreground";
 const momentLabel = (m) => `${m.dag} · ${uur(m.tijd)} · ${m.titel}`;
 function Veranderd() {
+    const { t } = useTranslation();
     const router = useRouter();
     const s = Route.useSearch();
     const kring = useKring();

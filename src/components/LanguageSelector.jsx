@@ -8,17 +8,17 @@ export function LanguageSelector({ variant = "default", className = "" }) {
   if (variant === "compact") {
     return (
       <div
-        className={`inline-flex items-center rounded-full border-2 border-slate-300 dark:border-border bg-white dark:bg-card p-0.5 text-xs font-semibold shadow-sm z-20 ${className}`}
+        className={`inline-flex items-center rounded-full border border-border bg-card/95 backdrop-blur-sm p-0.5 text-xs font-semibold shadow-xs z-30 ${className}`}
         role="group"
         aria-label="Language selection"
       >
         <button
           type="button"
           onClick={() => i18n.changeLanguage("nl")}
-          className={`rounded-full px-2.5 py-1 transition-all cursor-pointer ${
+          className={`rounded-full px-2.5 py-0.5 transition-colors cursor-pointer text-xs ${
             currentLang === "nl"
-              ? "bg-[#204E4A] text-white shadow-xs font-bold"
-              : "text-slate-700 dark:text-ink-soft hover:text-ink font-medium"
+              ? "bg-brand text-primary-foreground shadow-xs font-bold"
+              : "text-ink-soft hover:text-ink font-medium"
           }`}
           aria-pressed={currentLang === "nl"}
           aria-label="Nederlands"
@@ -28,10 +28,10 @@ export function LanguageSelector({ variant = "default", className = "" }) {
         <button
           type="button"
           onClick={() => i18n.changeLanguage("en")}
-          className={`rounded-full px-2.5 py-1 transition-all cursor-pointer ${
+          className={`rounded-full px-2.5 py-0.5 transition-colors cursor-pointer text-xs ${
             currentLang === "en"
-              ? "bg-[#204E4A] text-white shadow-xs font-bold"
-              : "text-slate-700 dark:text-ink-soft hover:text-ink font-medium"
+              ? "bg-brand text-primary-foreground shadow-xs font-bold"
+              : "text-ink-soft hover:text-ink font-medium"
           }`}
           aria-pressed={currentLang === "en"}
           aria-label="English"

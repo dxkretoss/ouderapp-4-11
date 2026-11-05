@@ -167,7 +167,6 @@ function Meer() {
     const initiaal = gebruikersnaam.charAt(0).toUpperCase();
     return (<AppShell>
       <div className="flex items-start gap-3">
-        <BackButton terug="/"/>
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-2xl font-extrabold">{t("navbar.menu", "Menu")}</h1>
           <p className="mt-1 text-sm text-ink-soft">{t("menu.headerSubtitle", "Alles rondom jullie gezin, overzichtelijk bij elkaar.")}</p>
@@ -194,21 +193,71 @@ function Meer() {
           })}
         </div>
         {overigeActies.length > 0 ? (<p className="mt-4 text-center text-xs text-ink-soft">
-            {isEn ? `${overigeActies.length} item(s) waiting for you: ` : `Nog ${overigeActies.length} ${overigeActies.length === 1 ? "onderdeel wacht" : "onderdelen wachten"} op jou: `}{overigeActies.map((i, n) => (<span key={i.to}>{n > 0 ? ", " : ""}<Link to={i.to} onClick={() => registreerMeerBezoek(i.to)} className="font-semibold text-brand underline-offset-2 hover:underline">{vertaalItem(i).titel}</Link></span>))}
+            {t("menu.itemsWaitingForYou", "Nog {{count}} onderdelen wachten op jou: ", { count: overigeActies.length })}{overigeActies.map((i, n) => (<span key={i.to}>{n > 0 ? ", " : ""}<Link to={i.to} onClick={() => registreerMeerBezoek(i.to)} className="font-semibold text-brand underline-offset-2 hover:underline">{vertaalItem(i).titel}</Link></span>))}
           </p>) : null}
       </section>
 
       {/* Alle overige onderdelen */}
       <label className="mt-5 flex min-h-11 items-center gap-2 border-b border-border py-2"><AppIcon functie="zoeken" maat="sm" vorm="kaal"/><input value={zoek} onChange={(e) => setZoek(e.target.value)} placeholder={t("menu.searchPlaceholder", "Zoek in het menu")} aria-label={t("menu.searchPlaceholder", "Zoek in het menu")} className="min-w-0 flex-1 bg-transparent text-sm outline-none"/></label>
       <section className="mt-2">
-        {q ? <><MeerSectie titel={isEn ? "Results" : "Gevonden"} klein compact onBezoek={registreerMeerBezoek} items={resultaten.map(metAantal).map(vertaalItem)}/>{!resultaten.length ? <p className="mt-2 text-sm text-ink-soft">{isEn ? "No results found. Try another search term." : "Niets gevonden. Probeer een ander woord."}</p> : null}{/persoon|contact|familie|verzorger|people/.test(q) ? <Button variant="link" className="min-h-11 px-0" onClick={() => setPersonenOpen(true)}>{isEn ? "View important contacts" : "Belangrijke personen bekijken"}</Button> : null}</> : <>
+        {q ? <><MeerSectie titel={t("menu.searchResults", "Gevonden")} klein compact onBezoek={registreerMeerBezoek} items={resultaten.map(metAantal).map(vertaalItem)}/>{!resultaten.length ? <p className="mt-2 text-sm text-ink-soft">{t("menu.noResults", "Niets gevonden. Probeer een ander woord.")}</p> : null}{/persoon|contact|familie|verzorger|people/.test(q) ? <Button variant="link" className="min-h-11 px-0" onClick={() => setPersonenOpen(true)}>{t("menu.viewImportantContacts", "Belangrijke personen bekijken")}</Button> : null}</> : <>
           <MeerSectie titel={t("menu.sections.daily", "Dagelijks")} klein compact onBezoek={registreerMeerBezoek} items={dagelijks.map(metAantal).map(vertaalItem)}/>
           <MeerSectie titel={t("menu.sections.family", "Gezin")} klein compact onBezoek={registreerMeerBezoek} items={gezinItems.map(metAantal).map(vertaalItem)}/>
           <Button variant="ghost" className="min-h-14 h-auto w-full justify-start gap-3.5 whitespace-normal rounded-none border-b border-border px-0 text-left" onClick={() => setPersonenOpen(true)}><AppIcon functie="contact" maat="lg"/><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{t("menu.importantPeople", "Belangrijke personen")}</span><span className="block text-xs font-normal text-ink-soft">{t("menu.importantPeopleDesc", "Familie, verzorgers en andere betrokkenen")}</span></span><span aria-hidden className="text-lg text-ink-soft">›</span></Button>
           {[{ titel: "Steun", key: "support", items: ondersteuning }, { titel: "Account", key: "settings", items: account }].map((c) => <MeerSectie key={c.titel} titel={t(`menu.sections.${c.key}`, c.titel)} klein compact onBezoek={registreerMeerBezoek} items={c.items.map(metAantal).map(vertaalItem)}/>)}
         </>}
       </section>
-      <Sheet open={personenOpen} onOpenChange={setPersonenOpen}><SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8"><SheetHeader className="pr-8 text-left"><SheetTitle>Belangrijke personen</SheetTitle><SheetDescription>Kies een kind voor de bestaande contacten. Een contact toevoegen geeft geen toegang tot de app.</SheetDescription></SheetHeader><div className="mt-3 divide-y divide-border">{profielen.map((k) => <Button asChild key={k.id} variant="ghost" className="min-h-11 w-full justify-between"><Link to={eigen ? "/kinderen/$kindId" : "/kring/$kindId"} params={{ kindId: k.id }}>{k.naam}<span aria-hidden>›</span></Link></Button>)}</div></SheetContent></Sheet>
-      <Sheet open={hulpOpen} onOpenChange={(o) => { setHulpOpen(o); setIntroBevestigen(false); }}><SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8"><SheetHeader className="pr-8 text-left"><SheetTitle>Hulp en uitleg</SheetTitle><SheetDescription>Rondleiding, uitleg en bestaande hulp op één plek.</SheetDescription></SheetHeader><div className="mt-3 divide-y divide-border"><Button asChild variant="ghost" className="min-h-11 w-full justify-start"><Link to="/rondleiding">Rondleiding starten</Link></Button><details className="py-2"><summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold">Uitleg en veelgestelde vragen</summary><p className="pb-2 text-sm text-ink-soft">Je kunt de rondleiding zo vaak starten als je wilt. Dat verandert geen kindprofielen, afspraken of andere gezinsgegevens. In het voorbeeldgezin worden geen echte meldingen of betalingen verstuurd.</p></details><Button asChild variant="ghost" className="min-h-11 w-full justify-start"><Link to="/ondersteuning">Contact of hulp</Link></Button><Button variant="ghost" className="min-h-11 w-full justify-start" onClick={() => setIntroBevestigen(true)}>Introductie opnieuw openen</Button>{introBevestigen ? <div className="space-y-3 py-3"><p className="text-sm">De introductie zelf verwijdert niets. Als je daarna een nieuw gezin begint, vervangt dit je eigen gegevens op dit apparaat, waaronder kinderen, afspraken en uitgaven. De rondleiding opnieuw starten verandert niets.</p><div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => setIntroBevestigen(false)}>Terug</Button><Button asChild><Link to="/welkom">Ik begrijp het, open introductie</Link></Button></div></div> : null}</div></SheetContent></Sheet>
+      <Sheet open={personenOpen} onOpenChange={setPersonenOpen}>
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+          <SheetHeader className="pr-8 text-left">
+            <SheetTitle>{t("menu.importantPeopleSheet.title", "Belangrijke personen")}</SheetTitle>
+            <SheetDescription>{t("menu.importantPeopleSheet.desc", "Kies een kind voor de bestaande contacten. Een contact toevoegen geeft geen toegang tot de app.")}</SheetDescription>
+          </SheetHeader>
+          <div className="mt-3 divide-y divide-border">
+            {profielen.map((k) => (
+              <Button asChild key={k.id} variant="ghost" className="min-h-11 w-full justify-between">
+                <Link to={eigen ? "/kinderen/$kindId" : "/kring/$kindId"} params={{ kindId: k.id }}>
+                  {k.naam}
+                  <span aria-hidden>›</span>
+                </Link>
+              </Button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+      <Sheet open={hulpOpen} onOpenChange={(o) => { setHulpOpen(o); setIntroBevestigen(false); }}>
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+          <SheetHeader className="pr-8 text-left">
+            <SheetTitle>{t("menu.helpSheet.title", "Hulp en uitleg")}</SheetTitle>
+            <SheetDescription>{t("menu.helpSheet.desc", "Rondleiding, uitleg en bestaande hulp op één plek.")}</SheetDescription>
+          </SheetHeader>
+          <div className="mt-3 divide-y divide-border">
+            <Button asChild variant="ghost" className="min-h-11 w-full justify-start">
+              <Link to="/rondleiding">{t("menu.helpSheet.startTour", "Rondleiding starten")}</Link>
+            </Button>
+            <details className="py-2">
+              <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold">{t("menu.helpSheet.faqTitle", "Uitleg en veelgestelde vragen")}</summary>
+              <p className="pb-2 text-sm text-ink-soft">{t("menu.helpSheet.faqDesc", "Je kunt de rondleiding zo vaak starten als je wilt. Dat verandert geen kindprofielen, afspraken of andere gezinsgegevens. In het voorbeeldgezin worden geen echte meldingen of betalingen verstuurd.")}</p>
+            </details>
+            <Button asChild variant="ghost" className="min-h-11 w-full justify-start">
+              <Link to="/ondersteuning">{t("menu.helpSheet.contactOrHelp", "Contact of hulp")}</Link>
+            </Button>
+            <Button variant="ghost" className="min-h-11 w-full justify-start" onClick={() => setIntroBevestigen(true)}>
+              {t("menu.helpSheet.reopenIntro", "Introductie opnieuw openen")}
+            </Button>
+            {introBevestigen ? (
+              <div className="space-y-3 py-3">
+                <p className="text-sm">{t("menu.helpSheet.introWarning", "De introductie zelf verwijdert niets. Als je daarna een nieuw gezin begint, vervangt dit je eigen gegevens op dit apparaat, waaronder kinderen, afspraken en uitgaven. De rondleiding opnieuw starten verandert niets.")}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" onClick={() => setIntroBevestigen(false)}>{t("common.back", "Terug")}</Button>
+                  <Button asChild>
+                    <Link to="/welkom">{t("menu.helpSheet.understoodOpen", "Ik begrijp het, open introductie")}</Link>
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </SheetContent>
+      </Sheet>
     </AppShell>);
 }

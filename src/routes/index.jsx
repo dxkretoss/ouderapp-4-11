@@ -198,25 +198,25 @@ function Dashboard() {
         ...alleVakanties.filter((v) => v.status === "afgesproken").map((v) => ({ id: `av-${v.id}`, titel: `${v.naam} afgesproken`, naar: "/planning" })),
     ];
     const budgetItems = alleBudgetten.filter((b) => b.status === "wacht" || b.status === "tegenvoorstel").map((b) => ({
-        id: `budget-${b.id}`, icoon: "kosten", titel: b.status === "tegenvoorstel" ? "Tegenvoorstel budget" : "Budgetvoorstel",
+        id: `budget-${b.id}`, icoon: "kosten", titel: b.status === "tegenvoorstel" ? t("home.budgetCounterProposal", "Tegenvoorstel budget") : t("home.budgetProposal", "Budgetvoorstel"),
         sub: `${b.wat} · ${b.kind} · ${euro(b.stappen.at(-1)?.bedrag ?? b.max)}`, status: b.aanZet === "Sanne" ? "Wacht op jou" : "Afstemming loopt", naar: "/kosten",
-        snel: b.aanZet === "Sanne" ? [{ label: "Akkoord", doe: () => reageerBudget(b.id, "Sanne", "akkoord") }] : undefined,
+        snel: b.aanZet === "Sanne" ? [{ label: t("common.agree", "Akkoord"), doe: () => reageerBudget(b.id, "Sanne", "akkoord") }] : undefined,
     }));
     const zorgItems = alleZorg.filter((v) => v.status === "open").map((v) => ({
-        id: `zorg-${v.id}`, icoon: "zorgregeling", titel: v.soort === "eenmalig" ? "Vraag om een dag te wijzigen" : "Vraag om de vaste verdeling te wijzigen",
-        voorstelId: v.id, voorstelKind: v.kinderen[0], sub: v.datumLabel, status: v.van === "Sanne" ? "Afstemming loopt" : "Wacht op jou", naar: "/zorgregeling",
-        snel: v.van === "Sanne" ? undefined : [{ label: "Akkoord", doe: () => accepteerZorg(v.id) }, { label: "Afwijzen", doe: () => wijsAfZorg(v.id) }],
+        id: `zorg-${v.id}`, icoon: "zorgregeling", titel: v.soort === "eenmalig" ? t("home.askChangeSingleDay", "Vraag om een dag te wijzigen") : t("home.askChangeCareSchedule", "Vraag om de vaste verdeling te wijzigen"),
+        voorstelId: v.id, voorstelKind: v.kinderen[0], sub: vertaalDatumLabel(v.datumLabel), status: v.van === "Sanne" ? "Afstemming loopt" : "Wacht op jou", naar: "/zorgregeling",
+        snel: v.van === "Sanne" ? undefined : [{ label: t("common.agree", "Akkoord"), doe: () => accepteerZorg(v.id) }, { label: t("common.reject", "Afwijzen"), doe: () => wijsAfZorg(v.id) }],
     }));
     const afspraakItems = eigenOpenVoorstellen(useAfspraken()).map((v) => ({
-        id: `afspraak-${v.id}`, icoon: "voorstel", titel: "Jouw voorstel", sub: `${v.titel} · ${v.kind}`, status: "Afstemming loopt", naar: "/afspraken",
+        id: `afspraak-${v.id}`, icoon: "voorstel", titel: t("home.yourProposal", "Jouw voorstel"), sub: `${v.titel} · ${v.kind}`, status: "Afstemming loopt", naar: "/afspraken",
     }));
     const vakantieItems = alleVakanties.filter((v) => v.status === "voorstel").map((v) => ({
-        id: `vakantie-${v.id}`, icoon: "vakantie", titel: v.van === "Sanne" ? "Jouw vakantievoorstel" : "Vakantievoorstel", sub: `${v.naam} · ${v.periode}`,
+        id: `vakantie-${v.id}`, icoon: "vakantie", titel: v.van === "Sanne" ? t("home.yourHolidayProposal", "Jouw vakantievoorstel") : t("home.holidayProposal", "Vakantievoorstel"), sub: `${v.naam} · ${v.periode}`,
         status: v.van === "Sanne" ? "Afstemming loopt" : "Wacht op jou", naar: "/planning",
     }));
     const importOpen = useTeControleren();
     const importItems = importOpen > 0 ? [{
-            id: "import-ouderschapsplan", icoon: "documenten", titel: "Ouderschapsplan controleren",
+            id: "import-ouderschapsplan", icoon: "documenten", titel: t("home.checkParentingPlan", "Ouderschapsplan controleren"),
             sub: importOpen === 1 ? "1 herkende afspraak wacht op je keuze" : `${importOpen} herkende afspraken wachten op je keuze`, status: "Wacht op jou", naar: "/documenten",
         }] : [];
     const openActies = eigen ? [...afspraakItems] : [
@@ -225,8 +225,8 @@ function Dashboard() {
             ? [{
                     id: "kosten-openstaand",
                     icoon: "kosten",
-                    titel: "Nog te betalen",
-                    sub: saldo > 0 ? `Nog ${saldoTekst} te betalen` : `Je ontvangt nog ${saldoTekst}`,
+                    titel: t("home.toPay", "Nog te betalen"),
+                    sub: saldo > 0 ? t("home.stillToPayAmount", "Nog {{amount}} te betalen", { amount: saldoTekst }) : t("home.youWillReceiveAmount", "Je ontvangt nog {{amount}}", { amount: saldoTekst }),
                     status: "Wacht op jou",
                     naar: "/kosten",
                 }]
@@ -286,7 +286,6 @@ function Dashboard() {
       <div className="relative flex items-center justify-between">
         <AppLogo className="w-36 max-w-[42%]"/>
         <div className="flex items-center gap-2">
-          <LanguageSelector variant="compact" />
           <ActiviteitenBel />
           <button onClick={() => setToevoegenOpen(true)} aria-label={t("common.actions", "Toevoegen")} className="grid size-9 place-items-center rounded-full border border-brand/40 text-lg leading-none text-brand cursor-pointer hover:bg-brand-soft">
             +
@@ -304,7 +303,7 @@ function Dashboard() {
           {(() => {
             const hr = (klokNu || nu).getHours();
             const timeGreeting = hr < 12 ? t("home.greetingMorning", "Goedemorgen") : hr < 18 ? t("home.greetingAfternoon", "Goedemiddag") : hr < 23 ? t("home.greetingEvening", "Goedenavond") : t("home.greetingNight", "Goedenacht");
-            const userName = eigen ? st.naam : (isEn ? "Parent" : "Sanne");
+            const userName = eigen ? st.naam : t("home.defaultUser", "Ouder");
             return userName ? `${timeGreeting}, ${userName}` : `${timeGreeting},`;
           })()}
         </h1>
@@ -328,18 +327,18 @@ function Dashboard() {
 
       {/* vandaag: tijdlijn bovenaan — de kinderen zijn bij jou tot het wisselmoment */}
       {eigen ? <EigenVandaag /> : <section className="relative mt-5 rounded-lg border border-border px-5 py-4" style={{ background: "linear-gradient(160deg, color-mix(in oklab, var(--brand) 10%, var(--card)), var(--card) 55%)" }}>
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">{isEn ? "Today" : "Vandaag"}</p>
+        <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">{t("common.today", "Vandaag")}</p>
         <p className="mt-1 font-display text-xl font-bold leading-snug">
           {dagenTotWissel <= 0
-            ? (isEn ? "Today is a handover day" : "Vandaag is een wisseldag")
-            : (isEn ? "Emma & Noah are with you today" : "Emma & Noah zijn vandaag bij jou")}
+            ? t("home.handoverToday", "Vandaag is een wisseldag")
+            : t("home.kidsWithYouToday", { names: "Emma & Noah", defaultValue: "Emma & Noah zijn vandaag bij jou" })}
         </p>
         <p className="mt-0.5 text-sm text-ink-soft">
           {dagenTotWissel <= 0
-            ? (isEn ? "Handover today · 2:30 PM" : "Wissel vandaag · 14:30 uur")
+            ? t("home.nextHandoverToday", "Wissel vandaag · 14:30 uur")
             : dagenTotWissel === 1
-            ? (isEn ? "Next handover · tomorrow 2:30 PM" : "Volgende wissel · morgen 14:30 uur")
-            : (isEn ? "Next handover · Friday 2:30 PM" : "Volgende wissel · vrijdag 14:30 uur")}
+            ? t("home.nextHandoverTomorrow", "Volgende wissel · morgen 14:30 uur")
+            : t("home.nextHandoverFriday", "Volgende wissel · vrijdag 14:30 uur")}
         </p>
 
         {/* compacte weeklijn */}
@@ -356,7 +355,7 @@ function Dashboard() {
 
         {/* overdracht: pas binnen 24 uur, als één klikbaar geheel */}
         {vertrekModus && meeItems.length && !wissel.overdrachtIngevuld ? (<div className="mt-4 rounded-md bg-brand-soft/60 px-3 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">{isEn ? "Almost time" : "Bijna tijd"} · {wisselLabel}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">{t("home.almostTime", "Bijna tijd")} · {wisselLabel}</p>
             {wisselMoment ? <IkBenLater momentId={wisselMoment.id}/> : null}
             <ul className="mt-2 space-y-1.5">
               {meeItems.map((item) => {
@@ -371,19 +370,17 @@ function Dashboard() {
             </ul>
             <div className="mt-2 flex items-center justify-between">
               <span className="text-xs text-ink-soft">
-                {spullenTeGaan === 0
-                  ? (isEn ? "All checked off ✓" : "Alles afgevinkt ✓")
-                  : (isEn ? `${spullenTeGaan} ${spullenTeGaan === 1 ? "item" : "items"} not yet checked off` : `${spullenTeGaan} ${spullenTeGaan === 1 ? "ding" : "dingen"} nog niet afgevinkt`)}
+                {spullenTeGaan === 0 ? t("home.allCheckedOff", "Alles afgevinkt ✓") : t("home.itemsNotCheckedOff", "{{count}} dingen nog niet afgevinkt", { count: spullenTeGaan })}
               </span>
               <Link to="/overdracht" className="text-xs font-semibold text-brand">
-                {isEn ? "Open handover ›" : "Overdracht openen ›"}
+                {t("home.openHandover", "Overdracht openen ›")}
               </Link>
             </div>
           </div>) : overdrachtDichtbij ? (wissel.overdrachtIngevuld || spullenTeGaan === 0 ? (<Link to="/overdracht" className="mt-4 flex items-center gap-3 border-t border-border pt-3">
               <span className="text-brand" aria-hidden="true">✓</span>
               <span className="flex-1">
                 <span className="block text-sm font-semibold text-brand">
-                  {isEn ? "All ready for handover" : "Alles klaar voor de overdracht"}
+                  {t("home.allReadyForHandover", "Alles klaar voor de overdracht")}
                 </span>
                 <span className="text-xs text-ink-soft">{wisselLabel}</span>
               </span>
@@ -392,10 +389,10 @@ function Dashboard() {
               <span className="text-brand"><OverdrachtIcoon /></span>
               <span className="flex-1">
                 <span className="block text-sm font-semibold">
-                  {isEn ? "Prepare handover" : "Overdracht voorbereiden"}
+                  {t("home.prepareHandover", "Overdracht voorbereiden")}
                 </span>
                 <span className="text-xs text-ink-soft">
-                  {wisselLabel} · {isEn ? `${spullenTeGaan} ${spullenTeGaan === 1 ? "item still needed" : "items still needed"}` : `${spullenTeGaan} ${spullenTeGaan === 1 ? "ding moet" : "dingen moeten"} nog mee`}
+                  {wisselLabel} · {t("home.itemsStillNeeded", "{{count}} dingen moeten nog mee", { count: spullenTeGaan })}
                 </span>
               </span>
               <span className="text-ink-soft" aria-hidden="true">›</span>
@@ -439,11 +436,11 @@ function Dashboard() {
             localStorage.setItem(PLAN_GEZIEN, "1");
         }
         catch { /* geen opslag */ } }} className="relative mt-4 block text-xs text-ink-soft">
-          Ouderschapsplan gewijzigd op 8 maart · <span className="font-semibold text-brand">Bekijken</span>
+          {t("home.parentingPlanChanged", "Ouderschapsplan gewijzigd op 8 maart")} · <span className="font-semibold text-brand">{t("common.view", "Bekijken")}</span>
         </Link>) : null}
 
       {!eigen && jaarMomentjes.length ? (<Link to="/momentjes" className="relative mt-4 block text-xs text-ink-soft">
-          Een jaar geleden vandaag · <span className="font-semibold text-ink">{jaarMomentjes.length === 1 ? jaarMomentjes[0]?.tekst : `${jaarMomentjes.length} momentjes`}</span> ›
+          {t("home.oneYearAgoToday", "Een jaar geleden vandaag")} · <span className="font-semibold text-ink">{jaarMomentjes.length === 1 ? jaarMomentjes[0]?.tekst : t("home.momentsCount", { count: jaarMomentjes.length, defaultValue: `${jaarMomentjes.length} momentjes` })}</span> ›
         </Link>) : null}
 
       {toevoegenOpen ? (<div className="fixed inset-0 z-30 flex items-end justify-center bg-ink/30" onClick={() => { setToevoegenOpen(false); setVoorstelMenu(false); setAfspraakMenu(false); }}>
@@ -500,15 +497,15 @@ function Dashboard() {
           </div>
         </div>) : null}
       <Sheet open={puntenOpen} onOpenChange={setPuntenOpen}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-xl bg-card">
-          <SheetHeader><SheetTitle className="font-display">{openActies.length === 1 ? "1 punt om af te stemmen" : `${openActies.length} punten om af te stemmen`}</SheetTitle></SheetHeader>
-          {openActies.length === 0 ? <p className="px-4 pb-4 text-sm text-brand">✓ Alles is afgestemd</p> : (<div className="px-4 pb-4">
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-xl bg-card">
+          <SheetHeader><SheetTitle className="font-display">{openActies.length === 1 ? t("home.actionsToAlignOne", "1 punt om af te stemmen") : t("home.actionsToAlignCount", { count: openActies.length, defaultValue: `${openActies.length} punten om af te stemmen` })}</SheetTitle></SheetHeader>
+          {openActies.length === 0 ? <p className="px-4 pb-4 text-sm text-brand">{t("home.allAlignedCheck", "✓ Alles is afgestemd")}</p> : (<div className="px-4 pb-4">
               {["Wacht op jou", "Afstemming loopt"].map((groep) => {
                 const items = openActies.filter((a) => (groep === "Wacht op jou" ? a.status === "Wacht op jou" : a.status !== "Wacht op jou"));
                 if (items.length === 0)
                     return null;
                 return (<section key={groep} className="mt-3">
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-soft">{groep} · {items.length}</h3>
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-soft">{groep === "Wacht op jou" ? t("home.waitingForYou", "Wacht op jou") : t("home.alignmentInProgress", "Afstemming loopt")} · {items.length}</h3>
                     <ul className="divide-y divide-border">
                       {items.map((a) => (<li key={a.id}>
                           <Link to={a.naar} search={("voorstelId" in a ? { voorstel: a.voorstelId, kind: a.voorstelKind } : undefined)} onClick={(e) => { setPuntenOpen(false); if (a.id === "kosten-openstaand") {
@@ -533,7 +530,7 @@ function Dashboard() {
             })}
             </div>)}
           {afgerond.length > 0 ? (<details className="px-4 pb-6">
-              <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-ink-soft">Afgerond · {afgerond.length}</summary>
+              <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-ink-soft">{t("common.completed", "Afgerond")} · {afgerond.length}</summary>
               <ul className="mt-2 divide-y divide-border">
                 {afgerond.map((a) => (<li key={a.id}>
                     <Link to={a.naar} onClick={() => { setPuntenOpen(false); markeerVanOverzicht(); }} className="flex items-center gap-3 py-2.5 text-sm text-ink-soft">
@@ -545,8 +542,8 @@ function Dashboard() {
         </SheetContent>
       </Sheet>
       <Sheet open={spullenOpen} onOpenChange={setSpullenOpen}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-xl bg-card">
-          <SheetHeader><SheetTitle className="font-display">{spullenTeGaan === 0 ? "Alles staat klaar" : `${spullenTeGaan} ${spullenTeGaan === 1 ? "ding" : "dingen"} om mee te nemen`}</SheetTitle></SheetHeader>
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-xl bg-card">
+          <SheetHeader><SheetTitle className="font-display">{spullenTeGaan === 0 ? t("home.everythingReady", "Alles staat klaar") : t("home.itemsToTakeCount", { count: spullenTeGaan, defaultValue: `${spullenTeGaan} ${spullenTeGaan === 1 ? "ding" : "dingen"} om mee te nemen` })}</SheetTitle></SheetHeader>
           <ul className="divide-y divide-border px-4">
             {meeItems.map((item) => {
             const klaar = meeKlaar.includes(item);
@@ -558,24 +555,24 @@ function Dashboard() {
                 </li>);
         })}
           </ul>
-          <Link to="/overdracht" onClick={() => setSpullenOpen(false)} className="mx-4 mb-4 mt-2 inline-block text-sm font-semibold text-brand">Hele overdracht bekijken →</Link>
+          <Link to="/overdracht" onClick={() => setSpullenOpen(false)} className="mx-4 mb-4 mt-2 inline-block text-sm font-semibold text-brand">{t("home.viewWholeHandover", "Hele overdracht bekijken →")}</Link>
         </SheetContent>
       </Sheet>
       <Sheet open={kostenOpen} onOpenChange={setKostenOpen}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-xl bg-card">
-          <SheetHeader><SheetTitle className="font-display">{saldo > 0 ? `Nog ${saldoTekst} te betalen` : `Je ontvangt nog ${saldoTekst}`}</SheetTitle></SheetHeader>
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-xl bg-card">
+          <SheetHeader><SheetTitle className="font-display">{saldo > 0 ? t("expenses.stillToPay", "Nog {{amount}} te betalen", { amount: saldoTekst }) : t("expenses.youReceive", "Je ontvangt nog {{amount}}", { amount: saldoTekst })}</SheetTitle></SheetHeader>
           <div className="space-y-4 px-4 pb-4">
-            {[["Jouw aandeel in kosten van de andere ouder", saldoDetail.sanneAanJoris], ["Aandeel van de andere ouder in jouw kosten", saldoDetail.jorisAanSanne]].map(([titel, kant]) => kant.posten.length === 0 ? null : (<div key={titel}>
+            {[[t("expenses.yourShareInOtherParentCosts", "Jouw aandeel in kosten van de andere ouder"), saldoDetail.sanneAanJoris], [t("expenses.otherParentShareInYourCosts", "Aandeel van de andere ouder in jouw kosten"), saldoDetail.jorisAanSanne]].map(([titel, kant]) => kant.posten.length === 0 ? null : (<div key={titel}>
                   <p className="text-xs font-semibold text-ink-soft">{titel}</p>
                   <ul className="mt-1 divide-y divide-border">
                     {kant.posten.map(({ post, aandeel }) => (<li key={post.id} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
-                        <span className="min-w-0"><span className="block truncate font-semibold">{post.omschrijving}</span><span className="text-xs text-ink-soft">{euro(post.bedrag)} totaal</span></span>
+                        <span className="min-w-0"><span className="block truncate font-semibold">{post.omschrijving}</span><span className="text-xs text-ink-soft">{euro(post.bedrag)} {t("expenses.total", "totaal")}</span></span>
                         <span className="shrink-0 font-semibold">{euro(aandeel)}</span>
                       </li>))}
                   </ul>
                 </div>))}
-            <div className="flex justify-between border-t border-border pt-3 text-sm font-semibold"><span>Nog te betalen</span><span>{saldoTekst}</span></div>
-            <Link to="/kosten" onClick={() => setKostenOpen(false)} className="inline-block text-sm font-semibold text-brand">Betaling bekijken →</Link>
+            <div className="flex justify-between border-t border-border pt-3 text-sm font-semibold"><span>{t("expenses.stillToPayLabel", "Nog te betalen")}</span><span>{saldoTekst}</span></div>
+            <Link to="/kosten" onClick={() => setKostenOpen(false)} className="inline-block text-sm font-semibold text-brand">{t("expenses.viewPayment", "Betaling bekijken →")}</Link>
           </div>
         </SheetContent>
       </Sheet>

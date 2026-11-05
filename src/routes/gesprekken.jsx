@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -32,6 +33,7 @@ function Uit({ m }) {
     </Card>);
 }
 function Gesprekken() {
+    const { t } = useTranslation();
     const [w, setW] = useState("bellen");
     const s = useGesprekken();
     const opnames = s.gesprekken.filter((g) => g.opname).length;

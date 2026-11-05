@@ -20,16 +20,14 @@ import {
 import { uur } from "@/lib/tijd-tekst";
 import { geenRechten, rolOpties, voegPersoonToe } from "@/lib/kring-store";
 
-const weekKortNL = ["ma", "di", "wo", "do", "vr", "za", "zo"];
-const weekKortEN = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-
 const knop = "w-full rounded-xl bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40 cursor-pointer";
 const veld = "mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-brand";
 
 /** Kleur en letter, zodat kleur nooit de enige informatiedrager is. */
-function Dag({ p, label, onClick, isEn }) {
+function Dag({ p, label, onClick }) {
   const ik = p === "ik";
-  const letter = isEn ? (ik ? "Y" : "O") : (ik ? "J" : "A");
+  const { t } = useTranslation();
+  const letter = ik ? t("calendar.legend.youCode", "J") : t("calendar.legend.otherCode", "A");
   const inhoud = (
     <>
       {label ? <span className="block text-[9px] text-ink-soft">{label}</span> : null}
@@ -60,15 +58,16 @@ function Dag({ p, label, onClick, isEn }) {
   );
 }
 
-function Weken({ dagen, labels, rijLabels, onToggle, isEn }) {
-  const weekKort = isEn ? weekKortEN : weekKortNL;
+function Weken({ dagen, labels, rijLabels, onToggle }) {
+  const { t } = useTranslation();
+  const weekKort = t("calendar.weekDaysShort", { returnObjects: true, defaultValue: ["ma", "di", "wo", "do", "vr", "za", "zo"] });
   return (
     <div className="space-y-1">
       {[0, 1].map((w) => (
         <div key={w}>
           {rijLabels ? (
             <p className="mb-0.5 mt-1 text-[11px] font-semibold text-ink-soft">
-              {w === 0 ? (isEn ? "This week" : "Deze week") : (isEn ? "Next week" : "Volgende week")}
+              {w === 0 ? t("calendar.thisWeek", "Deze week") : t("calendar.nextWeek", "Volgende week")}
             </p>
           ) : null}
           <div className="grid grid-cols-7 gap-1">
@@ -76,7 +75,6 @@ function Weken({ dagen, labels, rijLabels, onToggle, isEn }) {
               <Dag
                 key={i}
                 p={p}
-                isEn={isEn}
                 label={labels && w === 0 ? weekKort[i] : undefined}
                 onClick={onToggle ? () => onToggle(w * 7 + i) : undefined}
               />
@@ -88,18 +86,21 @@ function Weken({ dagen, labels, rijLabels, onToggle, isEn }) {
   );
 }
 
-const Legenda = ({ isEn }) => (
-  <p className="mt-2 text-xs text-ink-soft">
-    <b className="text-brand">{isEn ? "Y" : "J"}</b> {isEn ? "with you ·" : "bij jou ·"}{" "}
-    <b className="text-accent-warm">{isEn ? "O" : "A"}</b> {isEn ? "with other parent" : "bij de andere ouder"}
-  </p>
-);
+const Legenda = () => {
+  const { t } = useTranslation();
+  return (
+    <p className="mt-2 text-xs text-ink-soft">
+      <b className="text-brand">{t("calendar.legend.youCode", "J")}</b> {t("calendar.legend.withYou", "bij jou ·")}{" "}
+      <b className="text-accent-warm">{t("calendar.legend.otherCode", "A")}</b> {t("calendar.legend.withOther", "bij de andere ouder")}
+    </p>
+  );
+};
 
 export function GezagSheet({ open, onClose }) {
   const { t } = useTranslation();
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="bottom" className="rounded-t-3xl bg-background">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-3xl bg-background">
         <SheetHeader>
           <SheetTitle className="font-display">
             {t("sheets.custody.title", "Hoe is het ouderlijk gezag geregeld?")}
@@ -206,7 +207,7 @@ export function KindSheet({ open, onClose, start: begin = "kind" }) {
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="bottom" className="max-h-[92vh] overflow-y-auto rounded-t-3xl bg-background">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[92vh] overflow-y-auto rounded-t-3xl bg-background">
         <SheetHeader>
           <SheetTitle className="font-display">{titel}</SheetTitle>
         </SheetHeader>
@@ -356,8 +357,7 @@ export function KindSheet({ open, onClose, start: begin = "kind" }) {
 
 function RegelingSheet({ open, onClose, kindNaam }) {
   const { t, i18n } = useTranslation();
-  const isEn = i18n.language?.startsWith("en");
-  const locale = isEn ? "en-US" : "nl-NL";
+  const locale = i18n.language?.startsWith("en") ? "en-US" : "nl-NL";
   const st = useStart();
 
   const [stap, setStap] = useState("patroon");
@@ -409,7 +409,7 @@ function RegelingSheet({ open, onClose, kindNaam }) {
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="bottom" className="mx-auto max-h-[85vh] max-w-lg overflow-y-auto rounded-t-3xl bg-background">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl bg-background">
         {stap === "patroon" ? (
           <>
             <SheetHeader>
@@ -435,7 +435,7 @@ function RegelingSheet({ open, onClose, kindNaam }) {
                     <p className="mt-0.5 text-xs text-ink-soft">{p.uitleg}</p>
                     {p.dagen && p.id !== "zelf" ? (
                       <div className="mt-2">
-                        <Weken dagen={p.dagen} isEn={isEn} />
+                        <Weken dagen={p.dagen} />
                       </div>
                     ) : null}
                   </button>
@@ -471,13 +471,12 @@ function RegelingSheet({ open, onClose, kindNaam }) {
                     dagen={dagen}
                     labels
                     rijLabels
-                    isEn={isEn}
                     onToggle={(i) =>
                       setDagen((d) => d.map((x, n) => (n === i ? (x === "ik" ? "ander" : "ik") : x)))
                     }
                   />
                 </div>
-                <Legenda isEn={isEn} />
+                <Legenda />
                 <button
                   type="button"
                   onClick={omdraaien}
@@ -523,9 +522,13 @@ function RegelingSheet({ open, onClose, kindNaam }) {
                   });
                   return (
                     <p>
-                      {isEn
-                        ? `Today ${kindNaam} is ${switchPlace}. Next swap: ${nextDate} · ${uur(tijd)}.`
-                        : `Vandaag is ${kindNaam} ${switchPlace}. Volgende wissel: ${nextDate} · ${uur(tijd)}.`}
+                      {t("sheets.schedule.todaySummary", {
+                        name: kindNaam,
+                        place: switchPlace,
+                        nextDate,
+                        time: uur(tijd),
+                        defaultValue: `Vandaag is ${kindNaam} ${switchPlace}. Volgende wissel: ${nextDate} · ${uur(tijd)}.`,
+                      })}
                     </p>
                   );
                 })()}
@@ -609,8 +612,9 @@ export function EigenKinderen() {
   );
 }
 
-function WeekLijn({ dagen, vandaag, isEn }) {
-  const weekKort = isEn ? weekKortEN : weekKortNL;
+function WeekLijn({ dagen, vandaag }) {
+  const { t } = useTranslation();
+  const weekKort = t("calendar.weekDaysShort", { returnObjects: true, defaultValue: ["ma", "di", "wo", "do", "vr", "za", "zo"] });
   const kleur = (p) =>
     p === "ik"
       ? "color-mix(in oklab, var(--brand) 88%, var(--card))"
@@ -674,8 +678,7 @@ export function EigenVandaag() {
   const [schema, setSchema] = useState(false);
   const [kindOpen, setKindOpen] = useState(false);
   const [regOpen, setRegOpen] = useState(false);
-  const isEn = i18n.language?.startsWith("en");
-  const locale = isEn ? "en-US" : "nl-NL";
+  const locale = i18n.language?.startsWith("en") ? "en-US" : "nl-NL";
 
   return (
     <>
@@ -715,12 +718,12 @@ export function EigenVandaag() {
               {v.plek === "ik"
                 ? t("home.todayWithYou", {
                     names: namenTekst,
-                    verb: isEn ? (namenTekst.includes("&") ? "are" : "is") : zijn,
+                    verb: t(namenTekst.includes("&") ? "common.verbAre" : "common.verbIs"),
                     defaultValue: `${namenTekst} ${zijn} vandaag bij jou`,
                   })
                 : t("home.todayWithOther", {
                     names: namenTekst,
-                    verb: isEn ? (namenTekst.includes("&") ? "are" : "is") : zijn,
+                    verb: t(namenTekst.includes("&") ? "common.verbAre" : "common.verbIs"),
                     defaultValue: `${namenTekst} ${zijn} vandaag bij de andere ouder`,
                   })}
             </p>
@@ -738,7 +741,6 @@ export function EigenVandaag() {
               <WeekLijn
                 dagen={tweeWekenVanaf(regeling, nu).slice(0, 7)}
                 vandaag={(nu.getDay() + 6) % 7}
-                isEn={isEn}
               />
             ) : null}
             <div className="mt-2 flex gap-4">
@@ -754,8 +756,8 @@ export function EigenVandaag() {
             </div>
             {schema ? (
               <div className="mt-3 rounded-xl bg-surface p-3 text-xs">
-                <Weken dagen={tweeWekenVanaf(regeling, nu ?? new Date())} labels rijLabels isEn={isEn} />
-                <Legenda isEn={isEn} />
+                <Weken dagen={tweeWekenVanaf(regeling, nu ?? new Date())} labels rijLabels />
+                <Legenda />
               </div>
             ) : null}
           </>
@@ -794,7 +796,7 @@ export function EigenVandaag() {
             <p className="mt-1 text-sm text-ink-soft">
               {t("home.whenNextSwitchDesc", {
                 names: namenTekst,
-                verb: isEn ? (namenTekst.includes("&") ? "are" : "is") : zijn,
+                verb: t(namenTekst.includes("&") ? "common.verbAre" : "common.verbIs"),
                 defaultValue: `Voeg jullie verdeling van de week toe. Daarna zie je hier vanzelf waar ${namenTekst} volgens de planning ${zijn} en wanneer de volgende wissel is.`,
               })}
             </p>

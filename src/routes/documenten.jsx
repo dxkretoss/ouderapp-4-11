@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { FilterBalk, OverzichtKaart } from "@/components/ui-kit";
@@ -19,6 +20,7 @@ function DocumentenWrap() {
     return <Documenten />;
 }
 function EigenDocumenten() {
+    const { t } = useTranslation();
     const st = useStart();
     const nav = useNavigate();
     const upload = useRef(null);
@@ -31,17 +33,17 @@ function EigenDocumenten() {
         bevestig("Document toegevoegd", { uitleg: f.name });
     };
     return (<AppShell>
-      <PageHeader titel="Documenten" subtitel="Veilig gedeeld tussen jullie beiden" actie={<button aria-label="Document uploaden" onClick={() => upload.current?.click()} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
-      <input ref={upload} type="file" className="hidden" aria-label="Document kiezen" accept=".pdf,.doc,.docx,.txt,image/*" onChange={(e) => { kies(e.target.files?.[0]); e.target.value = ""; }}/>
+      <PageHeader titel={t("documents.headerTitle", "Documenten")} subtitel={t("documents.headerSubtitle", "Veilig gedeeld tussen jullie beiden")} actie={<button aria-label={t("documents.uploadAria", "Document uploaden")} onClick={() => upload.current?.click()} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
+      <input ref={upload} type="file" className="hidden" aria-label={t("documents.chooseDocAria", "Document kiezen")} accept=".pdf,.doc,.docx,.txt,image/*" onChange={(e) => { kies(e.target.files?.[0]); e.target.value = ""; }}/>
       {st.kinderen.length ? (<select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="Voor welk kind" className="mt-4 w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
           {st.kinderen.map((k) => <option key={k.id} value={k.naam}>{k.naam}</option>)}
-          <option value="Hele gezin">Hele gezin</option>
+          <option value="Hele gezin">{t("documents.wholeFamily", "Hele gezin")}</option>
         </select>) : null}
       {!lijst.length ? (<div className="mt-10 flex flex-col items-center text-center">
-          <p className="font-display text-lg font-bold">Hier is het nog rustig</p>
-          <p className="mt-1 max-w-xs text-sm text-ink-soft">Hier staan straks de documenten van je gezin, zoals schoolinformatie en afspraken.</p>
-          <button onClick={() => upload.current?.click()} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">Eerste document uploaden</button>
-          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">Terug naar Menu</button>
+          <p className="font-display text-lg font-bold">{t("documents.emptyTitle", "Hier is het nog rustig")}</p>
+          <p className="mt-1 max-w-xs text-sm text-ink-soft">{t("documents.emptyDesc", "Hier staan straks de documenten van je gezin, zoals schoolinformatie en afspraken.")}</p>
+          <button onClick={() => upload.current?.click()} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">{t("documents.uploadFirstDocument", "Eerste document uploaden")}</button>
+          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">{t("documents.backToMenu", "Terug naar Menu")}</button>
         </div>) : (<ul className="mt-4 divide-y divide-border rounded-md border border-border bg-card">
           {lijst.map((d) => (<li key={d.id} className="flex items-center gap-3 px-3 py-3">
               <span className="flex-1"><span className="block text-sm font-semibold">{d.naam}</span>
@@ -64,6 +66,7 @@ export const Route = createFileRoute("/documenten")({
     component: DocumentenWrap,
 });
 function Documenten() {
+    const { t } = useTranslation();
     const [alle, setAlle] = useState(documenten);
     const upload = useRef(null);
     const [bestand, setBestand] = useState(null);
@@ -92,12 +95,12 @@ function Documenten() {
         setUploadStatus("");
     } e.target.value = ""; }}/>
       <Button onClick={() => upload.current?.click()} className="mt-5 min-h-11 w-full bg-brand text-primary-foreground shadow-none">
-        + Document uploaden
+        + {t("documents.uploadDocument", "Document uploaden")}
       </Button>
       {bestand ? <form className="mt-3 space-y-3 border-y border-border py-4" onSubmit={(e) => { e.preventDefault(); if (!uploadNaam.trim())
             return; setAlle((l) => [{ id: `upload-${Date.now()}`, naam: uploadNaam.trim(), categorie: "Overig", kind: uploadKind, gewijzigd: "Vandaag", grootte: `${Math.max(1, Math.round(bestand.size / 1024))} KB`, icoon: "📄" }, ...l]); setCat("Alles"); setBestand(null); setUploadStatus("Document toegevoegd aan dit overzicht."); }}>
-        <label className="block text-xs font-semibold">Naam document<input aria-label="Naam document" value={uploadNaam} onChange={(e) => setUploadNaam(e.target.value)} required className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"/></label>
-        <label className="block text-xs font-semibold">Voor wie?<select aria-label="Document voor wie" value={uploadKind} onChange={(e) => setUploadKind(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"><option>Emma & Noah</option><option>Emma</option><option>Noah</option></select></label>
+        <label className="block text-xs font-semibold">{t("documents.docNameLabel", "Naam document")}<input aria-label="Naam document" value={uploadNaam} onChange={(e) => setUploadNaam(e.target.value)} required className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"/></label>
+        <label className="block text-xs font-semibold">{t("documents.forWhoLabel", "Voor wie?")}<select aria-label="Document voor wie" value={uploadKind} onChange={(e) => setUploadKind(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"><option>Emma & Noah</option><option>Emma</option><option>Noah</option></select></label>
         <p className="text-xs text-ink-soft">In deze voorbeeldomgeving blijft het document op je apparaat; de naam verschijnt in dit overzicht.</p>
         <div className="flex gap-2"><Button type="submit" disabled={!uploadNaam.trim()}>Toevoegen aan overzicht</Button><Button type="button" variant="ghost" onClick={() => setBestand(null)}>Annuleren</Button></div>
       </form> : null}

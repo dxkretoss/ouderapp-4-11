@@ -2,6 +2,7 @@ import { AgendaVakanties } from "@/components/AgendaVakanties";
 import { Sectie } from "@/components/ui-kit";
 import { createFileRoute, Link, Navigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { CalendarDays, CalendarRange, Gift, Palmtree } from "lucide-react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -73,6 +74,7 @@ function dagenBijAndereOuder(zorg, van, tot) {
     return n;
 }
 function Planning() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { toevoegen, periode } = Route.useSearch();
     const vak = useVakanties();
@@ -105,11 +107,11 @@ function Planning() {
         window.requestAnimationFrame(() => document.querySelector("#nieuw-periodevoorstel")?.scrollIntoView({ behavior: "smooth", block: "center" }));
     }, [toevoegen, periode]);
     return (<AppShell>
-       <PageHeader titel="Vakanties & bijzondere dagen" subtitel="Vakanties verdelen en samen vooruit plannen" actie={<ContextToevoegen titel="Wat wil je toevoegen?" acties={[
-                { titel: "Vakantievoorstel", uitleg: "Stel een vakantieperiode voor.", icoon: Palmtree, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "vakantie" } }) },
-                { titel: "Schoolvakantie verdelen", uitleg: "Maak een voorstel voor de verdeling van een schoolvakantie.", icoon: CalendarRange, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "verdelen", periode: "Meivakantie" } }) },
-                { titel: "Feestdag / bijzondere dag", uitleg: "Maak een voorstel voor een feestdag, verjaardag of andere bijzondere dag.", icoon: Gift, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "bijzonder" } }) },
-                { titel: "Andere periode", uitleg: "Maak een voorstel voor een zelfgekozen periode.", icoon: CalendarDays, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "periode" } }) },
+       <PageHeader titel={t("calendar.tabHolidays", "Vakanties & bijzondere dagen")} subtitel="Vakanties verdelen en samen vooruit plannen" actie={<ContextToevoegen titel={t("contextToevoegen.title", "Wat wil je toevoegen?")} acties={[
+                { titel: t("contextToevoegen.planning.vacationProposalTitle", "Vakantievoorstel"), uitleg: t("contextToevoegen.planning.vacationProposalDesc", "Stel een vakantieperiode voor."), icoon: Palmtree, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "vakantie" } }) },
+                { titel: t("contextToevoegen.planning.schoolHolidayTitle", "Schoolvakantie verdelen"), uitleg: t("contextToevoegen.planning.schoolHolidayDesc", "Maak een voorstel voor de verdeling van een schoolvakantie."), icoon: CalendarRange, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "verdelen", periode: "Meivakantie" } }) },
+                { titel: t("contextToevoegen.planning.specialDayTitle", "Feestdag / bijzondere dag"), uitleg: t("contextToevoegen.planning.specialDayDesc", "Maak een voorstel voor een feestdag, verjaardag of andere bijzondere dag."), icoon: Gift, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "bijzonder" } }) },
+                { titel: t("contextToevoegen.planning.otherPeriodTitle", "Andere periode"), uitleg: t("contextToevoegen.planning.otherPeriodDesc", "Maak een voorstel voor een zelfgekozen periode."), icoon: CalendarDays, onKies: () => router.navigate({ to: "/planning", search: { toevoegen: "periode" } }) },
             ]}/>}/>
 
       <div className="mt-4 space-y-3">

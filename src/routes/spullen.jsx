@@ -1,4 +1,5 @@
 import { Sectie, BewerkPotlood } from "@/components/ui-kit";
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -15,6 +16,7 @@ function SpullenWrap() {
     return <Spullen />;
 }
 function EigenSpullen() {
+    const { t } = useTranslation();
     const st = useStart();
     useTaken(); // herbereken bij wijzigingen
     const nav = useNavigate();
@@ -32,26 +34,26 @@ function EigenSpullen() {
         setNieuw(false);
     };
     return (<AppShell>
-      <PageHeader titel="Spullen" subtitel="Wat moet mee en waar zijn belangrijke spullen?" actie={<button aria-label="Nieuw spul" onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
+      <PageHeader titel={t("items.headerTitle", "Spullen")} subtitel={t("items.headerSubtitle", "Wat moet mee en waar zijn belangrijke spullen?")} actie={<button aria-label={t("items.newItemAria", "Nieuw spul")} onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
       {nieuw ? (<Card className="mt-4 space-y-3">
-          <p className="font-display text-lg font-bold">Nieuw spul</p>
-          <label className="block text-sm font-semibold">Wat is het?<input value={naam} onChange={(e) => setNaam(e.target.value)} placeholder="Bijv. knuffel, sporttas" className={`mt-1 w-full font-normal ${veld}`}/></label>
-          {st.kinderen.length ? (<fieldset><legend className="text-sm font-semibold">Van welk kind?</legend><div className="mt-1 flex flex-wrap gap-2">
+          <p className="font-display text-lg font-bold">{t("items.newItem", "Nieuw spul")}</p>
+          <label className="block text-sm font-semibold">{t("items.whatIsIt", "Wat is het?")}<input value={naam} onChange={(e) => setNaam(e.target.value)} placeholder={t("items.placeholder", "Bijv. knuffel, sporttas")} className={`mt-1 w-full font-normal ${veld}`}/></label>
+          {st.kinderen.length ? (<fieldset><legend className="text-sm font-semibold">{t("items.whichChild", "Van welk kind?")}</legend><div className="mt-1 flex flex-wrap gap-2">
               {st.kinderen.map((k) => <button key={k.id} onClick={() => setKind(k.id)} aria-pressed={kind === k.id} className={knop(kind === k.id)}>{k.naam}</button>)}
             </div></fieldset>) : null}
-          <fieldset><legend className="text-sm font-semibold">Wat ermee?</legend><div className="mt-1 flex flex-wrap gap-2">
+          <fieldset><legend className="text-sm font-semibold">{t("items.whatWithIt", "Wat ermee?")}</legend><div className="mt-1 flex flex-wrap gap-2">
             {["mee", "vast", "dubbel"].map((tp) => <button key={tp} onClick={() => setType(tp)} aria-pressed={type === tp} className={knop(type === tp)}>{typeLabel[tp]}</button>)}
           </div></fieldset>
           <div className="flex gap-2">
-            <button onClick={opslaan} className="min-h-11 flex-1 rounded-full bg-brand text-sm font-semibold text-primary-foreground">Toevoegen</button>
-            <button onClick={() => setNieuw(false)} className="min-h-11 px-3 text-sm text-ink-soft">Annuleren</button>
+            <button onClick={opslaan} className="min-h-11 flex-1 rounded-full bg-brand text-sm font-semibold text-primary-foreground">{t("items.add", "Toevoegen")}</button>
+            <button onClick={() => setNieuw(false)} className="min-h-11 px-3 text-sm text-ink-soft">{t("items.cancel", "Annuleren")}</button>
           </div>
         </Card>) : null}
       {!lijst.length && !nieuw ? (<div className="mt-10 flex flex-col items-center text-center">
-          <p className="font-display text-lg font-bold">Hier is het nog rustig</p>
-          <p className="mt-1 max-w-xs text-sm text-ink-soft">Hier houd je bij welke spullen meegaan tussen de huizen.</p>
-          <button onClick={() => setNieuw(true)} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">Eerste spul toevoegen</button>
-          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">Terug naar Menu</button>
+          <p className="font-display text-lg font-bold">{t("items.allDoneQuiet", "Hier is het nog rustig")}</p>
+          <p className="mt-1 max-w-xs text-sm text-ink-soft">{t("items.allDoneQuietDesc", "Hier houd je bij welke spullen meegaan tussen de huizen.")}</p>
+          <button onClick={() => setNieuw(true)} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">{t("items.addFirstItem", "Eerste spul toevoegen")}</button>
+          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">{t("items.backToMenu", "Terug naar Menu")}</button>
         </div>) : null}
       {["mee", "vast", "dubbel"].map((tp) => {
             const l = lijst.filter((s) => s.type === tp);
@@ -100,6 +102,7 @@ const routines = [
     { dag: "Zondag", tekst: "Neusspray Emma aanvullen" },
 ];
 function Spullen() {
+    const { t } = useTranslation();
     const { spullen } = useTaken();
     const [nieuw, setNieuw] = useState(false);
     const [open, setOpen] = useState(null);

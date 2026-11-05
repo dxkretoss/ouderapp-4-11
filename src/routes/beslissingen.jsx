@@ -32,6 +32,7 @@ function status(b) {
     return { t: "In afwachting", c: "bg-white" };
 }
 function Beslissingen() {
+    const { t } = useTranslation();
     const { gezag } = useGezagState();
     const [lijst, setLijst] = useState(start);
     const [titel, setTitel] = useState("");
@@ -57,7 +58,7 @@ function Beslissingen() {
         setTitel("");
     };
     return (<AppShell>
-      <PageHeader titel="Beslissingen" subtitel="Belangrijke keuzes rustig samen vastleggen."/>
+      <PageHeader titel={t("decisionsPage.headerTitle", "Beslissingen")} subtitel="Belangrijke keuzes rustig samen vastleggen."/>
 
       <Card className="mt-5 space-y-3">
         <p className="text-sm font-semibold">Nieuwe beslissing</p>

@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { X, MoreHorizontal, ArrowLeftRight, CalendarPlus, CircleHelp, FilePen, ListChecks, Palmtree, Lock } from "lucide-react";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { AppShell, Card } from "@/components/AppShell";
 import { ContextToevoegen } from "@/components/ContextToevoegen";
 import { HulpKnop } from "@/components/HulpVragen";
@@ -561,7 +562,7 @@ function AgendaPagina() {
       {(voorstellenOpen || zoek.zorgActie || zoek.zorgVoorstel) && !eigen ? <Sheet open={voorstellenOpen || !!zoek.zorgActie || !!zoek.zorgVoorstel} onOpenChange={(o) => { if (!o) {
         setVoorstellenOpen(false);
         sluitZorg();
-    } }}><SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8"><SheetHeader className="pr-8 text-left"><SheetTitle>Voorstellen</SheetTitle><SheetDescription>De bestaande afspraken blijven gelden tot het benodigde akkoord.</SheetDescription></SheetHeader><ZorgAfstemmen kind={kindFilter === "alle" ? "alle" : kindFilter === "noah" ? "noah" : "emma"} startActie={zoek.zorgActie} doel={zoek.zorgVoorstel} sluit={sluitZorg}/>{activiteiten.voorstellen.filter((v) => v.bron !== "zorg" && v.bron !== "budget" && v.bron !== "kost").map((v) => <Button asChild variant="ghost" key={v.sleutel} className="h-auto min-h-11 w-full justify-start whitespace-normal"><a href={v.naar}>{v.titel} · {v.aanJou ? "Jouw reactie nodig" : "Bekijk voorstel"}</a></Button>)}{voorstellen.map((w) => <div key={w.vk.a.id} className="flex items-center gap-2 border-b border-border py-2"><Button variant="ghost" className="h-auto min-h-11 flex-1 justify-start whitespace-normal text-left" onClick={() => { setVoorstellenOpen(false); setDetail(w.vk); }}><span>{w.vk.a.titel}<span className="block text-xs text-ink-soft">{w.status === "ingetrokken" ? "Ingetrokken" : w.status === "geaccepteerd" ? "Afgesproken" : "Wacht op de andere ouder"}</span></span></Button><GeschiedenisKnop soort="afspraak" itemId={w.vk.a.id} naam={w.vk.a.titel}/></div>)}<Button asChild variant="link" className="min-h-11 px-0"><Link to="/activiteiten" search={{ onderdeel: "regelen" }}>Bestaande voorstellenoverzicht bekijken</Link></Button></SheetContent></Sheet> : zoek.zorgActie && eigen ? <p className="mt-3 text-sm text-ink-soft">Een gedeelde wijziging voorstellen kan zodra de ouderaccounts veilig gekoppeld zijn. Je huidige verdeling blijft zichtbaar.</p> : null}
+    } }}><SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8"><SheetHeader className="pr-8 text-left"><SheetTitle>{t("calendar.proposalsSheet.title", "Voorstellen")}</SheetTitle><SheetDescription>{t("calendar.proposalsSheet.existingAgreementsStay", "De bestaande afspraken blijven gelden tot het benodigde akkoord.")}</SheetDescription></SheetHeader><ZorgAfstemmen kind={kindFilter === "alle" ? "alle" : kindFilter === "noah" ? "noah" : "emma"} startActie={zoek.zorgActie} doel={zoek.zorgVoorstel} sluit={sluitZorg}/>{activiteiten.voorstellen.filter((v) => v.bron !== "zorg" && v.bron !== "budget" && v.bron !== "kost").map((v) => <Button asChild variant="ghost" key={v.sleutel} className="h-auto min-h-11 w-full justify-start whitespace-normal"><a href={v.naar}>{v.titel} · {v.aanJou ? t("expenses.actionNeeded", "Jouw reactie nodig") : t("common.viewProposal", "Bekijk voorstel")}</a></Button>)}{voorstellen.map((w) => <div key={w.vk.a.id} className="flex items-center gap-2 border-b border-border py-2"><Button variant="ghost" className="h-auto min-h-11 flex-1 justify-start whitespace-normal text-left" onClick={() => { setVoorstellenOpen(false); setDetail(w.vk); }}><span>{w.vk.a.titel}<span className="block text-xs text-ink-soft">{w.status === "ingetrokken" ? t("calendar.statusWithdrawn", "Ingetrokken") : w.status === "geaccepteerd" ? t("calendar.statusAgreed", "Afgesproken") : t("calendar.statusWaitingOther", "Wacht op de andere ouder")}</span></span></Button><GeschiedenisKnop soort="afspraak" itemId={w.vk.a.id} naam={w.vk.a.titel}/></div>)}<Button asChild variant="link" className="min-h-11 px-0"><Link to="/activiteiten" search={{ onderdeel: "regelen" }}>{t("calendar.viewProposalsOverview", "Bestaande voorstellenoverzicht bekijken")}</Link></Button></SheetContent></Sheet> : zoek.zorgActie && eigen ? <p className="mt-3 text-sm text-ink-soft">{t("calendar.sharedChangeSoloHint", "Een gedeelde wijziging voorstellen kan zodra de ouderaccounts veilig gekoppeld zijn. Je huidige verdeling blijft zichtbaar.")}</p> : null}
       <DagSheet gegevens={gekozenDag ? zorgVan(gekozenDag) : zorgVan(VANDAAG)} dag={gekozenDag} onSluit={() => setGekozenDag(null)} zorg={zorg} regio={regio} eigen={eigen} eigenKinderen={eigen && eigenRegeling && gekozenDag ? startSt.kinderen.map((k) => ({ naam: k.naam, plek: plekOp(eigenRegeling, dt(gekozenDag)) })) : undefined} eigenWissel={gekozenDag ? eigenWisselVan(gekozenDag) : undefined} extra={gekozenDag ? vk(gekozenDag, gekozenDag) : []} taken={gekozenDag && !eigen ? taken.filter((t) => t.deadline === gekozenDag && !t.klaar) : []} onToevoegen={() => openNieuw(gekozenDag ?? "")} onOpen={(v) => { setGekozenDag(null); setDetail(v); }} onOpenVast={(id) => { setGekozenDag(null); if (zoek.afspraak === id)
         setDoelOpen(true);
     else
@@ -582,26 +583,26 @@ function AgendaPagina() {
       {zoek.afspraak ? (doelAfspraak ? (doelAfspraak.categorie === "wissel"
             ? <WisselmomentSheet open={doelOpen} onSluit={() => setDoelOpen(false)} a={doelAfspraak}/>
             : <VasteAfspraakSheet open={doelOpen} onSluit={() => setDoelOpen(false)} a={doelAfspraak} onActie={(actie) => actieVast(doelAfspraak, actie)}/>)
-            : doelOpen && !doelEigen ? <div role="alert" className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-md rounded-md border border-border bg-card p-4 text-sm"><p className="font-semibold">Deze afspraak bestaat niet meer</p><p className="mt-1 text-ink-soft">Hij is wellicht verplaatst of verwijderd. Bekijk de agenda voor de actuele planning.</p><button onClick={() => setDoelOpen(false)} className="mt-2 font-semibold text-brand">Sluiten</button></div> : null) : null}
+            : doelOpen && !doelEigen ? <div role="alert" className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-md rounded-md border border-border bg-card p-4 text-sm"><p className="font-semibold">{t("calendar.appointmentNoLongerExists", "Deze afspraak bestaat niet meer")}</p><p className="mt-1 text-ink-soft">{t("calendar.appointmentMovedOrDeleted", "Hij is wellicht verplaatst of verwijderd. Bekijk de agenda voor de actuele planning.")}</p><button onClick={() => setDoelOpen(false)} className="mt-2 font-semibold text-brand">{t("common.close", "Sluiten")}</button></div> : null) : null}
       <Sheet open={!!verwijderVk} onOpenChange={(o) => !o && setVerwijderVk(null)}>
-        <SheetContent side="bottom" className="left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl bg-background px-5 pb-8">
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-2xl bg-background px-5 pb-8">
           <SheetHeader className="text-left">
-            <SheetTitle className="font-display text-lg">Afspraak annuleren?</SheetTitle>
+            <SheetTitle className="font-display text-lg">{t("calendar.cancelModal.cancelAppointmentPrompt", "Afspraak annuleren?")}</SheetTitle>
             <SheetDescription>{verwijderVk ? `${verwijderVk.a.titel} · ${lang(verwijderVk.datum)}` : ""}</SheetDescription>
           </SheetHeader>
           {verwijderVk ? (<div className="mt-4 space-y-2">
               {!direct(verwijderVk.a) ? <p className="text-sm text-ink-soft">De andere ouder krijgt een melding van je voorstel zodra jullie accounts veilig gekoppeld zijn. In dit voorbeeld wordt geen echte melding verstuurd. De afspraak blijft staan tot akkoord.</p> : null}
               {afstemStatus(verwijderVk.a.id) === "akkoord" && annuleringNietNodig !== verwijderVk.a.id ? <section className="rounded-md border border-border p-3"><p className="text-sm">Deze afspraak was afgestemd met de andere ouder. Wil je laten weten dat hij niet doorgaat?</p><div className="mt-2 flex gap-4"><Link to="/berichten" search={{ concept: `De afspraak ${verwijderVk.a.titel} op ${lang(verwijderVk.datum)} om ${uur(verwijderVk.a.tijd)} gaat niet door. We hadden dit afgestemd; ik laat het je daarom weten. De verwijdering leg ik apart ter akkoord voor.` }} className="inline-flex min-h-11 items-center text-sm font-semibold text-brand">Bericht voorbereiden</Link><button onClick={() => setAnnuleringNietNodig(verwijderVk.a.id)} className="min-h-11 text-sm text-ink-soft">Niet nodig</button></div><p className="text-xs text-ink-soft">Je controleert het bericht vóór verzending. De afspraak blijft staan tot akkoord op de verwijdering.</p></section> : null}
               {isReeks(verwijderVk.a) ? (<fieldset className="rounded-md border border-border p-3">
-                  <legend className="px-1 text-xs font-semibold text-ink-soft">Waarop wil je dit toepassen?</legend>
+                  <legend className="px-1 text-xs font-semibold text-ink-soft">{t("calendar.cancelModal.applyToScope", "Waarop wil je dit toepassen?")}</legend>
                   {["alleen", "toekomst", "reeks"].map((b) => (<label key={b} className="flex items-center gap-2 py-1 text-sm">
-                      <input type="radio" name="vbereik" checked={bereik === b} onChange={() => setBereik(b)} className="accent-[var(--color-brand)]"/>{bereikNaam[b]}
+                      <input type="radio" name="vbereik" checked={bereik === b} onChange={() => setBereik(b)} className="accent-[var(--color-brand)]"/>{b === "alleen" ? t("calendar.cancelModal.onlyThisOccurrence", "Alleen deze afspraak") : b === "toekomst" ? t("calendar.cancelModal.allFutureOccurrences", "Deze en alle toekomstige afspraken") : t("calendar.entireSeries", "Hele reeks")}
                     </label>))}
                 </fieldset>) : null}
               {!direct(verwijderVk.a) ? (<>
-                  <Button onClick={() => { setWachtend((l) => [...l.filter((x) => x.vk.a.id !== verwijderVk.a.id || x.status), { vk: verwijderVk, soort: "verwijder", bereik: isReeks(verwijderVk.a) ? bereik : "reeks" }]); setVerwijderVk(null); setMelding("Annulering voorgesteld. De afspraak blijft staan tot de andere ouder akkoord geeft."); }} className="w-full">Annulering voorstellen</Button>
-                </>) : (<Button onClick={() => { verwijder(verwijderVk, isReeks(verwijderVk.a) ? bereik : "reeks"); setMelding("Afspraak geannuleerd."); }} className="w-full">Afspraak annuleren</Button>)}
-              <button onClick={() => setVerwijderVk(null)} className="w-full py-2 text-sm font-semibold text-ink-soft">Annuleren</button>
+                  <Button onClick={() => { setWachtend((l) => [...l.filter((x) => x.vk.a.id !== verwijderVk.a.id || x.status), { vk: verwijderVk, soort: "verwijder", bereik: isReeks(verwijderVk.a) ? bereik : "reeks" }]); setVerwijderVk(null); setMelding("Annulering voorgesteld. De afspraak blijft staan tot de andere ouder akkoord geeft."); }} className="w-full">{t("calendar.cancelModal.confirmCancel", "Annulering voorstellen")}</Button>
+                </>) : (<Button onClick={() => { verwijder(verwijderVk, isReeks(verwijderVk.a) ? bereik : "reeks"); setMelding("Afspraak geannuleerd."); }} className="w-full">{t("calendar.cancelModal.confirmCancel", "Afspraak annuleren")}</Button>)}
+              <button onClick={() => setVerwijderVk(null)} className="w-full py-2 text-sm font-semibold text-ink-soft">{t("calendar.cancelModal.keep", "Behouden")}</button>
             </div>) : null}
         </SheetContent>
       </Sheet>
@@ -780,10 +781,11 @@ function Chip({ actief, onClick, children }) {
     return (<button type="button" onClick={onClick} className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${actief ? "border-brand bg-brand text-primary-foreground" : "border-border bg-card"}`}>{children}</button>);
 }
 function ZorgLegenda() {
-    const isEn = i18n?.language?.startsWith("en");
-    return <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-soft" aria-label="Legenda zorgverdeling"><span><span className="font-semibold text-brand">{isEn ? "Green:" : "Groen:"}</span> {isEn ? "with you" : "bij jou"}</span><span>·</span><span><span className="font-semibold text-accent-warm">{isEn ? "Peach:" : "Perzik:"}</span> {isEn ? "with other parent" : "bij de andere ouder"}</span><span>·</span><span className="inline-flex items-center gap-1"><AppIcon functie="wissel" vorm="kaal" maat="sm"/>{isEn ? "Handover" : "Wissel"}</span></div>;
+    const { t } = useTranslation();
+    return <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-soft" aria-label="Legenda zorgverdeling"><span><span className="font-semibold text-brand">{t("calendar.greenWithYou", "Groen: bij jou")}</span></span><span>·</span><span><span className="font-semibold text-accent-warm">{t("calendar.peachWithOther", "Perzik: bij de andere ouder")}</span></span><span>·</span><span className="inline-flex items-center gap-1"><AppIcon functie="wissel" vorm="kaal" maat="sm"/>{t("calendar.handoverLabel", "Wissel")}</span></div>;
 }
 function DagCel({ gegevens, d, zorg, regio, heeftIets, onKies, groot, geselecteerd, eigenPlek, eigenWissel }) {
+    const { t } = useTranslation();
     const ouder = gegevens.kleur === "ik" ? "sanne" : gegevens.kleur === "ander" ? "joris" : undefined;
     const vandaag = d === VANDAAG;
     const wissel = gegevens.wissels.length > 0;
@@ -799,12 +801,13 @@ function DagCel({ gegevens, d, zorg, regio, heeftIets, onKies, groot, geselectee
         {heeftIets ? <span className="size-1 rounded-full bg-ink/50"/> : null}
         {bd ? <span className="size-1 rounded-full bg-accent-warm"/> : null}
       </span>
-      {groot && gegevens.kleur === "gemengd" ? <span className="relative block text-[10px] text-ink">Verdeeld</span> : null}
+      {groot && gegevens.kleur === "gemengd" ? <span className="relative block text-[10px] text-ink">{t("calendar.splitSchedule", "Verdeeld")}</span> : null}
       {vak ? <span className="absolute inset-x-1.5 bottom-0.5 h-0.5 rounded bg-ink-soft/40"/> : null}
-      {vandaag && groot ? <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-ink px-1.5 text-[8px] font-bold text-background">vandaag</span> : null}
+      {vandaag && groot ? <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-ink px-1.5 text-[8px] font-bold text-background">{t("calendar.today", "vandaag")}</span> : null}
     </Button>);
 }
 function DagSheet({ gegevens, dag, onSluit, zorg, regio, extra, taken, onToevoegen, onOpen, onOpenVast, eigen, eigenKinderen, eigenWissel }) {
+    const { t } = useTranslation();
     const d = dag ?? VANDAAG;
     const kinderen = eigen
         ? (eigenKinderen ?? []).map((k) => ({ k: k.naam, v: { ouder: k.plek === "ik" ? "sanne" : "joris", uitzondering: undefined } }))
@@ -820,24 +823,24 @@ function DagSheet({ gegevens, dag, onSluit, zorg, regio, extra, taken, onToevoeg
     const bijzonder = [vak ? `${vak.naam} (schoolkalender)` : null, bd ? `${bd.naam} (kalender)` : null, ...kinderen.map((x) => (x.v?.uitzondering ? `${eigen ? x.k : kindNamen[x.k]}: ${x.v.uitzondering}` : null))].filter(Boolean);
     const Sectie = ({ titel, children }) => (<div className="py-3"><p className="text-[11px] font-semibold tracking-wider text-ink-soft uppercase">{titel}</p><div className="mt-1.5 space-y-1 text-sm">{children}</div></div>);
     return (<Sheet open={!!dag} onOpenChange={(o) => !o && onSluit()}>
-      <SheetContent side="bottom" className="left-1/2 max-h-[85vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="text-left">
           <div className="flex items-center justify-between pr-7"><SheetTitle className="font-display text-xl font-medium first-letter:uppercase">{lang(d)}</SheetTitle><Button variant="ghost" size="icon" aria-label="Afspraak toevoegen op deze dag" onClick={onToevoegen}><AppIcon functie="toevoegen" maat="sm" vorm="kaal"/></Button></div>
           <SheetDescription className="sr-only">Wat er op deze dag speelt</SheetDescription>
         </SheetHeader>
         <div className="mt-2 divide-y divide-border border-y border-border">
-          {gegevens.kinderen.length ? <Sectie titel="Verblijf volgens planning">{gegevens.kinderen.map((k) => <div key={k.id}><p>{k.naam} · {ouderLabel(k.ouder)}</p>{k.delen?.map((d, i) => <p key={i} className="text-xs text-ink-soft">{d.tijdVan ?? "00:00"}–{d.tijdTot ?? "23:59"} · {d.ouder === "Sanne" ? "Bij jou" : d.ouder === "Joris" ? "Bij de andere ouder" : "Samen"}</p>)}{k.overlap.length ? <p className="text-xs text-accent-warm">Deze afspraken overlappen: {k.overlap.join(" en ")}. Stem de verdeling af; er is niets automatisch gewijzigd.</p> : null}</div>)}</Sectie> : null}
+          {gegevens.kinderen.length ? <Sectie titel={t("calendar.daySheet.stayAccordingToPlan", "Verblijf volgens planning")}>{gegevens.kinderen.map((k) => <div key={k.id}><p>{k.naam} · {ouderLabel(k.ouder)}</p>{k.delen?.map((d, i) => <p key={i} className="text-xs text-ink-soft">{d.tijdVan ?? "00:00"}–{d.tijdTot ?? "23:59"} · {d.ouder === "Sanne" ? t("calendar.daySheet.atYou", "Bij jou") : d.ouder === "Joris" ? t("calendar.daySheet.atOtherParent", "Bij de andere ouder") : "Samen"}</p>)}{k.overlap.length ? <p className="text-xs text-accent-warm">Deze afspraken overlappen: {k.overlap.join(" en ")}. Stem de verdeling af; er is niets automatisch gewijzigd.</p> : null}</div>)}</Sectie> : null}
           <AgendaWissels datum={d} gegevens={gegevens}/>
-          {overig.length || extra.length ? (<Sectie titel="Afspraken">
+          {overig.length || extra.length ? (<Sectie titel={t("calendar.daySheet.appointments", "Afspraken")}>
               {overig.map((a) => <Button key={a.id} variant="ghost" onClick={() => onOpenVast(a.id)} aria-label={`${a.titel} openen`} className="h-auto min-h-11 w-full justify-between gap-2 whitespace-normal px-0 text-left"><span>{uur(a.tijd)} · {a.titel} · {a.kind}</span><AppIcon functie="oog" maat="sm" vorm="kaal"/></Button>)}
               {extra.map((v) => <button key={v.a.id} type="button" onClick={() => onOpen(v)} className="flex min-h-[44px] w-full items-center justify-between gap-2 text-left" aria-label={`${v.a.titel} openen`}><span>{v.a.tijd ? uur(v.a.tijd) : "Hele dag"} · {v.a.titel} · {v.a.kind}{afstemStatus(v.a.id) === "akkoord" ? " · Afgestemd ✓" : ""}{v.a.herhaling ? " · herhalend" : ""}</span><span aria-hidden className="text-ink-soft">›</span></button>)}
             </Sectie>) : null}
-          {school.length ? <Sectie titel="School & activiteiten">{school.map((a) => <Button key={a.id} variant="ghost" onClick={() => onOpenVast(a.id)} aria-label={`${a.titel} openen`} className="h-auto min-h-11 w-full justify-between gap-2 whitespace-normal px-0 text-left"><span>{uur(a.tijd)} · {a.titel}</span><AppIcon functie="oog" maat="sm" vorm="kaal"/></Button>)}</Sectie> : null}
-          {taken.length ? <Sectie titel="Taken">{taken.map((t) => <p key={t.id}>{t.tekst}</p>)}</Sectie> : null}
-          {bijzonder.length ? <Sectie titel="Bijzonder">{bijzonder.map((b) => <p key={b}>{b}</p>)}</Sectie> : null}
-          {!kinderen.length && !demo.length && !extra.length && !taken.length && !bijzonder.length && !wissel ? <p className="py-3 text-sm text-ink-soft">Niets gepland op deze dag.</p> : null}
+          {school.length ? <Sectie titel={t("calendar.daySheet.schoolAndActivities", "School & activiteiten")}>{school.map((a) => <Button key={a.id} variant="ghost" onClick={() => onOpenVast(a.id)} aria-label={`${a.titel} openen`} className="h-auto min-h-11 w-full justify-between gap-2 whitespace-normal px-0 text-left"><span>{uur(a.tijd)} · {a.titel}</span><AppIcon functie="oog" maat="sm" vorm="kaal"/></Button>)}</Sectie> : null}
+          {taken.length ? <Sectie titel={t("calendar.daySheet.tasks", "Taken")}>{taken.map((t) => <p key={t.id}>{t.tekst}</p>)}</Sectie> : null}
+          {bijzonder.length ? <Sectie titel={t("calendar.daySheet.special", "Bijzonder")}>{bijzonder.map((b) => <p key={b}>{b}</p>)}</Sectie> : null}
+          {!kinderen.length && !demo.length && !extra.length && !taken.length && !bijzonder.length && !wissel ? <p className="py-3 text-sm text-ink-soft">{t("calendar.daySheet.nothingPlanned", "Niets gepland op deze dag.")}</p> : null}
         </div>
-        <button onClick={onToevoegen} className="mt-4 w-full rounded-md border border-brand/40 py-3 text-sm font-semibold text-brand">+ Toevoegen</button>
+        <button onClick={onToevoegen} className="mt-4 w-full rounded-md border border-brand/40 py-3 text-sm font-semibold text-brand">{t("calendar.daySheet.addSomething", "+ Toevoegen")}</button>
       </SheetContent>
     </Sheet>);
 }
@@ -890,9 +893,9 @@ function AfspraakDetail({ v, direct, wacht, ingetrokken, onSluit, onActie, onInt
     ];
     const rij = (l, w) => (w ? <div className="flex justify-between gap-3 py-2"><dt className="text-ink-soft">{l}</dt><dd className="text-right font-semibold">{w}</dd></div> : null);
     if (ingetrokken)
-        return <Sheet open onOpenChange={(o) => !o && onSluit()}><SheetContent side="bottom" className="left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl bg-background"><SheetHeader><SheetTitle>{a.titel}</SheetTitle><SheetDescription>Ingetrokken · dit voorstel kan niet meer worden goedgekeurd. De huidige agenda blijft gelden.</SheetDescription></SheetHeader><div className="mt-3 flex items-center gap-2"><GeschiedenisKnop soort="afspraak" itemId={a.id} naam={a.titel}/><span className="text-sm">Wijzigingsgeschiedenis</span></div></SheetContent></Sheet>;
+        return <Sheet open onOpenChange={(o) => !o && onSluit()}><SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-2xl bg-background"><SheetHeader><SheetTitle>{a.titel}</SheetTitle><SheetDescription>Ingetrokken · dit voorstel kan niet meer worden goedgekeurd. De huidige agenda blijft gelden.</SheetDescription></SheetHeader><div className="mt-3 flex items-center gap-2"><GeschiedenisKnop soort="afspraak" itemId={a.id} naam={a.titel}/><span className="text-sm">Wijzigingsgeschiedenis</span></div></SheetContent></Sheet>;
     return (<Sheet open onOpenChange={(o) => !o && onSluit()}>
-      <SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="pr-20 text-left">
           <SheetTitle className="font-display text-xl font-medium">{a.titel}</SheetTitle>
           <SheetDescription>{lang(v.datum)}{a.tijd ? ` · ${uur(a.tijd)}` : ""}</SheetDescription>
@@ -934,26 +937,28 @@ function AfspraakDetail({ v, direct, wacht, ingetrokken, onSluit, onActie, onInt
 }
 /** Detail van een vaste (voorbeeld)afspraak: wijzigen loopt via een voorstel. */
 function VasteAfspraakSheet({ open, onSluit, a, onActie }) {
+    const { t } = useTranslation();
     const [menu, setMenu] = useState(false);
     return (<Sheet open={open} onOpenChange={(o) => !o && onSluit()}>
-      <SheetContent side="bottom" className="left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="pr-20 text-left">
           <SheetTitle className="font-display text-xl font-medium">{a.titel}</SheetTitle>
           <SheetDescription>{a.datumLabel} · {uur(a.tijd)} · {a.kind}</SheetDescription>
         </SheetHeader>
-        <button onClick={() => setMenu((m) => !m)} aria-label="Meer opties" className="absolute right-12 top-4 grid size-8 place-items-center rounded-full text-ink-soft hover:bg-secondary"><MoreHorizontal className="size-5" strokeWidth={1.6}/></button>
+        <button onClick={() => setMenu((m) => !m)} aria-label={t("common.actions", "Meer opties")} className="absolute right-12 top-4 grid size-8 place-items-center rounded-full text-ink-soft hover:bg-secondary"><MoreHorizontal className="size-5" strokeWidth={1.6}/></button>
         {menu ? (<div className="mt-3 divide-y divide-border rounded-md border border-border bg-card">
-            <Button variant="ghost" className="w-full justify-start" onClick={() => onActie("tijd")}><AppIcon functie="tijd" maat="sm" vorm="kaal"/>Tijd wijzigen</Button>
-            <Button variant="ghost" className="w-full justify-start" onClick={() => onActie("locatie")}><AppIcon functie="locatie" maat="sm" vorm="kaal"/>Locatie wijzigen</Button>
-            <Button variant="ghost" className="w-full justify-start" onClick={() => onActie("verwijderen")}><AppIcon functie="niet" maat="sm" vorm="kaal"/>Afspraak annuleren</Button>
+            <Button variant="ghost" className="w-full justify-start" onClick={() => onActie("tijd")}><AppIcon functie="tijd" maat="sm" vorm="kaal"/>{t("calendar.changeTime", "Tijd wijzigen")}</Button>
+            <Button variant="ghost" className="w-full justify-start" onClick={() => onActie("locatie")}><AppIcon functie="locatie" maat="sm" vorm="kaal"/>{t("calendar.changeLocation", "Locatie wijzigen")}</Button>
+            <Button variant="ghost" className="w-full justify-start" onClick={() => onActie("verwijderen")}><AppIcon functie="niet" maat="sm" vorm="kaal"/>{t("calendar.cancelAppointment", "Afspraak annuleren")}</Button>
           </div>) : null}
         <p className="mt-4 text-sm">{a.locatie}</p>
-        <Button variant="outline" onClick={() => onActie("aanpassen")} className="mt-4 w-full">Afspraak bewerken</Button>
-        <p className="mt-3 text-xs text-ink-soft">Bij een gezamenlijke afspraak krijgt de andere ouder een melding van je wijziging of annulering zodra jullie accounts veilig gekoppeld zijn. In dit voorbeeld wordt geen echte melding verstuurd. De afspraak blijft gelden tot akkoord.</p>
+        <Button variant="outline" onClick={() => onActie("aanpassen")} className="mt-4 w-full">{t("calendar.editAppointment", "Afspraak bewerken")}</Button>
+        <p className="mt-3 text-xs text-ink-soft">{t("calendar.jointAppointmentNotice", "Bij een gezamenlijke afspraak krijgt de andere ouder een melding van je wijziging of annulering zodra jullie accounts veilig gekoppeld zijn. In dit voorbeeld wordt geen echte melding verstuurd. De afspraak blijft gelden tot akkoord.")}</p>
       </SheetContent>
     </Sheet>);
 }
 function AfspraakRij({ id, onActie }) {
+    const { t } = useTranslation();
     const a = afspraken.find((x) => x.id === id);
     const bijSanne = a?.ouder === "sanne";
     const [open, setOpen] = useState(false);
@@ -973,14 +978,15 @@ function AfspraakRij({ id, onActie }) {
       </div>
     </>);
     return (<div id={`item-${a.id}`} className="zoekdoel flex items-center gap-3 rounded-md border border-border bg-card p-3">
-      <button onClick={() => setOpen(true)} className="flex min-w-0 flex-1 items-center gap-3" aria-label={`${isWisselMoment ? "Wisselmoment" : a.titel} ${a.datumLabel} ${a.tijd} openen`}>{inhoud}</button>
-      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${bijSanne ? "bg-brand-soft text-brand" : "bg-accent-soft text-accent-warm"}`}>{bijSanne ? "Bij jou" : "Bij de andere ouder"}</span>
+      <button onClick={() => setOpen(true)} className="flex min-w-0 flex-1 items-center gap-3" aria-label={`${isWisselMoment ? t("calendar.handoverMoment", "Wisselmoment") : a.titel} ${a.datumLabel} ${a.tijd} openen`}>{inhoud}</button>
+      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${bijSanne ? "bg-brand-soft text-brand" : "bg-accent-soft text-accent-warm"}`}>{bijSanne ? t("calendar.withYou", "Bij jou") : t("calendar.withOtherParent", "Bij de andere ouder")}</span>
       <GeschiedenisKnop soort="afspraak" itemId={a.id} naam={a.titel}/>
       {isWisselMoment ? <WisselmomentSheet open={open} onSluit={() => setOpen(false)} a={a}/> : <VasteAfspraakSheet open={open} onSluit={() => setOpen(false)} a={a} onActie={(actie) => { setOpen(false); onActie(actie); }}/>}
     </div>);
 }
 /** Detail van een wisselmoment: direct vanuit de Agenda, met alleen relevante acties. */
 function WisselmomentSheet({ open, onSluit, a }) {
+    const { t } = useTranslation();
     const router = useRouter();
     const vk = useVoorkeuren();
     const wisselDatum = `2025-03-${String(a.dag).padStart(2, "0")}`;
@@ -988,21 +994,21 @@ function WisselmomentSheet({ open, onSluit, a }) {
     const aantalMee = spullen.filter((s) => s.type === "mee").length;
     const knop = "w-full rounded-md border border-border px-4 py-3 text-left text-sm font-semibold";
     return (<Sheet open={open} onOpenChange={(o) => !o && onSluit()}>
-      <SheetContent side="bottom" className="left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl bg-background px-5 pb-8">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md rounded-t-2xl bg-background px-5 pb-8">
         <SheetHeader className="pr-8 text-left">
-          <SheetTitle className="font-display text-xl font-medium">Wisselmoment</SheetTitle>
+          <SheetTitle className="font-display text-xl font-medium">{t("calendar.handoverMoment", "Wisselmoment")}</SheetTitle>
           <SheetDescription className="text-sm text-ink">{a.datumLabel} · {uur(a.tijd)}</SheetDescription>
         </SheetHeader>
         <dl className="mt-3 divide-y divide-border border-y border-border text-sm">
-          <div className="flex justify-between py-2.5"><dt className="text-ink-soft">Locatie</dt><dd className="font-semibold">{a.locatie}</dd></div>
-          <div className="flex justify-between py-2.5"><dt className="text-ink-soft">Kind</dt><dd className="font-semibold">{a.kind}</dd></div>
-          <div className="flex justify-between py-2.5"><dt className="text-ink-soft">Mee te nemen</dt><dd className="font-semibold">{aantalMee} {aantalMee === 1 ? "ding" : "dingen"}</dd></div>
+          <div className="flex justify-between py-2.5"><dt className="text-ink-soft">{t("calendar.location", "Locatie")}</dt><dd className="font-semibold">{a.locatie}</dd></div>
+          <div className="flex justify-between py-2.5"><dt className="text-ink-soft">{t("calendar.child", "Kind")}</dt><dd className="font-semibold">{a.kind}</dd></div>
+          <div className="flex justify-between py-2.5"><dt className="text-ink-soft">{t("calendar.itemsToTake", "Mee te nemen")}</dt><dd className="font-semibold">{aantalMee} {t(aantalMee === 1 ? "calendar.item" : "calendar.items", aantalMee === 1 ? "ding" : "dingen")}</dd></div>
         </dl>
         <div className="mt-4 space-y-2">
-          <Button variant="outline" className={knop} onClick={() => router.navigate({ to: "/overdracht" })}>Overdracht bekijken</Button>
-          {magOverdrachtVoorbereiden(wisselDatum, a.tijd, new Date(), vk.overdrachtHulp) ? <Button variant="outline" className={knop} onClick={() => router.navigate({ to: "/overdracht" })}>Overdracht voorbereiden</Button> : null}
-          <button className={knop} onClick={() => router.navigate({ to: "/agenda", search: { zorgActie: "wijziging" } })}>Wijziging voorstellen</button>
-          {a.locatie ? <a className={`${knop} block`} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.locatie)}`} target="_blank" rel="noreferrer">Route / locatie bekijken</a> : null}
+          <Button variant="outline" className={knop} onClick={() => router.navigate({ to: "/overdracht" })}>{t("calendar.wissels.viewHandover", "Overdracht bekijken")}</Button>
+          {magOverdrachtVoorbereiden(wisselDatum, a.tijd, new Date(), vk.overdrachtHulp) ? <Button variant="outline" className={knop} onClick={() => router.navigate({ to: "/overdracht" })}>{t("calendar.wissels.prepareHandover", "Overdracht voorbereiden")}</Button> : null}
+          <button className={knop} onClick={() => router.navigate({ to: "/agenda", search: { zorgActie: "wijziging" } })}>{t("calendar.wissels.proposeChange", "Wijziging voorstellen")}</button>
+          {a.locatie ? <a className={`${knop} block`} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.locatie)}`} target="_blank" rel="noreferrer">{t("calendar.viewRouteLocation", "Route / locatie bekijken")}</a> : null}
         </div>
       </SheetContent>
     </Sheet>);

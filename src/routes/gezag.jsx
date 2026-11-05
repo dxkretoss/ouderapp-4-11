@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -51,6 +52,7 @@ function magOuder(g, ouder, recht) {
     return ["Informatie bekijken", "Informatie toevoegen", "Praktische afspraken voorstellen", "Documenten bekijken"].includes(recht);
 }
 function GezagPagina() {
+    const { t } = useTranslation();
     const s = useGezagState();
     const [kindId, setKindId] = useState(kinderen[0]?.id ?? "");
     const [open, setOpen] = useState(null);
@@ -59,7 +61,7 @@ function GezagPagina() {
     const g = s.gezag[kindId] ?? "onbekend";
     const onduidelijk = g === "anders" || g === "onbekend" || g === "voogd" || s.afwijkend;
     return (<AppShell>
-      <PageHeader titel="Gezag & afspraken" subtitel="Per kind vastleggen wat voor jullie situatie geldt."/>
+      <PageHeader titel={t("custodyPage.headerTitle", "Gezag & Toegang")} subtitel="Per kind vastleggen wat voor jullie situatie geldt."/>
 
       <div className="mt-5 flex gap-2">
         {kinderen.map((k) => (<button key={k.id} onClick={() => setKindId(k.id)} className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold ${kindId === k.id ? "border-brand bg-white" : "border-transparent bg-surface text-ink-soft"}`}>

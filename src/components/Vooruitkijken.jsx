@@ -52,30 +52,35 @@ export function Vooruitkijken() {
 
   // Helper translations for suggestions
   const translateTitle = (title) => {
-    if (!isEn) return title;
-    return title
-      .replace(/Handig voor maandag/i, "Helpful for Monday")
-      .replace(/Handig voor dinsdag/i, "Helpful for Tuesday")
-      .replace(/Handig voor woensdag/i, "Helpful for Wednesday")
-      .replace(/Handig voor donderdag/i, "Helpful for Thursday")
-      .replace(/Handig voor vrijdag/i, "Helpful for Friday")
-      .replace(/Handig voor zaterdag/i, "Helpful for Saturday")
-      .replace(/Handig voor zondag/i, "Helpful for Sunday");
+    const dayMatch = title.match(/Handig voor (maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)/i);
+    if (dayMatch) {
+      const day = dayMatch[1].toLowerCase();
+      const dayKeyMap = {
+        maandag: "monday",
+        dinsdag: "tuesday",
+        woensdag: "wednesday",
+        donderdag: "thursday",
+        vrijdag: "friday",
+        zaterdag: "saturday",
+        zondag: "sunday",
+      };
+      const translatedDay = t(`calendar.daysLong.${dayKeyMap[day]}`, day);
+      return t("home.handyForDay", { day: translatedDay, defaultValue: title });
+    }
+    return t(`home.suggestions.${title}`, title);
   };
 
   const translateText = (text) => {
-    if (!isEn) return text;
-    return text
-      .replace(/Donderdag heeft Noah voetbaltraining en de voetbalschoenen staan bij de andere ouder\./i, "Thursday Noah has soccer practice and the football shoes are with the other parent.")
-      .replace(/heeft Noah voetbaltraining/gi, "Noah has soccer practice")
-      .replace(/de voetbalschoenen staan/gi, "the football shoes are")
-      .replace(/bij de andere ouder/gi, "with the other parent")
-      .replace(/bij jou/gi, "with you");
+    if (text.includes("voetbalschoenen")) {
+      return t("home.previewSoccerShoes", text);
+    }
+    return text;
   };
 
   const translateAction = (label) => {
-    if (!isEn) return label;
-    if (label.toLowerCase().includes("bekijk spullen")) return t("home.viewItems", "View items");
+    if (label.toLowerCase().includes("bekijk spullen")) {
+      return t("home.viewItems", "Bekijk spullen");
+    }
     return label;
   };
 
@@ -190,7 +195,7 @@ export function Vooruitkijken() {
       ) : null}
 
       <Sheet open={laterId !== null} onOpenChange={(open) => { if (!open) setLaterId(null); }}>
-        <SheetContent side="bottom" className="mx-auto max-w-lg">
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md mx-auto max-w-md">
           <SheetHeader>
             <SheetTitle>{t("home.whenToSeeAgain", "Wanneer wil je dit weer zien?")}</SheetTitle>
             <SheetDescription>{t("home.whenToSeeAgainDesc", "Het punt komt dan terug, zolang het nog openstaat.")}</SheetDescription>

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -25,7 +26,7 @@ function AbonnementPagina() {
     const [stap, setStap] = useState("");
     const sluit = () => setStap("");
     return (<AppShell>
-      <PageHeader titel="Abonnement" subtitel="Je abonnement en je gegevens" terug="/instellingen"/>
+      <PageHeader titel={t("subscriptionPage.headerTitle", "Abonnement")} subtitel="Je abonnement en je gegevens" terug="/instellingen"/>
 
       {ab.status !== "actief" ? (<Card className="mt-6">
           <p className="font-display text-xl">Welkom terug</p>
@@ -69,7 +70,7 @@ function AbonnementPagina() {
       <button onClick={() => setStap("verwijderen")} className="mt-3 w-full rounded-md border border-border py-3 text-sm font-semibold text-ink-soft">Account verwijderen</button>
 
       <Sheet open={!!stap} onOpenChange={(o) => !o && sluit()}>
-        <SheetContent side="bottom" className="left-1/2 max-h-[90vh] w-full max-w-md -translate-x-1/2 overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
           {stap === "opzeggen" ? (<>
               <SheetHeader className="text-left"><SheetTitle className="font-display text-xl font-medium">Abonnement opzeggen?</SheetTitle>
                 <SheetDescription>Je houdt alle functies tot en met {datum(ab.verlengdatum)}. Daarna stoppen de betaalde functies. Je account blijft bestaan.</SheetDescription></SheetHeader>

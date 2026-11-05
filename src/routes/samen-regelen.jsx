@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { z } from "zod";
 export const Route = createFileRoute("/samen-regelen")({
@@ -15,5 +16,6 @@ export const Route = createFileRoute("/samen-regelen")({
     component: SamenRegelenVerwijzing,
 });
 function SamenRegelenVerwijzing() {
+    const { t } = useTranslation();
     return <Navigate to="/activiteiten" search={{ onderdeel: "regelen" }} replace/>;
 }

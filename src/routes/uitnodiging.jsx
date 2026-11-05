@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { z } from "zod";
 import { kinderen } from "@/lib/demo-data";
@@ -16,9 +17,10 @@ export const Route = createFileRoute("/uitnodiging")({
     component: Uitnodiging,
 });
 function Uitnodiging() {
-    const { t } = Route.useSearch();
+    const { t } = useTranslation();
+    const { t: token } = Route.useSearch();
     useKring();
-    const p = t ? persoonVoorUitnodiging(t) : undefined;
+    const p = token ? persoonVoorUitnodiging(token) : undefined;
     const [stap, setStap] = useState("open");
     const [email, setEmail] = useState("");
     const [ingelogd, setIngelogd] = useState(false);

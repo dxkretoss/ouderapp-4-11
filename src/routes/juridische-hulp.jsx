@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/AppShell";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/juridische-hulp")({
     component: JuridischeHulp,
 });
 function JuridischeHulp() {
+    const { t } = useTranslation();
     const groepen = [...new Set(juridischeBronnen.map((b) => b.groep))];
     return (<AppShell>
       <PageHeader titel="Juridisch" subtitel="Externe hulp, en de voorwaarden van de app"/>

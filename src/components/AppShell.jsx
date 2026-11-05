@@ -82,69 +82,74 @@ export function AppShell({ children, breed = false }) {
   };
 
   return (
-    <div className="app-canvas min-h-screen w-full font-body text-ink">
-      <div className={`relative mx-auto max-w-md px-5 pb-32 pt-6 ${breed ? "md:max-w-3xl lg:max-w-6xl" : ""}`}>
-        {pathname !== "/" ? (
-          <div className="mb-4 flex items-center justify-between">
-            {isVanOverzicht() ? (
-              <Link
-                to="/"
-                onClick={vraagHeropen}
-                className="inline-flex items-center gap-1.5 rounded-full bg-card border border-border px-3.5 py-1 text-xs font-semibold text-ink-soft hover:text-ink shadow-xs"
-              >
-                ← {t("common.back", "Terug naar overzicht")}
-              </Link>
-            ) : (
-              <div />
-            )}
-            <LanguageSelector variant="compact" />
+    <div className="min-h-screen w-full bg-[#f8f6f2] dark:bg-[#1a1c1a] font-body text-ink antialiased sm:py-6 sm:px-4 flex justify-center">
+      <div className={`relative w-full max-w-md bg-background px-5 pb-28 pt-6 min-h-screen sm:min-h-[850px] sm:rounded-3xl sm:shadow-[0_20px_50px_rgba(0,0,0,0.08)] sm:border sm:border-border/70 flex flex-col ${breed ? "sm:max-w-3xl lg:sm:max-w-5xl" : ""}`}>
+        {pathname !== "/" && isVanOverzicht() ? (
+          <div className="mb-4 flex items-center">
+            <Link
+              to="/"
+              onClick={vraagHeropen}
+              className="inline-flex items-center gap-1.5 rounded-full bg-card border border-border px-3.5 py-1 text-xs font-semibold text-ink-soft hover:text-ink shadow-xs"
+            >
+              ← {t("common.back", "Terug naar overzicht")}
+            </Link>
           </div>
         ) : null}
-        {children}
+        <div className="flex-1">
+          {children}
+        </div>
       </div>
 
-      <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 ">
-        <div className="flex items-center justify-between border-t border-border bg-background px-3 pt-2.5 pb-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={wisTerug}
-              className={`flex flex-col items-center gap-1 border-t-2 px-3 py-1 transition-colors ${
-                isActive(item.to) ? "border-brand/70 text-ink" : "border-transparent text-ink-soft"
-              }`}
-            >
-              <span className="relative">
-                <AppIcon functie={item.icoon} vorm="kaal" maat="lg" actief={isActive(item.to)} />
-                {item.to === "/berichten" && ongelezen > 0 ? (
-                  <span
-                    aria-label={`${ongelezen} ongelezen`}
-                    className="absolute -right-2 -top-1 grid min-w-4 place-items-center rounded-full bg-brand px-1 text-[11px] font-bold text-primary-foreground"
-                  >
-                    {ongelezen}
-                  </span>
-                ) : null}
-              </span>
-              <span className={`text-[11px] ${isActive(item.to) ? "font-semibold" : "font-medium"}`}>
-                {t(item.labelKey, item.label)}
-              </span>
-            </Link>
-          ))}
+      {/* Modern mobile bottom navigation bar */}
+      <nav className="fixed bottom-0 inset-x-0 mx-auto z-40 w-full max-w-md bg-card/95 backdrop-blur-md border-t border-border/80 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] sm:rounded-b-3xl">
+        <div className="grid grid-cols-5 items-center h-16 px-1">
+          {navItems.map((item) => {
+            const active = isActive(item.to);
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={wisTerug}
+                className={`group relative flex flex-col items-center justify-center h-full py-1 transition-all duration-150 select-none ${
+                  active ? "text-brand font-bold" : "text-ink-soft hover:text-ink font-medium"
+                }`}
+              >
+                <span className={`relative flex items-center justify-center transition-transform duration-150 ${active ? "scale-105 -translate-y-0.5" : "group-hover:scale-102"}`}>
+                  <AppIcon functie={item.icoon} vorm="kaal" maat="lg" actief={active} />
+                  {item.to === "/berichten" && ongelezen > 0 ? (
+                    <span
+                      aria-label={`${ongelezen} ongelezen`}
+                      className="absolute -right-2 -top-1 grid min-w-4 h-4 px-1 place-items-center rounded-full bg-accent-warm text-[10px] font-bold text-white shadow-xs"
+                    >
+                      {ongelezen}
+                    </span>
+                  ) : null}
+                </span>
+                <span className={`text-[11px] leading-tight mt-0.5 transition-colors ${active ? "text-brand font-semibold" : "text-ink-soft font-medium"}`}>
+                  {t(item.labelKey, item.label)}
+                </span>
+                {active && (
+                  <span className="absolute bottom-1 w-5 h-0.5 bg-brand rounded-full" />
+                )}
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </div>
   );
 }
 
-export function PageHeader({ titel, subtitel, terug = "/meer", actie }) {
+export function PageHeader({ titel, subtitel, terug, actie }) {
   return (
     <div className="flex items-start gap-3">
-      <BackButton terug={terug} />
+      {terug ? <BackButton terug={terug} /> : null}
       <div className="min-w-0 flex-1">
-        <h1 className="font-display text-3xl leading-tight">{titel}</h1>
+        <h1 className="font-display text-2xl sm:text-3xl font-extrabold leading-tight">{titel}</h1>
         {subtitel ? <p className="mt-1 text-sm text-ink-soft">{subtitel}</p> : null}
       </div>
       <div className="flex shrink-0 items-center gap-2">
+        <LanguageSelector variant="compact" />
         <Assistent pagina={titel} />
         {actie}
       </div>

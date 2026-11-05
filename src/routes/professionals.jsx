@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { AppLogo } from "@/components/AppLogo";
 import { Badge, FilterBalk, OverzichtKaart } from "@/components/ui-kit";
 import { InterneAfsluiting } from "@/components/pro/BetrokkenheidAfsluiten";
@@ -209,6 +210,7 @@ function Chip({ actief, onClick, children }) {
     </button>);
 }
 function Professionals() {
+    const { t } = useTranslation();
     const [kant, setKant] = useState("pro");
     // Dossierlijst leeft hier, zodat een via intake toegevoegd gezin blijft staan bij wisselen naar de toegangsaanvraag (sessie).
     const dossierState = useState(startDossiers);
@@ -404,7 +406,7 @@ function ProToevoegen({ dossiers, huidig, werk, onKies, onNieuw }) {
           <Icoon naam="plus"/>
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="pro-cockpit left-1/2 w-full max-w-md -translate-x-1/2 rounded-t-2xl border-border bg-background px-5 pb-8 pt-4">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md pro-cockpit rounded-t-2xl border-border bg-background px-5 pb-8 pt-4">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border"/>
         <SheetHeader className="pr-8 text-left">
           <SheetTitle className="font-display text-xl font-medium text-ink">{wacht ? "Voor welk gezin?" : "Wat wil je toevoegen?"}</SheetTitle>

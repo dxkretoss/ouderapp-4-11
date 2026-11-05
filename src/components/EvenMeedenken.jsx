@@ -115,7 +115,7 @@ export function EvenMeedenken({ gesprekId, eigen, huidigConcept, onOvernemen }) 
     <Button variant="link" className="mt-2 min-h-11 p-0 text-sm" onClick={() => setOpen(true)}><CoBadge maat="sm"/>Even sparren met Co?</Button>
     <Sheet open={open} onOpenChange={(v) => { if (!v)
         sluit(); }}>
-      <SheetContent side="bottom" className="flex h-[92dvh] max-h-[900px] flex-col rounded-t-lg border-ai-reply bg-ai-space p-4 text-ai-ink sm:inset-x-auto sm:left-1/2 sm:w-full sm:max-w-xl sm:-translate-x-1/2">
+      <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md flex h-[92dvh] max-h-[900px] flex-col rounded-t-lg border-ai-reply bg-ai-space p-4 text-ai-ink">
         <SheetHeader className="shrink-0 pr-10 text-left">
           <SheetTitle className="flex items-center gap-2 text-ai-ink"><CoBadge maat="sm"/>Even sparren met Co?</SheetTitle>
           <SheetDescription className="text-ai-soft">Co is je digitale meedenker. Een moment voor jezelf, voordat je reageert.</SheetDescription>

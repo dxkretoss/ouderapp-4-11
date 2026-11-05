@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, Link, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts, } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -8,10 +9,11 @@ import { AppSlot } from "../components/AppSlot";
 import { Toaster } from "../components/ui/sonner";
 import { SpoedScherm } from "../components/SpoedScherm";
 function NotFoundComponent() {
+    const { t } = useTranslation();
     return (<div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="font-display text-7xl font-extrabold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Pagina niet gevonden</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("notFoundPage.title", "Pagina niet gevonden")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Deze pagina bestaat niet of is verplaatst.
         </p>

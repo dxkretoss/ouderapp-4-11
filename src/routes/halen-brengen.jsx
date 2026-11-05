@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -35,6 +36,7 @@ function faseVan(datum, tijd, nuMs) {
     return verschil <= 24 * UUR ? "binnen24" : "later";
 }
 function HalenBrengen() {
+    const { t } = useTranslation();
     const kring = useKring();
     const s = useGesprekken();
     // Dezelfde overdracht als op Home en Overdracht: het eerstvolgende wisselmoment.
