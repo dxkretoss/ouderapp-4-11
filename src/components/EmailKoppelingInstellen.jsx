@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { Card } from "@/components/AppShell";
 import { geldigEmail, stelKoppelingIn, stopKoppeling, useEmailKoppeling, wijzigAdres } from "@/lib/email-koppeling-store";
 /** Solo → Communicatie: e-mail van andere ouder koppelen, wijzigen of stoppen. */
@@ -36,7 +37,10 @@ export function EmailKoppelingInstellen() {
             <p className="text-sm font-semibold">{koppeling.email}</p>
             {koppeling.naam ? <p className="text-xs text-ink-soft">{koppeling.naam}</p> : null}
           </div>
-          <Link to="/berichten" className="block text-xs font-semibold text-brand">Naar de conversatie in Berichten ›</Link>
+          <Link to="/berichten" className="inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span>Naar de conversatie in Berichten</span>
+            <ChevronRight className="size-3.5" />
+          </Link>
           {modus === "rust" ? (<div className="flex gap-2">
               <button onClick={() => setModus("wijzig")} className="flex-1 rounded-md border border-border py-2 text-xs font-semibold">E-mailadres wijzigen</button>
               <button onClick={() => setModus("stop")} className="flex-1 rounded-md border border-border py-2 text-xs font-semibold">Koppeling stoppen</button>

@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { start } from "@/lib/start-store";
 import { AppLogo } from "@/components/AppLogo";
 import { BeeldKiezer } from "@/components/ProfielBeeld";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogIn, UserPlus, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/welkom")({
   head: () => ({
@@ -23,15 +25,32 @@ export const Route = createFileRoute("/welkom")({
 function Welkom() {
   const { t } = useTranslation();
   const nav = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [stap, setStap] = useState(0);
   const [beeld, setBeeld] = useState(undefined);
   const [naam, setNaam] = useState("");
   const [gebruik, setGebruik] = useState("samen");
-  const knop = "mt-6 w-full rounded-xl bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40 transition-colors cursor-pointer";
+
+  // If already authenticated with Supabase, navigate straight to Home
+  useEffect(() => {
+    if (!authLoading && user) {
+      nav({ to: "/" });
+    }
+  }, [user, authLoading, nav]);
+
+  const knop = "mt-5 w-full rounded-xl bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40 transition-colors cursor-pointer hover:bg-brand/90 flex items-center justify-center gap-2";
   const optie = (actief) =>
     `w-full rounded-xl border p-3.5 text-left text-sm transition-colors cursor-pointer ${
       actief ? "border-brand bg-brand-soft" : "border-border bg-surface"
     }`;
+
+  const startDemo = () => {
+    try {
+      localStorage.setItem("onzeapp_demo_mode", "true");
+    } catch {}
+    start.naarVoorbeeld();
+    nav({ to: "/" });
+  };
 
   return (
     <div className="app-canvas flex min-h-screen flex-col items-center justify-center px-6 py-10 font-body text-ink">
@@ -41,29 +60,73 @@ function Welkom() {
           <LanguageSelector variant="compact" />
         </div>
         <AppLogo className="mx-auto mb-7 w-64 max-w-full" slogan />
+
         {stap === 0 ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (naam.trim()) setStap(1);
-            }}
-          >
+          <div>
             <h1 className="font-display text-2xl font-bold">{t("onboarding.welcomeTitle", "Fijn dat je er bent.")}</h1>
-            <label className="mt-4 block text-sm text-ink-soft">
-              {t("onboarding.welcomeSubtitle", "Hoe mogen we je noemen?")}
-              <input
-                autoFocus
-                value={naam}
-                onChange={(e) => setNaam(e.target.value)}
-                placeholder={t("onboarding.namePlaceholder", "Voornaam")}
-                autoComplete="given-name"
-                className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-3 text-base text-ink outline-none focus:border-brand"
-              />
-            </label>
-            <button type="submit" disabled={!naam.trim()} className={knop}>
-              {t("common.continue", "Verder")}
+            <p className="mt-1 text-sm text-ink-soft">
+              {t("onboarding.welcomeIntro", "Alles rondom co-ouderschap op één rustige en overzichtelijke plek.")}
+            </p>
+
+            {/* Inloggen of registreren voor bestaande of uitgenodigde ouders */}
+            <div className="mt-6 space-y-2.5">
+              <Link
+                to="/login"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 text-sm font-semibold text-primary-foreground hover:bg-brand/90 transition shadow-xs"
+              >
+                <LogIn className="size-4" />
+                <span>{t("auth.inloggen", "Inloggen met bestaand account")}</span>
+              </Link>
+              <Link
+                to="/register"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface py-3 text-sm font-semibold text-ink hover:bg-muted transition"
+              >
+                <UserPlus className="size-4 text-brand" />
+                <span>{t("auth.registreren", "Nieuw account aanmaken")}</span>
+              </Link>
+            </div>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-3 text-ink-soft font-semibold">
+                  {t("common.or", "Of snelle start zonder account")}
+                </span>
+              </div>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (naam.trim()) setStap(1);
+              }}
+            >
+              <label className="block text-sm text-ink-soft">
+                {t("onboarding.welcomeSubtitle", "Hoe mogen we je noemen?")}
+                <input
+                  value={naam}
+                  onChange={(e) => setNaam(e.target.value)}
+                  placeholder={t("onboarding.namePlaceholder", "Voornaam")}
+                  autoComplete="given-name"
+                  className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-3 text-base text-ink outline-none focus:border-brand"
+                />
+              </label>
+              <button type="submit" disabled={!naam.trim()} className={knop}>
+                <span>{t("common.continue", "Verder")}</span>
+                <ArrowRight className="size-4" />
+              </button>
+            </form>
+
+            <button
+              type="button"
+              onClick={startDemo}
+              className="mt-4 block w-full text-center text-xs font-semibold text-ink-soft hover:text-brand transition cursor-pointer"
+            >
+              {t("onboarding.viewExample", "Eerst het voorbeeldgezin bekijken")}
             </button>
-          </form>
+          </div>
         ) : stap === 1 ? (
           <>
             <h1 className="font-display text-2xl font-bold">{t("onboarding.photoAvatarTitle", "Een foto of avatar?")}</h1>
@@ -111,6 +174,9 @@ function Welkom() {
               type="button"
               className={knop}
               onClick={() => {
+                try {
+                  localStorage.setItem("onzeapp_demo_mode", "true");
+                } catch {}
                 start.begin(naam, gebruik);
                 start.zetOuderBeeld(beeld);
                 nav({ to: "/" });
@@ -123,13 +189,6 @@ function Welkom() {
             </button>
           </>
         )}
-        <Link
-          to="/"
-          onClick={() => start.naarVoorbeeld()}
-          className="mt-4 block text-center text-xs font-semibold text-ink-soft hover:text-ink"
-        >
-          {t("onboarding.viewExample", "Eerst het voorbeeldgezin bekijken")}
-        </Link>
       </div>
     </div>
   );

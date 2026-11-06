@@ -3,7 +3,7 @@ import { uur } from "@/lib/tijd-tekst";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { z } from "zod";
 import { useState } from "react";
-import { Check, ChevronRight, Clock, HeartHandshake, Plus, ShieldCheck, UserRound, Users } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Clock, HeartHandshake, Plus, ShieldCheck, UserRound, Users } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { BewerkPotlood } from "@/components/ui-kit";
 import { UitnodigingDelen } from "@/components/UitnodigingDelen";
@@ -120,7 +120,10 @@ function KringPagina() {
                   {contactKandidaten(m).map((p) => <option key={p.id} value={p.id}>{persoonLabel(p)} (contact, zonder app)</option>)}
                 </select>
                 {wie && kring.personen.find((x) => x.id === wie)?.uitgenodigd === false ? <p className="mt-1 text-[11px] text-ink-soft">Door jou geregistreerd · geen digitale bevestiging</p> : bev && wie && !["sanne", "joris"].includes(wie) ? <p className="mt-1 text-[11px] text-ink-soft">{wieNaam(wie)} heeft bevestigd.</p> : wie && !["sanne", "joris"].includes(wie) ? <p className="mt-1 text-[11px] text-ink-soft">Wacht op bevestiging</p> : null}
-                <Link to="/veranderd" search={{ moment: m.id, kind: kindId }} className="mt-1 inline-block text-[11px] font-semibold text-brand">Nu afstemmen →</Link>
+                <Link to="/veranderd" search={{ moment: m.id, kind: kindId }} className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-brand">
+                  <span>Nu afstemmen</span>
+                  <ChevronRight className="size-3" />
+                </Link>
               </div>);
         })}
         </div>
@@ -327,7 +330,7 @@ function PersoonDetail({ p, kindId, terug }) {
     return (<AppShell>
       <div className="relative flex items-start gap-3 pr-12">
         {p.uitgenodigd !== false && !bewerk ? <BewerkPotlood onClick={() => setBewerk(true)} label={`Rechten van ${persoonLabel(p)} aanpassen`} className="right-0 top-0"/> : null}
-        <button onClick={terug} className="knop-kruis mt-2 size-9 shrink-0" aria-label="Terug">‹</button>
+        <button onClick={terug} className="knop-kruis mt-2 size-9 shrink-0 flex items-center justify-center cursor-pointer" aria-label="Terug"><ChevronLeft className="size-5 text-ink" strokeWidth={2.5} /></button>
         <div>
           <h1 className="font-display text-3xl">{persoonLabel(p)}</h1>
           <p className="mt-1 text-sm text-ink-soft">{p.rol}{p.noodcontact ? " · noodcontact" : ""}</p>
@@ -401,7 +404,7 @@ function NoodkaartInstellen({ kindId, terug }) {
     const aan = kring.noodkaart[kindId] ?? [];
     return (<AppShell>
       <div className="flex items-start gap-3">
-        <button onClick={terug} className="knop-kruis mt-2 size-9 shrink-0" aria-label="Terug">‹</button>
+        <button onClick={terug} className="knop-kruis mt-2 size-9 shrink-0 flex items-center justify-center cursor-pointer" aria-label="Terug"><ChevronLeft className="size-5 text-ink" strokeWidth={2.5} /></button>
         <div>
           <h1 className="font-display text-3xl">Noodkaart {kind.naam}</h1>
           <p className="mt-1 text-sm text-ink-soft">Alleen wat je hier aanzet, zien verzorgers met toegang tot noodinformatie. De naam staat er altijd op.</p>

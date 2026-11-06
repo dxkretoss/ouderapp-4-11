@@ -112,8 +112,14 @@ export const start = {
     onderwerpToevoegen: (naam) => { const id = `eigen-${Date.now()}`; zet({ onderwerpen: [{ id, naam: naam.trim() }, ...state.onderwerpen] }); return id; },
     kostToevoegen: (k) => zet({ kosten: [k, ...state.kosten] }),
     zetKostenAfspraak: (p) => zet({ kostenAfspraak: { ...state.kostenAfspraak, ...p } }),
-    naarVoorbeeld: () => zet({ eigen: true }),
-    terugNaarEigen: () => zet({ eigen: true }),
+    naarVoorbeeld: () => {
+        try { localStorage.setItem("onzeapp_demo_mode", "true"); } catch {}
+        zet({ eigen: false });
+    },
+    terugNaarEigen: () => {
+        try { localStorage.removeItem("onzeapp_demo_mode"); } catch {}
+        zet({ eigen: true });
+    },
 };
 const I = "ik", A = "ander";
 /** 14 dagen, maandag t/m zondag, twee weken. Neutrale startpunten — iedere regeling is gelijkwaardig. */

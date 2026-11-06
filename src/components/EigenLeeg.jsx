@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AppShell, BackButton } from "@/components/AppShell";
 import { Assistent } from "@/components/Assistent";
 import { AppIcon } from "@/components/AppIcon";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 /**
  * Lege weergave voor een eigen gezin: de pagina begint leeg in plaats van met
@@ -37,7 +38,8 @@ export function EigenLeeg({
             +
           </button>
         ) : null}
-        <div className="mt-1">
+        <div className="mt-1 flex items-center gap-1.5">
+          <LanguageSelector variant="compact" />
           <Assistent pagina={titel} />
         </div>
       </div>

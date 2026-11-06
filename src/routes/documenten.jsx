@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
@@ -107,7 +108,7 @@ function Documenten() {
       {uploadStatus ? <p role="status" className="mt-2 text-xs text-brand">{uploadStatus}</p> : null}
       <Link to="/exporteren" className="mt-8 flex items-center justify-between border-y border-border py-3.5 text-sm">
         <span><span className="block font-semibold">Overzicht bewaren of delen</span><span className="block text-xs text-ink-soft">Een feitelijk PDF-overzicht, als je dat nodig hebt</span></span>
-        <span className="text-ink-soft">›</span>
+        <ChevronRight className="size-5 text-ink-soft shrink-0" />
       </Link>
     </AppShell>);
 }

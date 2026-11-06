@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { FileUp, Loader2 } from "lucide-react";
+import { FileUp, Loader2, ChevronRight } from "lucide-react";
 import { herkenAfspraken } from "@/lib/ouderschapsplan.functions";
 import { voegGeimporteerdToe, zetTeControleren } from "@/lib/import-store";
 // Bewaard tussen paginabezoeken, zodat Home en Documenten dezelfde open punten tonen.
@@ -101,7 +101,10 @@ export function OuderschapsplanImport({ onOpgeslagen }) {
                   <p className="text-xs text-ink-soft">Controleer de geselecteerde tekst. Deze onderdelen komen in Onze afspraken; je verdeling van de week en agenda blijven ongewijzigd.</p>
                   <button disabled={!selectie.some((i) => items[i] && (items[i].keuze === "open" || items[i].keuze === "aanpassen") && items[i].tekst.trim())} onClick={() => { selectie.forEach((i) => { const g = items[i]; if (g && (g.keuze === "open" || g.keuze === "aanpassen") && g.tekst.trim())
                     voegToe(i); }); setSelectie([]); }} className="w-full rounded-md bg-brand px-3 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-40">Selectie toevoegen</button>
-                  <Link to="/afspraken" className="block text-center text-xs font-semibold text-brand">Naar Onze afspraken ›</Link>
+                  <Link to="/afspraken" className="inline-flex w-full items-center justify-center gap-1 text-center text-xs font-semibold text-brand">
+                    <span>Naar Onze afspraken</span>
+                    <ChevronRight className="size-3.5" />
+                  </Link>
                 </div>)}
             </>)}
         </div>) : null}

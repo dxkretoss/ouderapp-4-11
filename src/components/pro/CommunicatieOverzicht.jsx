@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { AppIcon } from "@/components/AppIcon";
 import { Badge, FilterBalk } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,12 @@ export function CommunicatieOverzicht({ gezinnen, onOpen }) {
     <div className="mt-3 divide-y divide-border">
       {gezinnen.map((g) => <div key={g.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
         <div className="min-w-0"><p className="text-sm font-semibold">{g.gezin}</p><p className="mt-0.5 text-sm text-ink-soft">Berichten en AI-herschrijfvoorstellen: niet beschikbaar</p></div>
-        {onOpen ? <Button variant="ghost" className="h-auto px-0 py-1 text-brand" onClick={() => onOpen(g.id)}>Bekijk signalen <span aria-hidden>›</span></Button> : null}
+        {onOpen ? (
+          <Button variant="ghost" className="h-auto inline-flex items-center gap-1 px-0 py-1 text-brand" onClick={() => onOpen(g.id)}>
+            <span>Bekijk signalen</span>
+            <ChevronRight className="size-3.5" />
+          </Button>
+        ) : null}
       </div>)}
     </div>
     <Button variant="outline" className="mt-3 h-auto min-h-11 whitespace-normal" onClick={() => setInformatie(true)}><AppIcon functie="slot" vorm="kaal" maat="sm"/>Toestemming voor meelezen</Button>

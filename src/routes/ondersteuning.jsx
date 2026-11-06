@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { AppIcon } from "@/components/AppIcon";
 import { BewerkPotlood } from "@/components/ui-kit";
 import { IK } from "@/lib/pro-journaal-store";
@@ -53,7 +54,10 @@ function Ondersteuning() {
           <p className="text-xs text-ink-soft">{hoofd.functie} · {hoofd.organisatie}</p>
           <p className="text-xs text-ink-soft">Heeft toegang tot {hoofd.toegang.length} onderdelen</p>
         </div>
-        <button onClick={() => { setOpen(hoofd.id); document.getElementById("betrokken")?.scrollIntoView({ behavior: "smooth" }); }} className="text-xs font-semibold text-brand">Bekijk toegang ›</button>
+        <button onClick={() => { setOpen(hoofd.id); document.getElementById("betrokken")?.scrollIntoView({ behavior: "smooth" }); }} className="inline-flex items-center gap-1 text-xs font-semibold text-brand">
+          <span>Bekijk toegang</span>
+          <ChevronRight className="size-3.5" />
+        </button>
       </div>
       <div className="mt-8"><VoorOuders dossier="bakker" ouder="Sanne"/></div>
       <section id="betrokken" className="mt-8">
@@ -65,7 +69,7 @@ function Ondersteuning() {
                   <span className="block text-sm font-semibold">{p.naam}</span>
                   <span className="block text-xs text-ink-soft">{p.functie} · {p.organisatie} · toegang sinds {new Date(`${p.vanaf}T00:00`).toLocaleDateString("nl-NL", { day: "numeric", month: "long" })}</span>
                 </span>
-                <span className="text-ink-soft">{open === p.id ? "⌃" : "›"}</span>
+                <ChevronDown className={`size-5 text-ink-soft shrink-0 transition-transform ${open === p.id ? "rotate-180" : ""}`} />
               </button>
               {open === p.id ? (<div className="mt-3 pl-1">
                   <p className="text-xs font-semibold">Wat kan deze professional zien?</p>
@@ -73,7 +77,10 @@ function Ondersteuning() {
                     {alleOnderdelen.map((o) => (<li key={o} className={p.toegang.includes(o) ? "" : "text-ink-soft"}>{p.toegang.includes(o) ? "✓" : "—"} {onderdeelLabel[o]}</li>))}
                     <li className="text-ink-soft">— Persoonlijke notities</li>
                   </ul>
-                  <Link to="/professionals" className="mt-2 inline-block text-xs font-semibold text-brand">Toegang aanpassen ›</Link>
+                  <Link to="/professionals" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+                    <span>Toegang aanpassen</span>
+                    <ChevronRight className="size-3.5" />
+                  </Link>
                 </div>) : null}
             </li>))}
         </ul>

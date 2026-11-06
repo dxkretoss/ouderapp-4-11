@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { Check } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { AppIcon } from "@/components/AppIcon";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { contactKandidaten, kandidatenVoor, persoonLabel, regelStatus, useKring, wijzigMoment, zetWie } from "@/lib/kring-store";
@@ -57,7 +57,7 @@ function Veranderd() {
               <button onClick={() => ga({ situatie: o.id })} className="flex w-full items-center gap-3 py-3.5 text-left">
                 <AppIcon functie={o.icoon}/>
                 <span className="flex-1 text-sm font-semibold">{o.titel}</span>
-                <span className="text-ink-soft">›</span>
+                <ChevronRight className="size-5 shrink-0 text-ink-soft" />
               </button>
             </li>))}
         </ul>) : s.situatie === "later" ? (<Later moment={moment}/>) : s.situatie === "ziek" ? (<Ziek kind={kind} onKind={(k) => ga({ kind: k })} onAfspraak={(id) => ga({ situatie: "afspraak", moment: id })} onHalen={(id) => ga({ situatie: "anderhaalt", moment: id })}/>) : s.situatie === "halen" || s.situatie === "anderhaalt" ? (<Halen moment={moment} kind={kind} kiesMoment={(id) => ga({ moment: id })} direct={s.situatie === "anderhaalt"} onTijd={() => ga({ situatie: "afspraak" })}/>) : s.situatie === "afspraak" ? (<AfspraakWijzigen moment={moment} kind={kind} kiesMoment={(id) => ga({ moment: id })}/>) : s.situatie === "taak" ? (<div className="mt-6 space-y-3">
@@ -66,11 +66,25 @@ function Veranderd() {
         </div>) : (<div className="mt-6 space-y-3">
           <p className="text-sm text-ink-soft">Iets anders? Deel het rustig, of doe een voorstel.</p>
           <div className="grid gap-2">
-            <Link to="/berichten" className={knop}>Bericht sturen →</Link>
-            <Link to="/samen-regelen" className={knop}>Iets samen regelen →</Link>
+            <Link to="/berichten" className={`${knop} inline-flex items-center justify-between`}>
+              <span>Bericht sturen</span>
+              <ChevronRight className="size-4" />
+            </Link>
+            <Link to="/samen-regelen" className={`${knop} inline-flex items-center justify-between`}>
+              <span>Iets samen regelen</span>
+              <ChevronRight className="size-4" />
+            </Link>
           </div>
         </div>)}
-      {s.situatie ? <button onClick={() => router.navigate({ to: "/veranderd", search: {}, replace: true })} className="mt-8 text-xs font-semibold text-ink-soft">← Andere situatie kiezen</button> : null}
+      {s.situatie ? (
+        <button
+          onClick={() => router.navigate({ to: "/veranderd", search: {}, replace: true })}
+          className="mt-8 inline-flex items-center gap-1 text-xs font-semibold text-ink-soft hover:text-ink cursor-pointer"
+        >
+          <ChevronLeft className="size-3.5" />
+          <span>Andere situatie kiezen</span>
+        </button>
+      ) : null}
     </AppShell>);
 }
 function KindKeuze({ kind, onKind }) {
@@ -107,18 +121,30 @@ function Ziek({ kind, onKind, onAfspraak, onHalen }) {
           {gevolgen.includes("wissel") && wissel ? (<div>
               <p className="text-sm">{wissel.dag} om {uur(wissel.tijd)} staat een wisselmoment gepland.</p>
               <p className="text-xs text-ink-soft">Een ziekmelding verandert de verdeling van de week niet. Wil je iets aanpassen, dan doe je een voorstel.</p>
-              <Link to="/zorgregeling" search={{ actie: "wijziging", bron: "ziek" }} className="mt-2 inline-block text-sm font-semibold text-brand">Wijziging voorstellen →</Link>
+              <Link to="/zorgregeling" search={{ actie: "wijziging", bron: "ziek" }} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+                <span>Wijziging voorstellen</span>
+                <ChevronRight className="size-4" />
+              </Link>
             </div>) : null}
           {gevolgen.includes("halen") && wissel ? (<div>
               <p className="text-sm">{momentLabel(wissel)}</p>
-              <button onClick={() => onHalen(wissel.id)} className="mt-1 text-sm font-semibold text-brand">Iemand anders laten halen of brengen →</button>
+              <button onClick={() => onHalen(wissel.id)} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+                <span>Iemand anders laten halen of brengen</span>
+                <ChevronRight className="size-4" />
+              </button>
             </div>) : null}
           {gevolgen.includes("activiteit") && afspraak ? (<div>
               <p className="text-sm">{afspraak.titel} staat {afspraak.dag.toLowerCase()} om {uur(afspraak.tijd)} gepland.</p>
-              <button onClick={() => onAfspraak(afspraak.id)} className="mt-1 text-sm font-semibold text-brand">Afspraak aanpassen →</button>
+              <button onClick={() => onAfspraak(afspraak.id)} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+                <span>Afspraak aanpassen</span>
+                <ChevronRight className="size-4" />
+              </button>
             </div>) : null}
           {gevolgen.includes("geen") ? <p className="text-sm">Dan blijft alles zoals gepland.</p> : null}
-          <Link to="/berichten" className="inline-block text-sm font-semibold text-brand">De andere ouder laten weten →</Link>
+          <Link to="/berichten" className="inline-flex items-center gap-1 text-sm font-semibold text-brand">
+            <span>De andere ouder laten weten</span>
+            <ChevronRight className="size-4" />
+          </Link>
           <p className="text-[11px] text-ink-soft">De app geeft geen medisch advies; dit gaat alleen over de praktische planning.</p>
         </div>) : null}
     </div>);

@@ -2,15 +2,24 @@ import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CreditCard, UsersRound } from "lucide-react";
+import { CreditCard, UsersRound, UserPlus, CheckCircle2, Loader2, Camera, Pencil, ChevronRight, UserX, Shield, LogOut, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useVoorkeuren, zetVoorkeur } from "@/lib/voorkeuren-store";
 import { apparaatOndersteunt, registreerSlot } from "@/lib/app-slot";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { parents } from "@/lib/demo-data";
-import { useStart } from "@/lib/start-store";
+import { useStart, start as startActies } from "@/lib/start-store";
 import { setCheckinAan, toonVoorbeeld, useCheckin } from "@/lib/checkin-store";
 import { regioLabel, regioUitleg, useRegio, zetRegio } from "@/lib/schoolvakanties";
+import { fetchConnectedCoParents } from "@/lib/invitation-service";
+import { fetchCaregivers } from "@/lib/caregiver-service";
+import { fetchChildren } from "@/lib/child-service";
+import { InviteCoParentSheet } from "@/components/InviteCoParentSheet";
+import { ManageCoParentModal } from "@/components/ManageCoParentModal";
+import { EditProfileModal } from "@/components/EditProfileModal";
+import { AddFamilyMemberModal } from "@/components/AddFamilyMemberModal";
+import { ShareCaregiverModal } from "@/components/ShareCaregiverModal";
 
 export const Route = createFileRoute("/instellingen")({
     head: () => ({
@@ -80,13 +89,48 @@ function Wissel({ label, uitleg, aan, onWissel, uit }) {
 
 function Instellingen() {
     const { t } = useTranslation();
+    const { user, profile, signOut } = useAuth();
     const vk = useVoorkeuren();
     const [slotMogelijk, setSlotMogelijk] = useState(null);
     const [slotMelding, setSlotMelding] = useState(null);
 
+    const [connectedCoParents, setConnectedCoParents] = useState([]);
+    const [caregivers, setCaregivers] = useState([]);
+    const [childrenList, setChildrenList] = useState([]);
+    const [loadingConnected, setLoadingConnected] = useState(false);
+    const [inviteOpen, setInviteOpen] = useState(false);
+    const [coParentToManage, setCoParentToManage] = useState(null);
+    const [editProfileOpen, setEditProfileOpen] = useState(false);
+    const [addCaregiverOpen, setAddCaregiverOpen] = useState(false);
+    const [selectedCaregiver, setSelectedCaregiver] = useState(null);
+
     useEffect(() => {
       apparaatOndersteunt().then(setSlotMogelijk);
     }, []);
+
+    const loadConnectedData = async () => {
+      if (user?.id) {
+        setLoadingConnected(true);
+        try {
+          const [cps, cgs, kids] = await Promise.all([
+            fetchConnectedCoParents(user.id),
+            fetchCaregivers(user.id),
+            fetchChildren(user.id),
+          ]);
+          setConnectedCoParents(cps || []);
+          setCaregivers(cgs || []);
+          setChildrenList(kids || []);
+        } catch (err) {
+          console.warn("Failed loading connected persons:", err);
+        } finally {
+          setLoadingConnected(false);
+        }
+      }
+    };
+
+    useEffect(() => {
+      loadConnectedData();
+    }, [user?.id]);
 
     const wisselSlot = async () => {
         setSlotMelding(null);
@@ -111,16 +155,7 @@ function Instellingen() {
     const regio = useRegio();
 
     const isEigen = startSt.eigen;
-    const profielNaam = isEigen ? (startSt.naam?.trim() || t("common.you", "Jij")) : s.volledigeNaam;
-    const profielSubtitel = isEigen
-      ? (startSt.uitgenodigd
-          ? t("settings.parent2Invited", "Ouder 2 uitgenodigd")
-          : t("settings.parent2NotConnected", "De andere ouder is nog niet gekoppeld"))
-      : t("settings.userCardSubtitle", {
-          role: s.rol === "Ouder 1" ? t("settings.parent1", "Ouder 1") : s.rol === "Ouder 2" ? t("settings.parent2", "Ouder 2") : s.rol,
-          partner: parents.joris.volledigeNaam,
-          defaultValue: `${s.rol} · gekoppeld aan ${parents.joris.volledigeNaam}`,
-        });
+    const profielNaam = user?.name || profile?.name || (isEigen ? (startSt.naam?.trim() || t("common.you", "Jij")) : s.volledigeNaam);
 
     return (
       <AppShell>
@@ -140,37 +175,172 @@ function Instellingen() {
             <span className="block text-sm font-semibold">{t("menu.exportLink", "Overzicht bewaren of delen")}</span>
             <span className="block text-xs text-ink-soft">{t("menu.exportDesc", "Gegevens & export · feitelijk PDF-overzicht")}</span>
           </span>
-          <span aria-hidden className="text-lg text-ink-soft">›</span>
+          <ChevronRight className="size-5 shrink-0 text-ink-soft" />
         </Link>
 
-        <Card className="mt-6 flex items-center gap-4">
-          {isEigen && !startSt.beeld ? (
-            <span className="grid size-16 place-items-center rounded-xl bg-brand-soft font-display text-2xl font-bold text-brand">
-              {profielNaam.slice(0, 1).toUpperCase()}
-            </span>
-          ) : (
-            <img src={isEigen ? startSt.beeld : s.avatar} alt={profielNaam} className="size-16 rounded-xl object-cover"/>
-          )}
-          <div>
-            <p className="font-display text-lg font-bold">{profielNaam}</p>
-            <p className="text-xs text-ink-soft">{profielSubtitel}</p>
+        {/* Clean Profile card - without co-parent subtitle per client feedback */}
+        <Card className="relative mt-6 flex items-center justify-between p-4">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              {profile?.avatar_url || (isEigen && startSt.beeld) ? (
+                <img src={profile?.avatar_url || startSt.beeld} alt={profielNaam} className="size-16 rounded-xl object-cover"/>
+              ) : profielNaam && profielNaam !== "Ouder" ? (
+                <span className="grid size-16 place-items-center rounded-xl bg-brand-soft font-display text-2xl font-bold text-brand">
+                  {profielNaam.slice(0, 1).toUpperCase()}
+                </span>
+              ) : (
+                <span className="grid size-16 place-items-center rounded-xl bg-brand-soft text-brand">
+                  <User className="size-8" />
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setEditProfileOpen(true)}
+                className="absolute -bottom-1 -right-1 grid size-5 place-items-center rounded-full bg-brand text-primary-foreground shadow-xs ring-2 ring-background hover:bg-brand/90 transition cursor-pointer"
+                title={t("settings.changePhoto", "Foto wijzigen")}
+              >
+                <Camera className="size-2.5" />
+              </button>
+            </div>
+            <div>
+              <p className="font-display text-lg font-bold">{profielNaam}</p>
+              <p className="text-xs text-ink-soft">{user?.email || t("settings.parentRole", "Ouder")}</p>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setEditProfileOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-ink shadow-2xs hover:bg-muted hover:border-brand/40 transition shrink-0 cursor-pointer"
+          >
+            <Pencil className="size-3.5 text-brand" />
+            <span>{t("common.edit", "Bewerken")}</span>
+          </button>
         </Card>
 
         <h2 className="mt-6 font-display font-bold">{t("settings.familyAndAccess", "Gezin & toegang")}</h2>
+        
+        {/* Manage Family */}
         <Link to="/kinderen" className="mt-3 flex min-h-[44px] items-center justify-between border-y border-border py-3.5">
           <span>
             <span className="block text-sm font-semibold">{t("settings.manageFamily", "Gezin beheren")}</span>
-            <span className="block text-xs text-ink-soft">{t("settings.manageFamilyDesc", "Kinderen en belangrijke personen aanvullen")}</span>
+            <span className="block text-xs text-ink-soft">{t("settings.manageFamilyDesc", "Kinderen toevoegen en beheren")}</span>
           </span>
-          <span aria-hidden className="text-lg text-ink-soft">›</span>
+          <ChevronRight className="size-5 shrink-0 text-ink-soft" />
         </Link>
+
+        {/* Connected Persons section directly below Manage Family per client feedback */}
+        <div className="border-b border-border py-3.5">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <span className="block text-sm font-semibold">{t("settings.connectedPersons", "Verbonden personen")}</span>
+              <span className="block text-xs text-ink-soft">{t("settings.connectedPersonsDesc", "Co-ouders, familieleden en verzorgers met toegang")}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setInviteOpen(true)}
+              className="inline-flex items-center gap-1 rounded-full bg-brand-soft border border-brand/40 px-2.5 py-1 text-xs font-semibold text-brand hover:bg-brand/10 transition cursor-pointer"
+            >
+              <UserPlus className="size-3" />
+              <span>{t("settings.invite", "Uitnodigen")}</span>
+            </button>
+          </div>
+
+          {loadingConnected ? (
+            <div className="flex items-center justify-center py-4 gap-2 text-ink-soft">
+              <Loader2 className="size-4 animate-spin text-brand" />
+              <span className="text-xs">{t("common.loading", "Gegevens laden...")}</span>
+            </div>
+          ) : (
+            <div className="space-y-2 mt-2">
+              {connectedCoParents.length > 0 ? (
+                connectedCoParents.map((cp) => (
+                  <div key={cp.invitation_id || cp.id} className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-50/50 p-3">
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-9 place-items-center rounded-xl bg-emerald-600 font-display text-xs font-bold text-white shadow-2xs">
+                        {(cp.name || "C").slice(0, 1).toUpperCase()}
+                      </span>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-ink">{cp.name || "Co-ouder"}</span>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                            <CheckCircle2 className="size-2.5 text-emerald-700" />
+                            <span>{t("settings.connected", "Verbonden")}</span>
+                          </span>
+                        </div>
+                        <p className="text-xs text-ink-soft">{cp.email || t("settings.coparentRole", "Co-ouder")}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCoParentToManage(cp)}
+                      className="rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-ink hover:bg-muted transition cursor-pointer"
+                    >
+                      {t("settings.manage", "Beheren")}
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-between rounded-xl border border-dashed border-border p-3 bg-card/50">
+                  <div>
+                    <p className="text-xs font-semibold text-ink">{t("settings.noCoParentConnected", "Nog geen co-ouder verbonden")}</p>
+                    <p className="text-[11px] text-ink-soft">{t("settings.inviteOtherParentHint", "Nodig de andere ouder uit om samen af te stemmen.")}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setInviteOpen(true)}
+                    className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1 text-xs font-bold text-primary-foreground hover:bg-brand/90 transition cursor-pointer"
+                  >
+                    <UserPlus className="size-3" />
+                    <span>{t("settings.inviteCoParent", "Co-ouder uitnodigen")}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Caregivers / family circle */}
+              {caregivers.map((cg) => (
+                <div key={cg.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-3">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-9 place-items-center rounded-xl bg-brand/20 font-display text-xs font-bold text-brand">
+                      {(cg.name || "B").slice(0, 1).toUpperCase()}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-ink">{cg.name}</span>
+                        <span className="text-[10px] rounded-full border border-border px-1.5 py-0.5 text-ink-soft">
+                          {cg.role || t("settings.caregiverRole", "Betrokkene")}
+                        </span>
+                      </div>
+                      <p className="text-xs text-ink-soft">{cg.email || cg.phone || t("settings.limitedAccess", "Beperkte toegang")}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCaregiver(cg)}
+                    className="rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-ink hover:bg-muted transition cursor-pointer"
+                  >
+                    {t("settings.manage", "Beheren")}
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => setAddCaregiverOpen(true)}
+                className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border py-2 text-xs font-semibold text-brand hover:bg-brand-soft/40 transition cursor-pointer"
+              >
+                <span>+ {t("settings.addFamilyMemberOrCaregiver", "Betrokkene / verzorger toevoegen")}</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Custody and Access */}
         <Link to="/gezag" className="flex min-h-11 items-center justify-between border-b border-border py-3.5">
           <span>
             <span className="block text-sm font-semibold">{t("settings.custodyAndAccess", "Gezag & toegang")}</span>
             <span className="block text-xs text-ink-soft">{t("settings.custodyAndAccessDesc", "Gezagsinformatie en bestaande instellingen per kind")}</span>
           </span>
-          <span aria-hidden className="text-lg text-brand">›</span>
+          <ChevronRight className="size-5 shrink-0 text-brand" />
         </Link>
 
         <Card className="mt-3">
@@ -201,11 +371,13 @@ function Instellingen() {
               </button>
             ))}
           </div>
-          <Link to="/solo" className="mt-3 inline-block text-xs font-semibold text-brand">
-            {t("settings.viewPersonalFeatures", "Bekijk persoonlijke functies →")}
+          <Link to="/solo" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span>{t("settings.viewPersonalFeatures", "Bekijk persoonlijke functies")}</span>
+            <ChevronRight className="size-3.5" />
           </Link>
-          <Link to="/solo" hash="email-koppeling" className="mt-1 block text-xs font-semibold text-brand">
-            {t("settings.emailConnection", "E-mailkoppeling →")}
+          <Link to="/solo" hash="email-koppeling" className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span>{t("settings.emailConnection", "E-mailkoppeling")}</span>
+            <ChevronRight className="size-3.5" />
           </Link>
         </Card>
 
@@ -220,7 +392,7 @@ function Instellingen() {
               })}
             </span>
           </span>
-          <span aria-hidden className="text-lg text-brand">›</span>
+          <ChevronRight className="size-5 shrink-0 text-brand" />
         </Link>
 
         <Card className="mt-3">
@@ -269,7 +441,7 @@ function Instellingen() {
             <span className="block text-sm font-semibold">{t("settings.subscription", "Abonnement")}</span>
             <span className="block text-xs text-ink-soft">{t("settings.subscriptionDesc", "Huidig abonnement, opzeggen en account")}</span>
           </span>
-          <span aria-hidden className="text-lg text-ink-soft">›</span>
+          <ChevronRight className="size-5 shrink-0 text-ink-soft" />
         </Link>
 
         <h2 className="mt-6 font-display font-bold">{t("settings.legalAndPrivacy", "Juridisch & privacy")}</h2>
@@ -278,14 +450,14 @@ function Instellingen() {
             <span className="block text-sm font-semibold">{t("settings.whoSeesWhat", "Wie ziet wat")}</span>
             <span className="block text-xs text-ink-soft">{t("settings.whoSeesWhatDesc", "In één overzicht wie welke informatie mag zien")}</span>
           </span>
-          <span aria-hidden className="text-lg text-ink-soft">›</span>
+          <ChevronRight className="size-5 shrink-0 text-ink-soft" />
         </Link>
         <Link to="/juridisch" className="mt-3 flex items-center justify-between rounded-lg border border-border bg-card p-4">
           <span>
             <span className="block text-sm font-semibold">{t("settings.termsAndPrivacy", "Voorwaarden en privacy")}</span>
             <span className="block text-xs text-ink-soft">{t("settings.termsAndPrivacyDesc", "Algemene voorwaarden, privacy, cookies, abonnementsvoorwaarden")}</span>
           </span>
-          <span aria-hidden className="text-lg text-ink-soft">›</span>
+          <ChevronRight className="size-5 shrink-0 text-ink-soft" />
         </Link>
 
         <h2 className="mt-6 font-display font-bold">{t("settings.schoolHolidays", "Schoolvakanties")}</h2>
@@ -321,8 +493,9 @@ function Instellingen() {
               <span className={`absolute top-0.5 size-5 rounded-full bg-card shadow transition-all ${checkin.aan ? "left-5" : "left-0.5"}`}/>
             </span>
           </button>
-          <Link to="/" onClick={toonVoorbeeld} className="block border-t border-border py-3 text-xs font-semibold text-brand">
-            {t("settings.dailyCheckinPreview", "Bekijk hoe dit eruitziet ›")}
+          <Link to="/" onClick={toonVoorbeeld} className="inline-flex items-center gap-1 border-t border-border py-3 text-xs font-semibold text-brand">
+            <span>{t("settings.dailyCheckinPreview", "Bekijk hoe dit eruitziet")}</span>
+            <ChevronRight className="size-3.5" />
           </Link>
         </Card>
 
@@ -340,7 +513,7 @@ function Instellingen() {
             <span className="block text-sm font-semibold">{t("settings.callViaApp", "Bellen via de app")}</span>
             <span className="block text-xs text-ink-soft">{t("settings.callViaAppDesc", "Bellen en privacy bij gesprekken")}</span>
           </span>
-          <span aria-hidden className="text-lg text-brand">›</span>
+          <ChevronRight className="size-5 shrink-0 text-brand" />
         </Link>
         <Card className="mt-3 divide-y divide-border py-1">
           <Button variant="ghost" role="switch" aria-checked={vk.communicatieSuggesties} onClick={() => zetVoorkeur("communicatieSuggesties", !vk.communicatieSuggesties)} className="h-auto w-full justify-between gap-3 whitespace-normal px-0 py-3 text-left hover:bg-transparent">
@@ -397,7 +570,112 @@ function Instellingen() {
           <Schakelaar label={t("settings.showReadReceipts", "Leesbevestiging tonen")} uitleg={t("settings.showReadReceiptsDesc", "De ander ziet wanneer je iets gelezen hebt")} standaard/>
         </Card>
 
+        {/* Account & Session management */}
+        <h2 className="mt-6 font-display font-bold">{t("settings.accountAndSession", "Account & sessie")}</h2>
+        <Card className="mt-3 p-4">
+          {user ? (
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-sm font-semibold">{user.email}</p>
+                <p className="text-xs text-ink-soft">
+                  {t("settings.loggedInAs", "Ingelogd met beveiligd Supabase account")}
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  try {
+                    await signOut();
+                  } catch {}
+                  try {
+                    localStorage.removeItem("onzeapp_demo_mode");
+                  } catch {}
+                  startActies.terugNaarEigen();
+                  window.location.href = "/welkom";
+                }}
+                className="mt-1 w-full justify-center gap-2 rounded-xl text-sm font-semibold cursor-pointer"
+              >
+                <LogOut className="size-4" />
+                <span>{t("auth.uitloggen", "Uitloggen")}</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-sm font-semibold">
+                  {!isEigen ? t("settings.viewingDemo", "Voorbeeldgezin actief") : t("settings.guestMode", "Lokale modus")}
+                </p>
+                <p className="text-xs text-ink-soft">
+                  {!isEigen
+                    ? t("settings.demoDesc", "Je bekijkt momenteel het voorbeeldgezin.")
+                    : t("settings.guestDesc", "Log in of maak een account aan om gegevens veilig te synchroniseren.")}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    try {
+                      localStorage.removeItem("onzeapp_demo_mode");
+                    } catch {}
+                    startActies.terugNaarEigen();
+                    window.location.href = "/welkom";
+                  }}
+                  className="flex-1 justify-center gap-2 rounded-xl text-sm font-semibold cursor-pointer"
+                >
+                  <LogOut className="size-4" />
+                  <span>{t("settings.toWelcome", "Naar welkomstscherm")}</span>
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.location.href = "/login";
+                  }}
+                  className="flex-1 justify-center gap-2 rounded-xl bg-brand text-primary-foreground text-sm font-semibold hover:bg-brand/90 cursor-pointer"
+                >
+                  <span>{t("auth.inloggen", "Inloggen")}</span>
+                </Button>
+              </div>
+            </div>
+          )}
+        </Card>
+
         <p className="mt-6 text-center text-xs text-ink-soft">{t("settings.footerTagline", "Ouderschap & Co · De app die ouders verbindt")}</p>
+
+        {/* Dynamic Modals for Family, Co-Parent & Profile */}
+        <InviteCoParentSheet
+          open={inviteOpen}
+          onClose={() => setInviteOpen(false)}
+          onInvited={loadConnectedData}
+        />
+
+        <ManageCoParentModal
+          open={!!coParentToManage}
+          onClose={() => setCoParentToManage(null)}
+          coParent={coParentToManage}
+          childrenList={childrenList}
+          onDisconnected={loadConnectedData}
+        />
+
+        <EditProfileModal
+          open={editProfileOpen}
+          onClose={() => setEditProfileOpen(false)}
+          currentProfile={profile || { name: profielNaam, email: user?.email }}
+        />
+
+        <AddFamilyMemberModal
+          open={addCaregiverOpen}
+          onClose={() => setAddCaregiverOpen(false)}
+          childrenList={childrenList}
+          onCreated={loadConnectedData}
+        />
+
+        <ShareCaregiverModal
+          open={!!selectedCaregiver}
+          onClose={() => setSelectedCaregiver(null)}
+          caregiver={selectedCaregiver}
+          childrenList={childrenList}
+          onStatusUpdated={loadConnectedData}
+        />
       </AppShell>
     );
 }

@@ -1,5 +1,6 @@
 import { Sectie, BewerkPotlood } from "@/components/ui-kit";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -131,13 +132,13 @@ function Spullen() {
                   <button onClick={() => setOpen(s.id)} className="flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left">
                     <span className="flex-1"><span className="block text-sm font-semibold">{s.naam}</span>
                       <span className="block text-xs text-ink-soft">{s.kind === "emma" ? "Emma" : "Noah"}{type === "mee" ? " · volgende overdracht" : type === "vast" ? ` · ${plekTekst(s.plek)}` : ""}</span></span>
-                    <span className="text-ink-soft" aria-hidden>›</span>
+                    <ChevronRight className="size-5 shrink-0 text-ink-soft" />
                   </button>
                 </li>))}
             </ul>
           </section>);
         })}
-      <Link to="/overdracht" className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand">Overdracht bekijken ›</Link>
+      <Link to="/overdracht" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand"><span>Overdracht bekijken</span><ChevronRight className="size-4" /></Link>
 
       <div className="mt-4">
         <Sectie titel="Niet vergeten" sub="Wat terug moet naar het andere huis">
@@ -183,7 +184,7 @@ function PlekKeuze({ type, plek, setType, setPlek }) {
 function SpulDetail({ s, terug }) {
     const [bewerk, setBewerk] = useState(false);
     return (<>
-      <div className="mt-2"><button onClick={terug} className="min-h-11 text-sm font-semibold text-brand">‹ Spullen</button></div>
+      <div className="mt-2"><button onClick={terug} className="min-h-11 inline-flex items-center gap-1 text-sm font-semibold text-brand cursor-pointer"><ChevronLeft className="size-4 shrink-0" /><span>Spullen</span></button></div>
       <Card className="relative mt-3 space-y-3">
         {!bewerk ? <BewerkPotlood onClick={() => setBewerk(true)} label="Plek aanpassen"/> : null}
         <div><h1 className="pr-12 font-display text-xl font-bold">{s.naam}</h1><p className="text-sm text-ink-soft">{s.kind === "emma" ? "Emma" : "Noah"}</p></div>
@@ -191,7 +192,7 @@ function SpulDetail({ s, terug }) {
             <PlekKeuze type={s.type} plek={s.plek ?? "sanne"} setType={(t) => zetSpul(s.id, { type: t, ...(t === "vast" && !s.plek ? { plek: "sanne" } : {}) })} setPlek={(p) => zetSpul(s.id, { plek: p })}/>
             <button onClick={() => setBewerk(false)} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground">Klaar</button>
           </>) : (<dl className="text-sm"><dt className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">Waar hoort het?</dt><dd className="mt-0.5">{typeLabel[s.type]}{s.type === "vast" ? ` · ${plekTekst(s.plek)}` : ""}</dd></dl>)}
-        {s.type === "mee" ? <Link to="/overdracht" className="inline-flex min-h-11 items-center text-sm font-semibold text-brand">Bekijk bij de overdracht ›</Link> : null}
+        {s.type === "mee" ? <Link to="/overdracht" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand"><span>Bekijk bij de overdracht</span><ChevronRight className="size-4" /></Link> : null}
       </Card>
     </>);
 }

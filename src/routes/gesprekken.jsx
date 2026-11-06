@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { bewaarOnderdelen, demoTranscript, moduleLabels, useGesprekken, voegGesprekToe, werkOpnameBij, zetBewaar, zetModule, } from "@/lib/gesprekken-store";
@@ -46,8 +47,18 @@ function Gesprekken() {
         {w === "privacy" && <Privacy />}
       </div>
       <div className="mt-6 space-y-1 text-sm">
-        {w !== "bellen" && <button onClick={() => setW("bellen")} className="block min-h-11 font-semibold text-brand">‹ Terug naar bellen</button>}
-        {w === "bellen" && opnames > 0 && <button onClick={() => setW("opnames")} className="block min-h-11 font-semibold text-brand">Opgenomen gesprekken ({opnames}) ›</button>}
+        {w !== "bellen" && (
+          <button onClick={() => setW("bellen")} className="inline-flex items-center gap-1 min-h-11 font-semibold text-brand">
+            <ChevronLeft className="size-4" />
+            <span>Terug naar bellen</span>
+          </button>
+        )}
+        {w === "bellen" && opnames > 0 && (
+          <button onClick={() => setW("opnames")} className="inline-flex items-center gap-1 min-h-11 font-semibold text-brand">
+            <span>Opgenomen gesprekken ({opnames})</span>
+            <ChevronRight className="size-4" />
+          </button>
+        )}
         {w === "bellen" && <button onClick={() => setW("privacy")} className="block min-h-11 text-xs text-ink-soft underline">Privacy en instellingen</button>}
       </div>
     </AppShell>);

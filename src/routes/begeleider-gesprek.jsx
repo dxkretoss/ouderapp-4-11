@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { AppShell, PageHeader } from "@/components/AppShell";
@@ -38,7 +39,7 @@ function BegeleiderGesprek() {
         <div className="mt-2 divide-y divide-border rounded-md border border-border bg-card">
           {bereikbaar.map((p) => (<button key={p.id} onClick={() => navigate({ search: { pro: p.id } })} className="flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left">
               <span className="flex-1"><span className="block text-sm font-semibold">{p.naam}</span><span className="block text-xs text-ink-soft">{p.rol}</span></span>
-              <span className="text-ink-soft" aria-hidden>›</span>
+              <ChevronRight className="size-5 text-ink-soft shrink-0" />
             </button>))}
         </div>
       </AppShell>);

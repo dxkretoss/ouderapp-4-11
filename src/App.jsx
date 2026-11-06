@@ -4,6 +4,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { AppSlot } from "@/components/AppSlot";
 import { SpoedScherm } from "@/components/SpoedScherm";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthModalProvider } from "@/components/AuthRequiredModal";
+import { AuthGuard } from "@/components/AuthGuard";
+
+// Auth routes
+import { LoginPage } from "./routes/login";
+import { RegisterPage } from "./routes/register";
+import { ForgotPasswordPage } from "./routes/forgot-password";
 
 // Import all route components cleanly
 import { Route as RootRoute } from "./routes/__root";
@@ -60,58 +68,77 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppSlot />
-        <SpoedScherm />
-        <Toaster position="top-center" />
-        <Routes>
-          <Route path="/" element={<IndexRoute.component />} />
-          <Route path="/welkom" element={<WelkomRoute.component />} />
-          <Route path="/agenda" element={<AgendaRoute.component />} />
-          <Route path="/berichten" element={<BerichtenRoute.component />} />
-          <Route path="/kosten" element={<KostenRoute.component />} />
-          <Route path="/meer" element={<MeerRoute.component />} />
-          <Route path="/abonnement" element={<AbonnementRoute.component />} />
-          <Route path="/activiteiten" element={<ActiviteitenRoute.component />} />
-          <Route path="/afspraken-veiligheid" element={<AfsprakenVeiligheidRoute.component />} />
-          <Route path="/afspraken" element={<AfsprakenRoute.component />} />
-          <Route path="/begeleider-gesprek" element={<BegeleiderGesprekRoute.component />} />
-          <Route path="/beslissingen" element={<BeslissingenRoute.component />} />
-          <Route path="/boodschappen" element={<BoodschappenRoute.component />} />
-          <Route path="/contact" element={<ContactRoute.component />} />
-          <Route path="/documenten" element={<DocumentenRoute.component />} />
-          <Route path="/exporteren" element={<ExporterenRoute.component />} />
-          <Route path="/extra-ondersteuning" element={<ExtraOndersteuningRoute.component />} />
-          <Route path="/gesprekken" element={<GesprekkenRoute.component />} />
-          <Route path="/gezag" element={<GezagRoute.component />} />
-          <Route path="/halen-brengen" element={<HalenBrengenRoute.component />} />
-          <Route path="/instellingen" element={<InstellingenRoute.component />} />
-          <Route path="/juridisch" element={<JuridischRoute.component />} />
-          <Route path="/juridische-hulp" element={<JuridischeHulpRoute.component />} />
-          <Route path="/kinderen" element={<KinderenIndexRoute.component />} />
-          <Route path="/kinderen/:kindId" element={<KinderenKindIdRoute.component />} />
-          <Route path="/kring/:kindId" element={<KringKindIdRoute.component />} />
-          <Route path="/momentjes" element={<MomentjesRoute.component />} />
-          <Route path="/ondersteuning" element={<OndersteuningRoute.component />} />
-          <Route path="/overdracht" element={<OverdrachtRoute.component />} />
-          <Route path="/planning" element={<PlanningRoute.component />} />
-          <Route path="/privacy" element={<PrivacyRoute.component />} />
-          <Route path="/professionals" element={<ProfessionalsRoute.component />} />
-          <Route path="/rondleiding" element={<RondleidingRoute.component />} />
-          <Route path="/samen-regelen" element={<SamenRegelenRoute.component />} />
-          <Route path="/solo" element={<SoloRoute.component />} />
-          <Route path="/spullen" element={<SpullenRoute.component />} />
-          <Route path="/taken" element={<TakenRoute.component />} />
-          <Route path="/tijdlijn" element={<TijdlijnRoute.component />} />
-          <Route path="/uitnodiging" element={<UitnodigingRoute.component />} />
-          <Route path="/vakantie/:id" element={<VakantieIdRoute.component />} />
-          <Route path="/veranderd" element={<VeranderdRoute.component />} />
-          <Route path="/verhaal" element={<VerhaalRoute.component />} />
-          <Route path="/verzorger" element={<VerzorgerRoute.component />} />
-          <Route path="/wissel" element={<WisselRoute.component />} />
-          <Route path="/zorgregeling" element={<ZorgregelingRoute.component />} />
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <AuthProvider>
+          <AuthModalProvider>
+            <AppSlot />
+            <SpoedScherm />
+            <Toaster position="top-center" />
+            <Routes>
+              {/* Auth routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/inloggen" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/registreren" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/wachtwoord-vergeten" element={<ForgotPasswordPage />} />
+
+              {/* Public routes */}
+              <Route path="/welkom" element={<WelkomRoute.component />} />
+              <Route path="/privacy" element={<PrivacyRoute.component />} />
+              <Route path="/juridisch" element={<JuridischRoute.component />} />
+
+              {/* Protected app routes - requires login or active demo session */}
+              <Route element={<AuthGuard />}>
+                <Route path="/" element={<IndexRoute.component />} />
+                <Route path="/agenda" element={<AgendaRoute.component />} />
+                <Route path="/berichten" element={<BerichtenRoute.component />} />
+                <Route path="/kosten" element={<KostenRoute.component />} />
+                <Route path="/meer" element={<MeerRoute.component />} />
+                <Route path="/abonnement" element={<AbonnementRoute.component />} />
+                <Route path="/activiteiten" element={<ActiviteitenRoute.component />} />
+                <Route path="/afspraken-veiligheid" element={<AfsprakenVeiligheidRoute.component />} />
+                <Route path="/afspraken" element={<AfsprakenRoute.component />} />
+                <Route path="/begeleider-gesprek" element={<BegeleiderGesprekRoute.component />} />
+                <Route path="/beslissingen" element={<BeslissingenRoute.component />} />
+                <Route path="/boodschappen" element={<BoodschappenRoute.component />} />
+                <Route path="/contact" element={<ContactRoute.component />} />
+                <Route path="/documenten" element={<DocumentenRoute.component />} />
+                <Route path="/exporteren" element={<ExporterenRoute.component />} />
+                <Route path="/extra-ondersteuning" element={<ExtraOndersteuningRoute.component />} />
+                <Route path="/gesprekken" element={<GesprekkenRoute.component />} />
+                <Route path="/gezag" element={<GezagRoute.component />} />
+                <Route path="/halen-brengen" element={<HalenBrengenRoute.component />} />
+                <Route path="/instellingen" element={<InstellingenRoute.component />} />
+                <Route path="/juridische-hulp" element={<JuridischeHulpRoute.component />} />
+                <Route path="/kinderen" element={<KinderenIndexRoute.component />} />
+                <Route path="/kinderen/:kindId" element={<KinderenKindIdRoute.component />} />
+                <Route path="/kinderen/$kindId" element={<KinderenKindIdRoute.component />} />
+                <Route path="/kring/:kindId" element={<KringKindIdRoute.component />} />
+                <Route path="/kring/$kindId" element={<KringKindIdRoute.component />} />
+                <Route path="/momentjes" element={<MomentjesRoute.component />} />
+                <Route path="/ondersteuning" element={<OndersteuningRoute.component />} />
+                <Route path="/overdracht" element={<OverdrachtRoute.component />} />
+                <Route path="/planning" element={<PlanningRoute.component />} />
+                <Route path="/professionals" element={<ProfessionalsRoute.component />} />
+                <Route path="/rondleiding" element={<RondleidingRoute.component />} />
+                <Route path="/samen-regelen" element={<SamenRegelenRoute.component />} />
+                <Route path="/solo" element={<SoloRoute.component />} />
+                <Route path="/spullen" element={<SpullenRoute.component />} />
+                <Route path="/taken" element={<TakenRoute.component />} />
+                <Route path="/tijdlijn" element={<TijdlijnRoute.component />} />
+                <Route path="/uitnodiging" element={<UitnodigingRoute.component />} />
+                <Route path="/vakantie/:id" element={<VakantieIdRoute.component />} />
+                <Route path="/veranderd" element={<VeranderdRoute.component />} />
+                <Route path="/verhaal" element={<VerhaalRoute.component />} />
+                <Route path="/verzorger" element={<VerzorgerRoute.component />} />
+                <Route path="/wissel" element={<WisselRoute.component />} />
+                <Route path="/zorgregeling" element={<ZorgregelingRoute.component />} />
+              </Route>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </AuthModalProvider>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -39,7 +40,15 @@ export function IkBenLater({ momentId }) {
         bevestig("Verstuurd naar de andere ouder ✓", { uitleg: "Wacht op reactie van de andere ouder", tril: true });
     };
     return <>
-    {wacht ? <p role="status" className="mt-2 text-xs text-ink-soft">{t("calendar.lateModal.waitingNotice", { time: m.tijd, defaultValue: `Tijdvoorstel verstuurd · ${m.tijd} uur blijft gelden tot akkoord.` })} <Link to="/zorgregeling" className="font-semibold text-brand">{t("calendar.lateModal.viewProposal", "Bekijk voorstel →")}</Link></p> : <Button variant="link" size="sm" className="h-auto px-0" onClick={() => { setTijd(""); setOpen(true); }}><AppIcon functie="tijd" maat="sm" vorm="kaal"/>{t("calendar.lateModal.button", "Ik ben later")}</Button>}
+    {wacht ? (
+      <p role="status" className="mt-2 text-xs text-ink-soft">
+        {t("calendar.lateModal.waitingNotice", { time: m.tijd, defaultValue: `Tijdvoorstel verstuurd · ${m.tijd} uur blijft gelden tot akkoord.` })}{" "}
+        <Link to="/zorgregeling" className="inline-flex items-center gap-0.5 font-semibold text-brand">
+          <span>{t("calendar.lateModal.viewProposal", "Bekijk voorstel")}</span>
+          <ChevronRight className="size-3" />
+        </Link>
+      </p>
+    ) : <Button variant="link" size="sm" className="h-auto px-0" onClick={() => { setTijd(""); setOpen(true); }}><AppIcon functie="tijd" maat="sm" vorm="kaal"/>{t("calendar.lateModal.button", "Ik ben later")}</Button>}
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md mx-auto max-w-md">
         <SheetHeader><SheetTitle>{t("calendar.lateModal.title", "Ik ben later")}</SheetTitle><SheetDescription>{t("calendar.lateModal.subtitle", { day: m.dag, time: m.tijd, place: m.plek, defaultValue: `${m.dag} · afgesproken om ${m.tijd} uur bij ${m.plek}` })}</SheetDescription></SheetHeader>

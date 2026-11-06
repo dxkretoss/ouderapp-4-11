@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useBevestigPopup } from "@/lib/feedback";
 import { RustigTip, useKeuzeTeksten } from "@/components/RustigTip";
 import { useEffect, useRef, useState } from "react";
@@ -59,7 +60,12 @@ function AfsprakenPagina() {
     const gekozen = lijst.find((a) => a.id === open);
     if (gekozen) {
         return (<AppShell>
-        <div className="mt-2"><button onClick={() => setOpen(null)} className="min-h-11 text-sm font-semibold text-brand">‹ {t("agreements.title", "Afspraken")}</button></div>
+        <div className="mt-2">
+          <button onClick={() => setOpen(null)} className="min-h-11 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+            <ChevronLeft className="size-4 shrink-0" />
+            <span>{t("agreements.title", "Afspraken")}</span>
+          </button>
+        </div>
         <Detail a={gekozen} rol={rol} magVoorstellen={rol === "ouder" || rechtenOpties.indexOf(recht) >= 2} magEvalueren={rol === "pro" && recht === "Evalueren"} onVoorstel={(v) => { stelVoor(gekozen.id, v); setMelding(v.soort === "stoppen" ? "Je voorstel om te stoppen is verstuurd. De afspraak blijft gelden tot er akkoord is." : "Je wijzigingsvoorstel is verstuurd. De huidige afspraak blijft gelden tot er akkoord is."); }} onReageer={(k, t) => {
                 reageer(gekozen.id, IK, k, t);
                 if (k === "niet" && !gekozen.veiligheid && !vk.extraHouvast && !vk.extraHouvastTipGezien) {
@@ -114,7 +120,7 @@ function AfsprakenPagina() {
       <Card className="mt-6">
         <p className="text-sm font-semibold">{PRO_LABEL}</p>
         <p className="mt-0.5 text-xs text-ink-soft">{recht === "Geen toegang" ? "Kan geen afspraken zien." : recht === "Evalueren" ? "Kan afspraken bekijken, voorstellen en samen met jullie bekijken." : `Kan afspraken ${recht.toLowerCase()}.`} Wat Lotte vastlegt, geldt pas als jullie allebei akkoord zijn.</p>
-        <button onClick={() => setToegang(!toegang)} className="mt-1 min-h-11 text-xs font-semibold text-brand">{toegang ? t("agreements.hideAccess", "Verberg toegang") : t("agreements.viewAccess", "Bekijk toegang ›")}</button>
+        <button onClick={() => setToegang(!toegang)} className="mt-1 min-h-11 inline-flex items-center gap-1 text-xs font-semibold text-brand">{toegang ? t("agreements.hideAccess", "Verberg toegang") : <><span>{t("agreements.viewAccess", "Bekijk toegang")}</span><ChevronRight className="size-3.5" /></>}</button>
         {toegang ? <Transparantie recht={recht} setRecht={setRecht}/> : null}
       </Card>
 
@@ -138,7 +144,7 @@ function Rij({ a, onOpen, status, actie }) {
         <span className="mt-0.5 block text-xs text-ink-soft">{a.tekst}</span>
         {s ? <span className="mt-1 block"><Badge toon={actie || s === "Jouw reactie is nodig" ? "actie" : "klaar"}>{s}</Badge></span> : null}
       </span>
-      <span className="text-ink-soft" aria-hidden>›</span>
+      <ChevronRight className="size-5 shrink-0 text-ink-soft" />
     </button>);
 }
 function Veld({ label, children }) {
@@ -213,13 +219,13 @@ function Detail({ a, rol, magVoorstellen, magEvalueren, onVoorstel, onReageer, o
         {a.geldtVanaf ? <Veld label={t("agreements.appliesFrom", "Geldt vanaf")}>{a.geldtVanaf}</Veld> : null}
         {a.afgesprokenDoor ? <Veld label={t("agreements.agreedBy", "Afgesproken door")}>{a.afgesprokenDoor}</Veld> : null}
         {a.bron?.soort === "professional" ? <Veld label={t("agreements.recordedWith", "Vastgelegd met")}>{a.bron.label}</Veld> : null}
-        {a.bron?.soort === "document" ? <Veld label={t("agreements.source", "Bron")}>{a.bron.label}{a.bron.datum ? ` · ${a.bron.datum}` : ""}{a.bron.document ? <><br /><Link to="/documenten" className="inline-flex min-h-11 items-center text-sm font-semibold text-brand">{t("agreements.viewDocument", "Bekijk document ›")}</Link></> : null}</Veld> : null}
+        {a.bron?.soort === "document" ? <Veld label={t("agreements.source", "Bron")}>{a.bron.label}{a.bron.datum ? ` · ${a.bron.datum}` : ""}{a.bron.document ? <><br /><Link to="/documenten" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand"><span>{t("agreements.viewDocument", "Bekijk document")}</span><ChevronRight className="size-3.5" /></Link></> : null}</Veld> : null}
         {a.evaluatie && a.status === "Actief" ? <Veld label={t("agreements.revisitTogether", "Samen weer bekijken")}>{a.evaluatie}{a.bron?.soort === "professional" ? <span className="block text-xs text-ink-soft">Op {a.evaluatie.replace(/ \d{4}$/, "")} bekijken jullie met Lotte of deze afspraak nog goed werkt.</span> : null}</Veld> : null}
       </dl>
 
       {a.koppeling ? <p className="mt-3 rounded-md bg-brand-soft/60 p-2 text-[11px]"><span className="inline-flex items-center gap-1.5"><AppIcon functie="link" maat="sm" vorm="kaal"/>{a.koppeling}</span></p> : null}
 
-      <Button variant="ghost" onClick={() => setHistorie(!historie)} className="mt-3 h-auto min-h-11 w-full justify-between border-t border-border px-0 pt-2 text-sm font-semibold">{t("agreements.changeHistory", "Wijzigingsgeschiedenis")} <span className="text-ink-soft" aria-hidden>{historie ? "⌃" : "›"}</span></Button>
+      <Button variant="ghost" onClick={() => setHistorie(!historie)} className="mt-3 h-auto min-h-11 w-full justify-between border-t border-border px-0 pt-2 text-sm font-semibold"><span>{t("agreements.changeHistory", "Wijzigingsgeschiedenis")}</span> <ChevronDown className={"size-4 text-ink-soft shrink-0 transition-transform " + (historie ? "rotate-180" : "")} /></Button>
       {historie ? (<div className="space-y-2 text-xs">
           {v ? <p className="text-ink-soft">{v.door} stelde op {v.datum} een {v.soort === "nieuw" ? "nieuwe afspraak" : "wijziging"} voor. Wacht op goedkeuring van {nodig(v).join(" en ")}.</p> : null}
           {a.geschiedenis.map((g, i) => <p key={i}><span className="text-ink-soft">{g.datum}</span><br />{g.tekst}</p>)}
@@ -249,7 +255,7 @@ function NieuweAfspraak({ pro, voorinvul = "", onVerstuur, onAnnuleer }) {
       {!onderwerp ? (<>
           <p className="font-display text-lg font-bold">{t("agreements.whatTopicQuestion", "Waar willen jullie iets over afspreken?")}</p>
           <div className="divide-y divide-border rounded-md border border-border">
-            {ONDERWERPEN.map(([l, g]) => <button key={l} onClick={() => setOnderwerp(g)} className="flex min-h-11 w-full items-center justify-between px-3 text-left text-sm">{l}<span className="text-ink-soft" aria-hidden>›</span></button>)}
+            {ONDERWERPEN.map(([l, g]) => <button key={l} onClick={() => setOnderwerp(g)} className="flex min-h-11 w-full items-center justify-between px-3 text-left text-sm cursor-pointer hover:bg-muted/40"><span>{l}</span><ChevronRight className="size-4 shrink-0 text-ink-soft" /></button>)}
           </div>
         </>) : (<>
           <p className="font-display text-lg font-bold">{t("agreements.whatToAgreeQuestion", "Wat wil je afspreken?")}</p>

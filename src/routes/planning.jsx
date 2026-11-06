@@ -4,7 +4,7 @@ import { createFileRoute, Link, Navigate, useRouter } from "@tanstack/react-rout
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { CalendarDays, CalendarRange, Gift, Palmtree } from "lucide-react";
+import { CalendarDays, CalendarRange, Gift, Palmtree, ChevronRight } from "lucide-react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { ContextToevoegen } from "@/components/ContextToevoegen";
 import { VerdeelHulp, ReisHulp } from "@/components/VerdeelHulp";
@@ -140,7 +140,14 @@ function Planning() {
                     <p className="text-xs text-ink-soft">Controleer ook de eisen van je bestemming. De app kent de geldigheidsdatum niet.</p>
                     <label className="flex items-center gap-2 text-sm"><input type="radio" name="reisdocument" checked={reisdocument === "geldig"} onChange={() => setReisdocument("geldig")}/>Ja, gecontroleerd</label>
                     <label className="flex items-center gap-2 text-sm"><input type="radio" name="reisdocument" checked={reisdocument === "regelen"} onChange={() => setReisdocument("regelen")}/>Nog te regelen</label>
-                    {reisdocument === "regelen" ? <Button asChild variant="link" size="sm" className="h-auto px-0"><Link to="/taken" search={{ taak: `Paspoort/ID controleren voor ${reis.bestemming || voorstel.naam}` }}>Als taak voorbereiden →</Link></Button> : null}
+                    {reisdocument === "regelen" ? (
+                      <Button asChild variant="link" size="sm" className="h-auto px-0 inline-flex items-center gap-1">
+                        <Link to="/taken" search={{ taak: `Paspoort/ID controleren voor ${reis.bestemming || voorstel.naam}` }}>
+                          <span>Als taak voorbereiden</span>
+                          <ChevronRight className="size-3.5" />
+                        </Link>
+                      </Button>
+                    ) : null}
                   </fieldset>
                   <input type="file" multiple onChange={(e) => setDocs(Array.from(e.target.files ?? []).map((f) => f.name))} className="w-full text-xs" aria-label="Documenten toevoegen"/>
                   {docs.length ? <p className="text-xs text-ink-soft">Toegevoegd: {docs.join(", ")}</p> : null}
@@ -172,7 +179,7 @@ function Planning() {
             {[...vak].sort((a, b) => Number(a.status === "afgesproken") - Number(b.status === "afgesproken")).map((v) => (<Card key={v.id}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <Link to="/vakantie/$id" params={{ id: v.id }} className="font-display font-bold underline-offset-2 hover:underline">{v.naam} ›</Link>
+                    <Link to="/vakantie/$id" params={{ id: v.id }} className="inline-flex items-center gap-1 font-display font-bold underline-offset-2 hover:underline"><span>{v.naam}</span><ChevronRight className="size-4" /></Link>
                     <p className="text-sm text-ink-soft">{v.periode}</p>
                     {v.details && <p className="mt-1 flex items-center gap-1 text-xs"><AppIcon functie="vliegen" maat="sm" vorm="kaal"/>{v.details}</p>}
                     {v.status === "ingetrokken" ? <p className="mt-1 text-[11px] text-ink-soft">Ingetrokken · huidige verdeling van de week blijft gelden</p> : v.status === "afgesproken" ? <p className="mt-1 text-[11px] text-brand">Afgesproken ✓</p> : v.status === "voorstel" ? <p className="mt-1 text-[11px] text-ink-soft">Voorstel verstuurd · reactie open · huidige verdeling van de week blijft gelden</p> : <p className="mt-1 text-[11px] text-ink-soft">Huidige verdeling van de week blijft gelden</p>}

@@ -4,9 +4,12 @@ import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { kinderen } from "@/lib/demo-data";
 import { useStart, leeftijdTekst } from "@/lib/start-store";
 import { KindSheet } from "@/components/EersteHome";
+import { ChildSheet } from "@/components/ChildSheet";
 import { useState } from "react";
 import { ProfielBeeld } from "@/components/ProfielBeeld";
 import { useKring, persoonLabel } from "@/lib/kring-store";
+import { Plus, UserPlus, ChevronRight } from "lucide-react";
+
 export const Route = createFileRoute("/kinderen/")({
     head: () => ({
         meta: [
@@ -20,51 +23,80 @@ export const Route = createFileRoute("/kinderen/")({
     }),
     component: Kinderen,
 });
+
 function Kinderen() {
     const { t } = useTranslation();
     const st = useStart();
     const kring = useKring();
     const betrokkenen = kring.personen.filter((p) => !p.ingetrokken && st.kinderen.some((k) => p.rechten[k.id]));
     const [kindOpen, setKindOpen] = useState(false);
-    if (st.eigen)
-        return (<AppShell>
-        <PageHeader titel={t("childrenSection.title", "Kinderen")} subtitel={t("childrenSection.subtitle", "Dezelfde informatie, in beide huizen")}/>
-        <div className="mt-6 divide-y divide-border border-y border-border">
-          {st.kinderen.map((k) => (<Link key={k.id} to="/kinderen/$kindId" params={{ kindId: k.id }} className="flex min-h-14 items-center gap-4 py-3">
-              <ProfielBeeld beeld={k.beeld} naam={k.naam} kleur={k.kleur} maat={48}/>
-              <div className="flex-1">
-                <p className="font-display text-lg font-bold">{k.naam}</p>
-                {leeftijdTekst(k.geboortedatum) ? <p className="text-xs text-ink-soft">{leeftijdTekst(k.geboortedatum)}</p> : null}
-              </div>
-              <span className="text-xl text-ink-soft">›</span>
-            </Link>))}
+    const [childSheetOpen, setChildSheetOpen] = useState(false);
+
+    const lijst = st.eigen ? st.kinderen : kinderen;
+
+    return (
+      <AppShell>
+        <div className="flex items-center justify-between">
+          <PageHeader titel={t("childrenSection.title", "Kinderen")} subtitel={t("childrenSection.subtitle", "Dezelfde informatie, in beide huizen")}/>
         </div>
-        {!st.kinderen.length ? <p className="mt-4 text-sm text-ink-soft">{t("childrenSection.noChildrenYet", "Je hebt nog geen kind toegevoegd.")}</p> : null}
-        <details className="mt-6 [&_summary::-webkit-details-marker]:hidden">
-          <summary className="flex min-h-[44px] cursor-pointer list-none items-center text-sm font-semibold text-ink-soft">{t("common.manage", "Beheren")} ›</summary>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <button onClick={() => setKindOpen("kind")} className="min-h-[44px] rounded-xl border border-border px-4 text-sm font-semibold">{t("sheets.child.title", "Kind toevoegen")}</button>
-            <button onClick={() => setKindOpen("familie")} className="min-h-[44px] rounded-xl border border-border px-4 text-sm font-semibold">{t("sheets.child.addFamilyMember", "Familielid of betrokkene toevoegen")}</button>
+
+        {/* Action Button: + Kind toevoegen */}
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setChildSheetOpen(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand py-3 px-4 text-sm font-semibold text-primary-foreground hover:bg-brand/90 transition shadow-xs cursor-pointer"
+          >
+            <Plus className="size-4" />
+            <span>{t("sheets.child.title", "+ Kind toevoegen")}</span>
+          </button>
+        </div>
+
+        <div className="mt-5 space-y-3">
+          {lijst.map((k) => (
+            <Link key={k.id} to={`/kinderen/${k.id}`} className="block">
+              <Card className="flex items-center gap-4 p-3.5 hover:border-brand/40 transition">
+                {k.avatar || k.beeld ? (
+                  <img src={k.avatar || k.beeld} alt={k.naam} className="size-16 rounded-xl object-cover shadow-2xs"/>
+                ) : (
+                  <span className="grid size-16 place-items-center rounded-xl bg-brand-soft font-display text-2xl font-bold text-brand shadow-2xs">
+                    {k.naam.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-display text-lg font-bold text-ink truncate">{k.naam}</p>
+                  <p className="text-xs text-ink-soft truncate">
+                    {k.geboortedatum ? leeftijdTekst(k.geboortedatum) : (k.leeftijd ? `${k.leeftijd} jaar` : "Profiel bekijken")}
+                    {k.school ? ` · ${k.school}` : ""}
+                  </p>
+                </div>
+                <ChevronRight className="size-5 text-ink-soft shrink-0 pr-1" />
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        {!lijst.length ? (
+          <div className="mt-6 rounded-2xl border border-dashed border-border p-6 text-center">
+            <p className="text-sm font-semibold text-ink">{t("childrenSection.noChildrenYet", "Je hebt nog geen kind toegevoegd.")}</p>
+            <p className="mt-1 text-xs text-ink-soft">Voeg je kind toe om school, afspraken en zorgverdeling bij te houden.</p>
+            <button
+              onClick={() => setChildSheetOpen(true)}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-brand/90 transition cursor-pointer"
+            >
+              <Plus className="size-3.5" />
+              <span>{t("sheets.child.title", "Kind toevoegen")}</span>
+            </button>
           </div>
-          {betrokkenen.length ? <div className="mt-4 divide-y divide-border border-y border-border">
-            {betrokkenen.map((p) => <div key={p.id} className="py-3"><p className="text-sm font-semibold">{persoonLabel(p)}</p>{p.contact ? <p className="text-xs text-ink-soft">{p.contact}</p> : null}</div>)}
-          </div> : null}
-        </details>
+        ) : null}
+
+        {/* Dynamic Child Creation Sheet */}
+        <ChildSheet
+          open={childSheetOpen}
+          onClose={() => setChildSheetOpen(false)}
+          onChildAdded={() => setChildSheetOpen(false)}
+        />
         <KindSheet open={!!kindOpen} start={kindOpen || "kind"} onClose={() => setKindOpen(false)}/>
-      </AppShell>);
-    return (<AppShell>
-      <PageHeader titel={t("childrenSection.title", "Kinderen")} subtitel={t("childrenSection.subtitle", "Dezelfde informatie, in beide huizen")}/>
-      <div className="mt-6 space-y-3">
-        {kinderen.map((k) => (<Link key={k.id} to="/kinderen/$kindId" params={{ kindId: k.id }} className="block">
-            <Card className="flex items-center gap-4">
-              <img src={k.avatar} alt={k.naam} className="size-16 rounded-md object-cover"/>
-              <div className="flex-1">
-                <p className="font-display text-lg font-bold">{k.naam}</p>
-                <p className="text-xs text-ink-soft">{k.leeftijd} jaar · {k.school}</p>
-              </div>
-              <span className="text-xl text-ink-soft">›</span>
-            </Card>
-          </Link>))}
-      </div>
-    </AppShell>);
+      </AppShell>
+    );
 }

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { accepteerHulp, useHulpVerzoeken } from "@/lib/taken-store";
 import { z } from "zod";
-import { Bell, Check, Heart, Home, Menu, ShieldPlus } from "lucide-react";
+import { Bell, Check, Heart, Home, Menu, ShieldPlus, ChevronRight } from "lucide-react";
 import { kinderen, parents, useGezondheid } from "@/lib/demo-data";
 import { useMomentjes } from "@/lib/momentjes-store";
 import { DeelMomentje, MomentjeKaart } from "@/components/Momentjes";
@@ -30,7 +30,8 @@ function Verzorger() {
         <p className="mt-2 text-sm text-ink-soft">Bekijk de app zoals iemand uit de kring hem ziet. Iedereen ziet alleen wat ouders met hem of haar delen.</p>
         <div className="mt-6 divide-y divide-border border-y border-border">
           {kring.personen.map((p) => (<Link key={p.id} to="/verzorger" search={{ p: p.id, s: p.sleutel }} className="flex items-center justify-between py-3 text-sm">
-              <span><b>{persoonLabel(p)}</b><span className="block text-xs text-ink-soft">{p.rol}{isActief(p) ? "" : " · geen toegang meer"}</span></span>›
+              <span><b>{persoonLabel(p)}</b><span className="block text-xs text-ink-soft">{p.rol}{isActief(p) ? "" : " · geen toegang meer"}</span></span>
+              <ChevronRight className="size-4 shrink-0 text-ink-soft" />
             </Link>))}
         </div>
         <Link to="/meer" className="mt-6 block text-center text-xs font-semibold text-brand">Terug naar de ouder-app</Link>
@@ -119,7 +120,10 @@ function KringApp({ p }) {
           {mijnMomentjes[0] ? (<section className="mt-8">
               <h2 className={kop}>Nieuw Momentje</h2>
               <p className="mt-2 text-sm">{mijnMomentjes[0].tekst}</p>
-              <button onClick={() => setTab("momentjes")} className="mt-2 text-xs font-semibold text-brand">Bekijk Momentje ›</button>
+              <button onClick={() => setTab("momentjes")} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+                <span>Bekijk Momentje</span>
+                <ChevronRight className="size-3.5" />
+              </button>
             </section>) : null}
 
           {meldingen.length ? (<section className="mt-8">

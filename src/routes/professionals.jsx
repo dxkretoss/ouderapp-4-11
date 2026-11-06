@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AppLogo } from "@/components/AppLogo";
 import { Badge, FilterBalk, OverzichtKaart } from "@/components/ui-kit";
 import { InterneAfsluiting } from "@/components/pro/BetrokkenheidAfsluiten";
@@ -297,7 +298,10 @@ function ProCockpit({ onOuderKant, dossierState }) {
       <div className="mt-auto space-y-0.5 border-t border-border pt-3">
         {onderNav.map((n) => <NavKnop key={n} n={n}/>)}
         <button onClick={onOuderKant} className="mt-2 block w-full px-3 py-1.5 text-left text-[11px] text-ink-soft hover:text-ink">Toegang regelen als ouder</button>
-        <Link to="/meer" className="block px-3 py-1.5 text-[11px] text-ink-soft hover:text-ink">← Terug naar gezinsapp</Link>
+        <Link to="/meer" className="flex items-center gap-1 px-3 py-1.5 text-[11px] text-ink-soft hover:text-ink">
+          <ChevronLeft className="size-3.5" />
+          <span>Terug naar gezinsapp</span>
+        </Link>
       </div>
     </>);
     return (<div className="pro-cockpit min-h-screen w-full bg-background font-body text-ink">
@@ -420,14 +424,14 @@ function ProToevoegen({ dossiers, huidig, werk, onKies, onNieuw }) {
           {!wacht && <Button type="button" variant="ghost" onClick={() => { setOpen(false); onNieuw(); }} className="h-auto w-full justify-start whitespace-normal px-0 py-3"><AppIcon functie="kinderen" maat="lg"/><span className="text-left"><span className="block font-semibold">Nieuw gezin aanmelden</span><span className="block text-xs font-normal text-ink-soft">Intake voorbereiden · voorbeeldflow</span></span></Button>}
           {wacht ? dossiers.map((d) => (<Button key={d.id} type="button" variant="ghost" onClick={() => { setOpen(false); onKies(d.id, wacht); }} className="h-auto w-full justify-start whitespace-normal rounded-none px-0 py-3 text-left hover:bg-transparent">
               <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-ink">{d.gezin}</span></span>
-              <span aria-hidden="true" className="text-ink-soft">›</span>
+              <ChevronRight className="size-5 shrink-0 text-ink-soft" />
             </Button>)) : opties.map((o) => (<Button key={o.modus} type="button" variant="ghost" onClick={() => kiesModus(o.modus)} className="h-auto w-full justify-start whitespace-normal rounded-none px-0 py-3.5 text-left hover:bg-transparent">
               <AppIcon functie={o.functie} maat="lg"/>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-ink">{o.titel}</span>
                 <span className="mt-0.5 block text-xs font-normal leading-relaxed text-ink-soft">{o.uitleg}</span>
               </span>
-              <span aria-hidden="true" className="text-ink-soft">›</span>
+              <ChevronRight className="size-5 shrink-0 text-ink-soft" />
             </Button>))}
         </div>
       </SheetContent>
@@ -442,7 +446,7 @@ function ContextKolom({ dossiers, werk, onOpen }) {
         <h2 className={kopStijl}>Recent vastgelegd</h2>
         <div className="mt-2 divide-y divide-border border-y border-border">
           {recent.map((l) => (<Button key={l.id} variant="ghost" onClick={() => onOpen(l.dossier, bronTab[l.soort])} className="h-auto w-full justify-start whitespace-normal rounded-none px-0 py-2 text-left">
-              <span className="min-w-0 flex-1"><span className="block text-xs font-normal text-ink-soft">{datumKort(l.moment.slice(0, 10))} · {dossiers.find((d) => d.id === l.dossier)?.gezin}</span><span className="block text-sm font-normal">{l.tekst}</span></span><span className="shrink-0 text-xs text-brand">Bekijk bron ›</span>
+              <span className="min-w-0 flex-1"><span className="block text-xs font-normal text-ink-soft">{datumKort(l.moment.slice(0, 10))} · {dossiers.find((d) => d.id === l.dossier)?.gezin}</span><span className="block text-sm font-normal">{l.tekst}</span></span><span className="inline-flex items-center gap-1 shrink-0 text-xs text-brand"><span>Bekijk bron</span><ChevronRight className="size-3.5" /></span>
             </Button>))}
           {recent.length === 0 && <p className="py-2.5 text-xs text-ink-soft">Nog niets vastgelegd.</p>}
         </div>
@@ -472,7 +476,7 @@ function SindsLaatsteBezoek({ dossier, onBron }) {
     if (tel("veiligheid") && (r.includes("veiligBekijken") || r.includes("veiligBeheren")))
         punten.push({ tekst: `${tel("veiligheid")} registratie veiligheidsafspraken`, tab: "Veiligheid" });
     const Bron = ({ tab, children }) => (<button onClick={() => onBron(tab)} className="group flex w-full items-baseline justify-between gap-3 py-1.5 text-left text-sm">
-      <span>{children}</span><span className="shrink-0 text-[11px] text-ink-soft group-hover:text-brand">Bekijk bron →</span>
+      <span>{children}</span><span className="inline-flex items-center gap-1 shrink-0 text-[11px] text-ink-soft group-hover:text-brand"><span>Bekijk bron</span><ChevronRight className="size-3" /></span>
     </button>);
     return (<div className="border-t border-border pt-3">
       <h2 className={kopStijl}>Sinds je laatste bezoek</h2>
@@ -495,7 +499,10 @@ function ProDocumenten({ dossiers, onOpen }) {
             const n = werk.log.filter((l) => l.dossier === d.id && l.soort === "documenten").length;
             return (<button key={d.id} onClick={() => onOpen(d.id, "Documenten")} className="flex w-full items-center justify-between gap-3 px-2 py-3 text-left transition-colors duration-200 hover:bg-muted/50">
               <span className="text-sm font-semibold">{d.gezin}</span>
-              <span className="text-xs text-ink-soft">{n ? `${n} recent toegevoegd` : "Geen nieuwe documenten"} ›</span>
+              <span className="inline-flex items-center gap-1 text-xs text-ink-soft">
+                <span>{n ? `${n} recent toegevoegd` : "Geen nieuwe documenten"}</span>
+                <ChevronRight className="size-3.5" />
+              </span>
             </button>);
         })}
         {met.length === 0 && <p className="py-3 text-sm text-ink-soft">Geen dossiers met documenttoegang.</p>}
@@ -575,11 +582,17 @@ function Dashboard({ dossiers, setFilter, onOpen, naar, naarAgendaDag }) {
                 <span className="block text-sm font-semibold">{d.gezin}</span>
                 <span className="block text-xs text-ink-soft">Nog geen gegevens · berichten en AI-interventies: —</span>
               </span>
-              <span className="shrink-0 text-sm text-brand">Bekijk gezin →</span>
+              <span className="inline-flex items-center gap-1 shrink-0 text-sm text-brand">
+                <span>Bekijk gezin</span>
+                <ChevronRight className="size-4" />
+              </span>
             </button>))}
           {gezinnen.length === 0 && <p className="py-3 text-sm text-ink-soft">Nog geen gezinnen met toegang.</p>}
         </div>
-        <button onClick={() => naar("Dossiers")} className="mt-2 text-sm text-brand hover:underline">Bekijk alle gezinnen →</button>
+        <button onClick={() => naar("Dossiers")} className="mt-2 inline-flex items-center gap-1 text-sm text-brand hover:underline">
+          <span>Bekijk alle gezinnen</span>
+          <ChevronRight className="size-4" />
+        </button>
       </section>
 
       <section aria-labelledby="werk-kop">
@@ -588,12 +601,12 @@ function Dashboard({ dossiers, setFilter, onOpen, naar, naarAgendaDag }) {
           <button onClick={naarAgendaDag} className="flex items-center gap-3 rounded-lg border border-border px-3 py-3 text-left transition-colors hover:bg-brand-soft">
             <AppIcon functie="agenda" maat="sm"/>
             <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">Mijn afspraken · {vandaag.length}</span><span className="block text-xs text-ink-soft">{eerstvolgende ? `Eerstvolgende: ${eerstvolgende.tijd ? uur(eerstvolgende.tijd) + " · " : ""}${eerstvolgende.soort}` : "Geen afspraken vandaag"}</span></span>
-            <span aria-hidden className="text-ink-soft">›</span>
+            <ChevronRight className="size-5 shrink-0 text-ink-soft" />
           </button>
           <button onClick={() => naar("Acties")} className="flex items-center gap-3 rounded-lg border border-border px-3 py-3 text-left transition-colors hover:bg-brand-soft">
             <AppIcon functie="taken" maat="sm"/>
             <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">Mijn acties · {openActies.length}</span><span className="block text-xs text-ink-soft">{openActies.length === 1 ? "1 openstaande actie" : `${openActies.length} openstaande acties`}</span></span>
-            <span aria-hidden className="text-ink-soft">›</span>
+            <ChevronRight className="size-5 shrink-0 text-ink-soft" />
           </button>
         </div>
       </section>
@@ -620,12 +633,12 @@ function WeekAgenda({ dossiers, onOpen, naarAgenda }) {
     return (<section aria-label="Mijn agenda">
       <div className="grid grid-cols-[minmax(0,1fr)_max-content] items-center gap-2 sm:flex sm:justify-between">
         <h2 className="min-w-0 font-display text-xl">Mijn agenda</h2>
-        <Button variant="ghost" onClick={naarAgenda} className="h-auto shrink-0 px-0 py-1 text-xs font-normal text-brand">Volledig overzicht ›</Button>
+        <Button variant="ghost" onClick={naarAgenda} className="h-auto shrink-0 px-0 py-1 text-xs font-normal text-brand flex items-center gap-1"><span>Volledig overzicht</span><ChevronRight className="size-3.5" /></Button>
       </div>
       <div className="mt-1 flex items-center justify-between text-ink-soft">
-        <Button variant="ghost" size="icon" onClick={() => schuif(-7)} aria-label="Vorige week" className="size-11">‹</Button>
+        <Button variant="ghost" size="icon" onClick={() => schuif(-7)} aria-label="Vorige week" className="size-11"><ChevronLeft className="size-5" /></Button>
         <span className="text-xs">{maandag.toLocaleDateString("nl-NL", { day: "numeric", month: "long" })} – {dagen.at(-1)?.toLocaleDateString("nl-NL", { day: "numeric", month: "long" })}</span>
-        <Button variant="ghost" size="icon" onClick={() => schuif(7)} aria-label="Volgende week" className="size-11">›</Button>
+        <Button variant="ghost" size="icon" onClick={() => schuif(7)} aria-label="Volgende week" className="size-11"><ChevronRight className="size-5" /></Button>
       </div>
       <div className="mt-2 grid grid-cols-7 gap-1" role="tablist" aria-label="Kies een dag">
         {dagen.map((d) => {
@@ -643,7 +656,7 @@ function WeekAgenda({ dossiers, onOpen, naarAgenda }) {
         {vandaagLijst.map((a) => (<Button variant="ghost" key={a.ts + a.dossier + a.soort} onClick={() => onOpen(a.dossier, "Afspraken")} className="grid h-auto w-full grid-cols-[80px_minmax(0,1fr)_auto] items-center gap-3 whitespace-normal rounded-none px-0 py-1.5 text-left font-normal hover:bg-muted/40">
             <span className="text-xs font-semibold tabular-nums text-ink-soft">{a.tijd ? uur(a.tijd) : "—"}</span>
             <span className="min-w-0"><span className="block text-sm font-semibold">{a.soort}</span><span className="block text-[11px] text-ink-soft">{naam(a.dossier)}</span></span>
-            <span className="text-ink-soft" aria-hidden>›</span>
+            <ChevronRight className="size-4 text-ink-soft shrink-0" />
           </Button>))}
         {vandaagLijst.length === 0 && <p className="px-2 py-2 text-sm text-ink-soft">Geen afspraken gepland</p>}
       </div>

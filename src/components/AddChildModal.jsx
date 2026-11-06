@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { childColors, defaultChildColor } from "@/context/AppContext";
 import { BeeldKiezer } from "@/components/ProfielBeeld";
@@ -39,9 +40,19 @@ export function AddChildModal({ isOpen, onClose, onSave, existingCount = 0 }) {
     setPhase("form");
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-t-3xl sm:rounded-2xl border border-border bg-background p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+  const [phoneEl, setPhoneEl] = useState(() =>
+    typeof document !== "undefined" ? document.getElementById("app-shell-phone") : null
+  );
+
+  useEffect(() => {
+    if (!phoneEl && typeof document !== "undefined") {
+      setPhoneEl(document.getElementById("app-shell-phone"));
+    }
+  }, [phoneEl]);
+
+  const modalNode = (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 rounded-3xl overflow-hidden animate-in fade-in duration-200">
+      <div className="w-full rounded-3xl border border-border bg-background p-5 shadow-2xl max-h-[92%] overflow-y-auto my-auto">
         <div className="flex items-center justify-between pb-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <span className="grid size-9 place-items-center rounded-xl bg-brand/12 text-brand">
@@ -177,4 +188,6 @@ export function AddChildModal({ isOpen, onClose, onSave, existingCount = 0 }) {
       </div>
     </div>
   );
+
+  return phoneEl ? createPortal(modalNode, phoneEl) : modalNode;
 }

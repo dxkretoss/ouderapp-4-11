@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { AppIcon } from "@/components/AppIcon";
 import { Badge, FilterBalk } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,7 @@ export function CommunicatiePatronen() {
     <div className="mt-3 divide-y divide-border">
       {patroonCategorieen.map((c) => <Button variant="ghost" key={c.titel} onClick={() => setOpen(c)} className="flex h-auto min-h-11 w-full items-center justify-between gap-2 whitespace-normal px-0 py-3 text-left">
         <span className="min-w-0"><span className="block text-sm font-semibold">{c.titel}</span><span className="mt-0.5 block text-sm text-ink-soft">Nog niet beschikbaar · {periode}</span></span>
-        <span aria-hidden className="text-ink-soft">›</span>
+        <ChevronRight className="size-4 text-ink-soft shrink-0" />
       </Button>)}
     </div>
     <Button variant="outline" className="mt-3 h-auto min-h-11 whitespace-normal" onClick={() => setToestemming(true)}><AppIcon functie="slot" vorm="kaal" maat="sm"/>AI-analyse van communicatiepatronen</Button>

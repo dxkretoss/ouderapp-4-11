@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -173,7 +174,14 @@ function Boodschappen() {
       </section>
 
       {gekocht.length ? (<div className="mt-4">
-          <button onClick={() => setGekochtOpen(!gekochtOpen)} aria-expanded={gekochtOpen} className="min-h-11 text-sm font-semibold text-brand">{gekochtOpen ? "Verberg gekocht" : `Gekocht (${gekocht.length}) ›`}</button>
+          <button onClick={() => setGekochtOpen(!gekochtOpen)} aria-expanded={gekochtOpen} className="min-h-11 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+            {gekochtOpen ? "Verberg gekocht" : (
+              <>
+                <span>Gekocht ({gekocht.length})</span>
+                <ChevronRight className="size-4" />
+              </>
+            )}
+          </button>
           {gekochtOpen ? <ul className="mt-2 divide-y divide-border rounded-md border border-border bg-card">{gekocht.map(rij)}</ul> : null}
         </div>) : null}
     </AppShell>);

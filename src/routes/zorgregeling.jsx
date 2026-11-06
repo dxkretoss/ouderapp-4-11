@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { BewerkPotlood, FilterBalk } from "@/components/ui-kit";
 import { kindNamen, uitzonderingenVan, useZorg, zorgDag } from "@/lib/zorg-store";
 import { z } from "zod";
-import { CalendarRange, Repeat2 } from "lucide-react";
+import { CalendarRange, Repeat2, ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { ContextToevoegen } from "@/components/ContextToevoegen";
@@ -99,7 +99,10 @@ function Zorgregeling() {
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-soft">{t("care.nextSwitch", "Volgende wissel")}</p>
           {wissel ? <p className="mt-1 text-sm font-semibold">{weekdag[(wissel.datum - 1) % 7][0].toUpperCase() + weekdag[(wissel.datum - 1) % 7].slice(1)} {wissel.datum} maart · 14:30 uur → naar {parents[wissel.ouder].naam}</p> : <p className="mt-1 text-sm text-ink-soft">{t("care.noMoreSwitchesThisMonth", "Deze maand geen wissel meer")}</p>}
-          <Link to="/overdracht" className="mt-1 inline-block text-xs font-semibold text-brand">{t("care.prepareHandover", "Overdracht voorbereiden ›")}</Link>
+          <Link to="/overdracht" className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span>{t("care.prepareHandover", "Overdracht voorbereiden")}</span>
+            <ChevronRight className="size-3.5" />
+          </Link>
         </div>
       </div>
       <FilterBalk className="mt-4" opties={[{ id: "emma", label: "Emma" }, { id: "noah", label: "Noah" }]} waarde={kind} onChange={(k) => { setKind(k); setGekozen(null); }}/>
@@ -133,7 +136,7 @@ function Zorgregeling() {
               <span className="block text-sm font-semibold">{uitzRaw.length === 1 ? "1 dag is" : `${uitzRaw.length} dagen zijn`} deze maand anders</span>
               <span className="block text-xs text-ink-soft">{groepen.map((g) => g.reden).join(" · ")}</span>
             </span>
-            <span className="text-ink-soft">{andersOpen ? "⌃" : "›"}</span>
+            <ChevronDown className={`size-5 text-ink-soft shrink-0 transition-transform ${andersOpen ? "rotate-180" : ""}`} />
           </button>
           {andersOpen ? (<ul className="divide-y divide-border border-t border-border">
               {groepen.map((u) => (<li key={u.reden + u.ouder} className="flex items-center justify-between py-2.5">

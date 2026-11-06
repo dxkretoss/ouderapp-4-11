@@ -98,6 +98,7 @@ export const wijzigPersoon = (id, p) => {
     zet({ personen: state.personen.map((x) => (x.id === id ? { ...x, ...p } : x)) });
 };
 export const trekIn = (id) => wijzigPersoon(id, { ingetrokken: true, sleutel: crypto.randomUUID() });
+export const verwijderPersoon = (id) => zet({ personen: state.personen.filter((x) => x.id !== id) });
 export const zetWie = (momentId, wie) => {
     const m = state.momenten.find((x) => x.id === momentId);
     if (m && state.wie[momentId] !== wie)

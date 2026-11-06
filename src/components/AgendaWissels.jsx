@@ -36,7 +36,7 @@ export function AgendaWissels({ datum, gegevens }) {
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
+        <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[80dvh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8">
           <SheetHeader>
             <SheetTitle>{t("calendar.handoverMoment", "Wisselmoment")}</SheetTitle>
             <SheetDescription>

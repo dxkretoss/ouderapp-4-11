@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { z } from "zod";
@@ -27,7 +28,10 @@ function Uitnodiging() {
     const knop = "w-full rounded-md bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40";
     if (stap === "klaar")
         return (<Kader><h1 className="font-display text-3xl">Welkom in de kring</h1><p className="mt-2 text-sm text-ink-soft">Je uitnodiging is bevestigd. Je ziet alleen wat de ouders met je delen.</p>
-      <Link to="/verzorger" className="mt-6 block text-sm font-semibold text-brand">Naar de app ›</Link></Kader>);
+      <Link to="/verzorger" className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+        <span>Naar de app</span>
+        <ChevronRight className="size-4" />
+      </Link></Kader>);
     if (!p)
         return (<Kader><h1 className="font-display text-2xl">Deze uitnodiging werkt niet</h1><p className="mt-2 text-sm text-ink-soft">De link is al gebruikt, ingetrokken of klopt niet. Vraag de ouders om een nieuwe uitnodiging.</p></Kader>);
     const kids = kinderen.filter((k) => p.rechten[k.id]);

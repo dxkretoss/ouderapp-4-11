@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
@@ -143,8 +144,9 @@ export function Solo() {
             </div>
           ) : null}
           {delen === "verstuurd" ? <p className="mt-3 text-xs text-brand">{t("solo.inviteReadyNotice", "✓ Uitnodiging klaargezet. Pas als de andere ouder accepteert, wordt gedeeld wat je koos.")}</p> : null}
-          <Link to="/professionals" className="mt-3 inline-block text-xs font-semibold text-brand">
-            {t("solo.askMediator", "Of vraag hulp aan een mediator ›")}
+          <Link to="/professionals" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span>{t("solo.askMediator", "Of vraag hulp aan een mediator")}</span>
+            <ChevronRight className="size-3.5" />
           </Link>
         </Card>
       </AppShell>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { GeldInvoer } from "@/components/GeldInvoer";
 import { leesGeld } from "@/lib/geld-invoer";
 import { useVasteLasten, voegLastToe } from "@/lib/vaste-lasten-store";
@@ -15,7 +16,7 @@ export function VasteLasten() {
     const [toon, setToon] = useState(null);
     const Rij = ({ id, titel, sub }) => (<button onClick={() => setToon(toon === id ? null : id)} aria-expanded={toon === id} className="flex min-h-14 w-full items-center gap-3 py-2.5 text-left">
       <span className="min-w-0 flex-1"><span className="block font-display text-sm font-bold">{titel}</span><span className="block truncate text-xs text-ink-soft">{sub}</span></span>
-      <span aria-hidden className="text-ink-soft">{toon === id ? "–" : "›"}</span>
+      <ChevronDown className={`size-5 text-ink-soft shrink-0 transition-transform ${toon === id ? "rotate-180" : ""}`} />
     </button>);
     return (<section className="mt-6 divide-y divide-border border-y border-border">
       <div>

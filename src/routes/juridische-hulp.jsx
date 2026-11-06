@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { juridischeBronnen } from "@/lib/juridische-bronnen";
+
 export const Route = createFileRoute("/juridische-hulp")({
     head: () => ({
         meta: [
@@ -16,13 +17,18 @@ export const Route = createFileRoute("/juridische-hulp")({
     }),
     component: JuridischeHulp,
 });
+
 function JuridischeHulp() {
     const { t } = useTranslation();
     const groepen = [...new Set(juridischeBronnen.map((b) => b.groep))];
+
     return (<AppShell>
-      <PageHeader titel="Juridisch" subtitel="Externe hulp, en de voorwaarden van de app"/>
+      <PageHeader
+        titel={t("legalHelp.title", "Juridisch")}
+        subtitel={t("legalHelp.subtitle", "Externe hulp, en de voorwaarden van de app")}
+      />
       <p className="mt-5 text-sm leading-relaxed text-ink-soft">
-        Ouderschap & Co geeft geen juridisch advies. Hieronder vind je betrouwbare organisaties waar je terechtkunt. Ze openen als externe website.
+        {t("legalHelp.intro", "Ouderschap & Co geeft geen juridisch advies. Hieronder vind je betrouwbare organisaties waar je terechtkunt. Ze openen als externe website.")}
       </p>
       {groepen.map((g) => (<section key={g} className="mt-6">
           <h2 className="text-[11px] font-semibold tracking-wider text-ink-soft uppercase">{g}</h2>
@@ -31,20 +37,24 @@ function JuridischeHulp() {
                 <span className="flex-1">
                   <span className="block text-sm font-semibold">{b.titel}</span>
                   <span className="block text-xs text-ink-soft">{b.uitleg}</span>
-                  <span className="mt-0.5 block text-[11px] text-ink-soft">Externe website · {new URL(b.url).hostname.replace("www.", "")}</span>
+                  <span className="mt-0.5 block text-[11px] text-ink-soft">
+                    {t("legalHelp.externalSite", "Externe website · {{host}}", { host: new URL(b.url).hostname.replace("www.", "") })}
+                  </span>
                 </span>
-                <ExternalLink className="mt-1 size-4 shrink-0 text-ink-soft" strokeWidth={1.6} aria-label="Opent externe website"/>
+                <ExternalLink className="mt-1 size-4 shrink-0 text-ink-soft" strokeWidth={1.6} aria-label="External link"/>
               </a>))}
           </div>
         </section>))}
       <section className="mt-8">
-        <h2 className="text-[11px] font-semibold tracking-wider text-ink-soft uppercase">Over deze app</h2>
+        <h2 className="text-[11px] font-semibold tracking-wider text-ink-soft uppercase">
+          {t("legalHelp.aboutApp", "Over deze app")}
+        </h2>
         <Link to="/juridisch" className="mt-2 flex items-center justify-between border-y border-border py-3.5">
           <span>
-            <span className="block text-sm font-semibold">Voorwaarden & privacy</span>
-            <span className="block text-xs text-ink-soft">Gebruiksvoorwaarden, privacyverklaring en abonnement</span>
+            <span className="block text-sm font-semibold">{t("legalHelp.termsAndPrivacy", "Voorwaarden & privacy")}</span>
+            <span className="block text-xs text-ink-soft">{t("legalHelp.termsAndPrivacyDesc", "Gebruiksvoorwaarden, privacyverklaring en abonnement")}</span>
           </span>
-          <span aria-hidden className="text-ink-soft">›</span>
+          <ChevronRight className="size-5 shrink-0 text-ink-soft" />
         </Link>
       </section>
     </AppShell>);

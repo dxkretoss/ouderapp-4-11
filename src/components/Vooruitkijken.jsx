@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Compass, MoreHorizontal } from "lucide-react";
+import { Compass, MoreHorizontal, ChevronRight } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { laterHerinneren, morgenOverzicht, nietMeerTonen, nogTeRegelenDezeWeek, sindsLaatsteBezoek, suggesties, useSlimmeHulp, weekOverzicht } from "@/lib/slimme-hulp";
 import { useTaken } from "@/lib/taken-store";
@@ -170,9 +170,14 @@ export function Vooruitkijken() {
           <button
             onClick={() => setWeek(!week)}
             aria-expanded={week}
-            className="mt-1 text-xs font-semibold text-brand cursor-pointer hover:underline"
+            className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand cursor-pointer hover:underline"
           >
-            {week ? t("home.hideThisWeek", "Deze week verbergen") : t("home.viewThisWeek", "Deze week bekijken →")}
+            {week ? t("home.hideThisWeek", "Deze week verbergen") : (
+              <>
+                <span>{t("home.viewThisWeek", "Deze week bekijken")}</span>
+                <ChevronRight className="size-3.5" />
+              </>
+            )}
           </button>
           {week ? (
             <div className="mt-2 space-y-3 border-l-2 border-border pl-3">

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AppIcon } from "@/components/AppIcon";
@@ -27,7 +27,7 @@ export function ContextToevoegen({ titel, acties, toegestaan = true, open, onOpe
                     <span className="block text-sm font-semibold text-ink">{actie.titel}</span>
                     <span className="mt-0.5 block text-xs font-normal leading-relaxed text-ink-soft">{actie.uitleg}</span>
                   </span>
-                  <span aria-hidden="true" className="text-ink-soft">›</span>
+                  <ChevronRight className="size-5 shrink-0 text-ink-soft" />
                 </Button>
               </SheetClose>);
         })}

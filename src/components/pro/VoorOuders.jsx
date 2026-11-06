@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { AppIcon } from "@/components/AppIcon";
 import { datumKort, markeerBerichtGezien, markeerGezamenlijk, momentKort, toggleActie, useProWerk, voorOudersVan, } from "@/lib/pro-journaal-store";
@@ -39,7 +39,12 @@ export function VoorOuders({ dossier, ouder, alleenLezen = false }) {
                 <p className="text-sm font-semibold">{a.tekst}</p>
                 <p className="text-xs text-ink-soft">{a.deadline ? `Uiterlijk ${datumKort(a.deadline)}` : a.omschrijving}</p>
                 {kan ? (<div className="mt-2 flex gap-2">
-                    {/rooster|upload|document/i.test(a.tekst) ? <Link to="/documenten" className={primair}>Uploaden ›</Link> : null}
+                    {/rooster|upload|document/i.test(a.tekst) ? (
+                      <Link to="/documenten" className={`${primair} inline-flex items-center gap-1`}>
+                        <span>Uploaden</span>
+                        <ChevronRight className="size-3.5" />
+                      </Link>
+                    ) : null}
                     <button onClick={() => toggleActie(a.id, o)} className={knop}>Gedaan</button>
                   </div>) : null}
               </li>))}
@@ -77,7 +82,16 @@ export function VoorOuders({ dossier, ouder, alleenLezen = false }) {
                 </div>
               </li>))}
           </ul>
-          {gedeeld.length > 3 ? <button onClick={() => setAlles(!alles)} className="mt-2 text-xs font-semibold text-brand">{alles ? "Minder tonen" : "Bekijk alles ›"}</button> : null}
+          {gedeeld.length > 3 ? (
+            <button onClick={() => setAlles(!alles)} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+              {alles ? "Minder tonen" : (
+                <>
+                  <span>Bekijk alles</span>
+                  <ChevronRight className="size-3.5" />
+                </>
+              )}
+            </button>
+          ) : null}
         </section>) : null}
     </div>);
 }

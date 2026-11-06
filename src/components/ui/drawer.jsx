@@ -4,13 +4,26 @@ import { cn } from "@/lib/utils";
 const Drawer = ({ shouldScaleBackground = true, ...props }) => (<DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props}/>);
 Drawer.displayName = "Drawer";
 const DrawerTrigger = DrawerPrimitive.Trigger;
-const DrawerPortal = DrawerPrimitive.Portal;
 const DrawerClose = DrawerPrimitive.Close;
-const DrawerOverlay = React.forwardRef(({ className, ...props }, ref) => (<DrawerPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-50 bg-black/80", className)} {...props}/>));
+
+const DrawerPortal = ({ container, ...props }) => {
+  const [phoneEl, setPhoneEl] = React.useState(() =>
+    typeof document !== "undefined" ? document.getElementById("app-shell-phone") : null
+  );
+
+  React.useEffect(() => {
+    if (!phoneEl && typeof document !== "undefined") {
+      setPhoneEl(document.getElementById("app-shell-phone"));
+    }
+  }, [phoneEl]);
+
+  return <DrawerPrimitive.Portal container={container ?? phoneEl ?? undefined} {...props} />;
+};
+const DrawerOverlay = React.forwardRef(({ className, ...props }, ref) => (<DrawerPrimitive.Overlay ref={ref} className={cn("absolute inset-0 z-50 bg-black/60 rounded-3xl", className)} {...props}/>));
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 const DrawerContent = React.forwardRef(({ className, children, ...props }, ref) => (<DrawerPortal>
     <DrawerOverlay />
-    <DrawerPrimitive.Content ref={ref} className={cn("fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background", className)} {...props}>
+    <DrawerPrimitive.Content ref={ref} className={cn("absolute inset-x-0 bottom-0 z-50 max-h-[85%] flex h-auto flex-col rounded-t-3xl border bg-background overflow-y-auto", className)} {...props}>
       <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted"/>
       {children}
     </DrawerPrimitive.Content>

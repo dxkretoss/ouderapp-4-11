@@ -1,4 +1,5 @@
 import { Card } from "@/components/AppShell";
+import { ChevronRight } from "lucide-react";
 import { AppIcon } from "@/components/AppIcon";
 import { Button } from "@/components/ui/button";
 /** Eén filterbalk voor de hele app (Alle | Nieuw | Actie nodig, categorieën, tabs). */
@@ -55,7 +56,7 @@ export function Sectie({ titel, sub, open = false, children }) {
           <span className="block font-display text-lg font-medium text-ink">{titel}</span>
           {sub ? <span className="block text-xs text-ink-soft">{sub}</span> : null}
         </span>
-        <span aria-hidden className="shrink-0 text-ink-soft transition-transform group-open:rotate-90">›</span>
+        <ChevronRight className="size-5 shrink-0 text-ink-soft transition-transform group-open:rotate-90" />
       </summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>);

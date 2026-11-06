@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronRight } from "lucide-react";
 import { AppIcon } from "@/components/AppIcon";
 import { BeeldKiezer, ProfielBeeld } from "@/components/ProfielBeeld";
 import { BewerkPotlood } from "@/components/ui-kit";
@@ -599,13 +600,13 @@ export function EigenKinderen() {
       {s.kinderen.map((k) => (
         <Link
           key={k.id}
-          to="/kinderen/$kindId"
-          params={{ kindId: k.id }}
+          to={`/kinderen/${k.id}`}
           aria-label={`Profiel van ${k.naam} openen`}
-          className="flex min-h-9 items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-sm"
+          className="flex min-h-9 items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-sm hover:border-brand/40 transition-colors"
         >
           <ProfielBeeld beeld={k.beeld} naam={k.naam} kleur={k.kleur} maat={28} />
           <span className="font-semibold">{k.naam}</span>
+          <ChevronRight className="size-3.5 text-ink-soft shrink-0" />
         </Link>
       ))}
     </div>

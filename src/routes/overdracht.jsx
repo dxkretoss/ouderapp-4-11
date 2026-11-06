@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SlimmeMeeLijst } from "@/components/SlimmeMeeLijst";
 import { VasteRoutines } from "@/components/VasteRoutines";
@@ -97,7 +98,10 @@ function Overdracht() {
       <SlimmeMeeLijst momentId="w1"/>
       <OnderwegStatus momentId="w1"/>
       <IkBenLater momentId="w1"/>
-      <Link to="/veranderd" search={{ moment: "w1" }} className="mt-2 inline-block text-xs font-semibold text-brand">Nu afstemmen →</Link>
+      <Link to="/veranderd" search={{ moment: "w1" }} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+        <span>Nu afstemmen</span>
+        <ChevronRight className="size-3.5" />
+      </Link>
       <VasteRoutines />
 
       <div className="mt-5 grid grid-cols-2 gap-1 rounded-full bg-white/60 p-1 text-sm font-semibold">

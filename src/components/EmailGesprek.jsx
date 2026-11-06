@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Mail, Paperclip } from "lucide-react";
+import { Mail, Paperclip, ChevronLeft } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { coachBericht } from "@/lib/coach.functions";
 import { bewaarBijDocumenten, demoAntwoord, herkenSuggesties, useEmailKoppeling, verstuurEmail } from "@/lib/email-koppeling-store";
@@ -40,8 +40,8 @@ export function EmailGesprek({ onTerug }) {
     };
     return (<AppShell>
       <div className="flex items-center gap-3">
-        <button onClick={onTerug} className="knop-kruis size-10 shrink-0" aria-label="Terug">
-          <span className="text-lg leading-none">‹</span>
+        <button onClick={onTerug} className="knop-kruis size-10 shrink-0 flex items-center justify-center cursor-pointer" aria-label="Terug">
+          <ChevronLeft className="size-5 text-ink" strokeWidth={2.5} />
         </button>
         <div>
           <h1 className="font-display text-xl font-extrabold leading-tight">Communicatie met andere ouder</h1>

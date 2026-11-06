@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { createFileRoute } from "@tanstack/react-router";
@@ -129,7 +130,14 @@ function Taken() {
       {!actief.length ? <p className="mt-6 text-sm text-ink-soft">{t("tasks.allDone", "Alles is geregeld.")}</p> : null}
 
       {klaar.length ? (<div className="mt-4">
-          <button onClick={() => setAfgerond(!afgerond)} className="min-h-11 text-sm font-semibold text-brand">{afgerond ? t("tasks.hideCompleted", "Verberg afgeronde taken") : t("tasks.viewCompleted", "Bekijk afgeronde taken ›")}</button>
+          <button onClick={() => setAfgerond(!afgerond)} className="min-h-11 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+            {afgerond ? t("tasks.hideCompleted", "Verberg afgeronde taken") : (
+              <>
+                <span>{t("tasks.viewCompleted", "Bekijk afgeronde taken")}</span>
+                <ChevronRight className="size-4" />
+              </>
+            )}
+          </button>
           {afgerond ? <Groep titel={t("tasks.completed", "Afgerond")}>{klaar.map(rij)}</Groep> : null}
         </div>) : null}
 
@@ -154,7 +162,7 @@ function TaakRij({ t, open, onOpen }) {
           <span className="block text-xs text-ink-soft">{sub}</span>
           {t.overdragenAan ? <span className="block text-xs text-ink-soft">Gevraagd aan {wieNaam(t.overdragenAan)} · wacht op antwoord</span> : null}
         </button>
-        <span className="text-ink-soft" aria-hidden>{open ? "⌃" : "›"}</span>
+        <ChevronDown className={`size-5 text-ink-soft shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </div>
       {open ? (<div className="ml-9 mt-2 space-y-1 text-xs">
           <p className="text-ink-soft">{taakWieTekst(t.wie)}{t.herhaling !== "eenmalig" ? ` · ${t.herhaling === "aangepast" ? t.herhalingTekst ?? "Terugkerend" : herhalingLabel[t.herhaling]}` : ""}{t.herinnerDagen ? ` · herinnering ${t.herinnerDagen} ${t.herinnerDagen === 1 ? "dag" : "dagen"} vooraf` : ""}</p>

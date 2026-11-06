@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui-kit";
 import { AppIcon } from "@/components/AppIcon";
@@ -63,7 +64,7 @@ export function HulpKnop({ voorstel = {}, label = "Hulp vragen aan je netwerk" }
         return (<button type="button" onClick={() => setOpen(true)} className="flex min-h-11 w-full items-center gap-2 rounded-md border border-border px-3 text-left text-sm font-semibold text-ink">
         <AppIcon functie="hulp" maat="sm" vorm="kaal"/>
         <span className="flex-1">{label}</span>
-        <span aria-hidden="true" className="text-ink-soft">›</span>
+        <ChevronRight className="size-5 shrink-0 text-ink-soft" />
       </button>);
     }
     return (<div>
@@ -80,7 +81,12 @@ export function HulpVragen({ open: openVanBuiten, onOpenChange }) {
     return (<section className="mt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">Hulp vragen</h2>
-        {!open ? <button onClick={() => zetOpen(true)} className="min-h-11 text-xs font-semibold text-brand">Hulp vragen aan je netwerk ›</button> : null}
+        {!open ? (
+          <button onClick={() => zetOpen(true)} className="min-h-11 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span>Hulp vragen aan je netwerk</span>
+            <ChevronRight className="size-3.5" />
+          </button>
+        ) : null}
       </div>
       {open ? <HulpForm onKlaar={() => zetOpen(false)}/> : null}
       {lijst.length ? (<div className="mt-2 divide-y divide-border rounded-md border border-border bg-card">

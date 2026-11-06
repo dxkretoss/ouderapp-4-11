@@ -11,11 +11,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { Camera, MoreHorizontal, Paperclip, Receipt, X } from "lucide-react";
+import { Camera, MoreHorizontal, Paperclip, Receipt, X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { koppelUitgave, useBudgetten } from "@/lib/budget-store";
 import { bevestig } from "@/lib/feedback";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { AppShell, BackButton } from "@/components/AppShell";
 import { AppIcon, Pictogram } from "@/components/AppIcon";
 import { BonScanner } from "@/components/BonScanner";
@@ -114,6 +115,7 @@ function KostenPagina() {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <LanguageSelector variant="compact" />
         <Assistent pagina="Kosten" />
         <DropdownMenu>
           <DropdownMenuTrigger aria-label={t("common.actions", "Meer opties")} className="grid size-11 place-items-center rounded-full text-ink-soft hover:bg-muted">
@@ -144,44 +146,83 @@ function KostenPagina() {
         </div>
       </section>
 
-      <Button className="mt-4 min-h-12 w-full" onClick={() => opmaak()}><AppIcon functie="toevoegen" vorm="kaal" />{t("expenses.addExpense", "+ Uitgave toevoegen")}</Button>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <Button variant="outline" className="h-auto min-h-20 justify-start whitespace-normal px-3 py-3 text-left" onClick={() => { setToonBudgetten(true); setVoorstelKey((k) => k + 1); }}><AppIcon functie="voorstel" maat="sm" vorm="kaal" /><span className="min-w-0"><span className="block text-sm">{t("expenses.proposeBudget", "Een budget voorstellen")}</span><span className="mt-1 block text-xs font-normal text-ink-soft">{t("expenses.agreeInAdvance", "Spreek vooraf een bedrag af.")}</span></span></Button>
-        <Button variant="outline" className="h-auto min-h-20 justify-start whitespace-normal px-3 py-3 text-left" onClick={() => { setBetaalStart(true); setScherm("verrekenen"); }}><AppIcon functie="betaalverzoek" maat="sm" vorm="kaal" /><span className="min-w-0"><span className="block text-sm">{t("expenses.paymentRequest", "Betaalverzoek")}</span><span className="mt-1 block text-xs font-normal text-ink-soft">{t("expenses.requestPaymentDesc", "Vraag een betaling aan.")}</span></span></Button>
+      {/* Prominent main button: Kosten toevoegen (Receipt scanning is inside the modal flow) */}
+      <Button className="mt-4 min-h-12 w-full text-base font-bold shadow-xs flex items-center justify-center gap-2" onClick={() => opmaak()}>
+        <AppIcon functie="toevoegen" vorm="kaal" />
+        <span>{t("expenses.addExpenseMain", "Kosten toevoegen")}</span>
+      </Button>
+
+      {/* Action shortcuts */}
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        <Button variant="outline" className="h-auto min-h-[72px] justify-start whitespace-normal px-3 py-2.5 text-left rounded-xl border-border" onClick={() => { setToonBudgetten(true); setVoorstelKey((k) => k + 1); }}>
+          <AppIcon functie="voorstel" maat="sm" vorm="kaal" />
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold">{t("expenses.submitBudgetProposal", "Budgetvoorstel indienen")}</span>
+            <span className="mt-0.5 block text-xs font-normal text-ink-soft">{t("expenses.agreeInAdvance", "Spreek vooraf een bedrag af.")}</span>
+          </span>
+        </Button>
+        <Button variant="outline" className="h-auto min-h-[72px] justify-start whitespace-normal px-3 py-2.5 text-left rounded-xl border-border" onClick={() => { setBetaalStart(true); setScherm("verrekenen"); }}>
+          <AppIcon functie="betaalverzoek" maat="sm" vorm="kaal" />
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold">{t("expenses.paymentRequest", "Betaalverzoek")}</span>
+            <span className="mt-0.5 block text-xs font-normal text-ink-soft">{t("expenses.requestPaymentDesc", "Vraag een betaling aan.")}</span>
+          </span>
+        </Button>
       </div>
 
       {acties.length || ontvangenBudgetten.length ? <section className="mt-5" aria-label={t("expenses.actionNeeded", "Jouw reactie nodig")}>
         <h2 className="font-display text-lg font-bold">{t("expenses.actionNeeded", "Jouw reactie nodig")} <span className="text-sm font-normal text-ink-soft">({acties.length + ontvangenBudgetten.length})</span></h2>
         <div className="mt-1 divide-y divide-border border-y border-border">
-          {ontvangenBudgetten.map((b) => <Button key={b.id} variant="ghost" onClick={() => setBudgetDetail(b.id)} className="h-auto min-h-14 w-full justify-between gap-3 whitespace-normal px-0 py-3 text-left"><span className="min-w-0"><span className="block text-sm font-semibold">{b.wat}</span><span className="block text-xs text-accent-warm">{t("expenses.actionNeeded", "Jouw reactie nodig")}</span></span><span className="text-brand" aria-hidden>›</span></Button>)}
+          {ontvangenBudgetten.map((b) => <Button key={b.id} variant="ghost" onClick={() => setBudgetDetail(b.id)} className="h-auto min-h-14 w-full justify-between gap-3 whitespace-normal px-0 py-3 text-left"><span className="min-w-0"><span className="block text-sm font-semibold">{b.wat}</span><span className="block text-xs text-accent-warm">{t("expenses.actionNeeded", "Jouw reactie nodig")}</span></span><ChevronRight className="size-5 shrink-0 text-brand" /></Button>)}
           {zichtbareKostenActies(acties, alleActies).map((a) => <Button key={a.id} variant="ghost" onClick={a.open} aria-label={`Open ${a.titel}`} className="h-auto min-h-16 w-full justify-between gap-3 rounded-none px-0 py-2.5 text-left whitespace-normal">
             <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{a.titel}</span><span className="block text-xs font-normal text-accent-warm">{a.status}</span></span>
-            <span className="shrink-0 text-sm font-bold tabular-nums">{euro(a.bedrag)}</span><span aria-hidden className="text-brand">›</span>
+            <span className="shrink-0 text-sm font-bold tabular-nums">{euro(a.bedrag)}</span><ChevronRight className="size-5 shrink-0 text-brand" />
           </Button>)}
         </div>
         {acties.length > 3 ? <Button variant="link" onClick={() => setAlleActies((v) => !v)} className="min-h-11 px-0">{alleActies ? "Toon minder" : "Bekijk alle openstaande acties"}</Button> : null}
       </section> : null}
 
-      <section className="mt-5 border-t border-border pt-4">
-        <h2 className="font-display text-lg font-bold">{t("expenses.toAnswer", "Nog te beantwoorden")}</h2>
-        <p className="mt-1 text-xs text-ink-soft">{t("expenses.budgetProposalsLater", "Budgetvoorstellen voor later · tellen niet mee in je saldo.")}</p>
-        <BudgetVoorstel key={voorstelKey} zonderKop filter="lopend" bronItem={bronItem} voorinvul={benodigdheid} voorKind={voorKind} startOpen={budget === "nieuw" || voorstelKey > 0} onUitgave={(b) => { setVanBudget(b); setNieuwOpen(true); }} />
+      {/* SECTION 1: Budget proposals (pending proposals and responses) */}
+      <section className="mt-6 rounded-2xl border border-border bg-card p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h2 className="font-display text-lg font-bold text-ink">{t("expenses.budgetProposalsTitle", "Budgetvoorstellen")}</h2>
+            <p className="mt-0.5 text-xs text-ink-soft">{t("expenses.budgetProposalsDesc", "Openstaande voorstellen en reacties · tellen nog niet mee in je saldo.")}</p>
+          </div>
+        </div>
+        <div className="mt-2">
+          <BudgetVoorstel key={voorstelKey} filter="lopend" bronItem={bronItem} voorinvul={benodigdheid} voorKind={voorKind} startOpen={budget === "nieuw" || voorstelKey > 0} onUitgave={(b) => { setVanBudget(b); setNieuwOpen(true); }} />
+        </div>
       </section>
-      <section className="mt-7 border-t border-border pt-4">
-        <h2 className="font-display text-lg font-bold">{t("expenses.agreedBudgets", "Afgesproken budgetten")}</h2>
-        <BudgetVoorstel zonderKop filter="afgesproken" onUitgave={(b) => { setVanBudget(b); setNieuwOpen(true); }} />
-        <Button variant="link" onClick={() => setScherm("instellingen")} className="mt-1 px-0">{t("expenses.distributionAndSettlement", "Verdeling & afrekenen")}</Button>
+
+      {/* SECTION 2: Agreed budgets (approved by both parents) */}
+      <section className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-50/20 dark:bg-emerald-950/10 p-4">
+        <div>
+          <h2 className="font-display text-lg font-bold text-ink">{t("expenses.agreedBudgetsTitle", "Afgesproken budgetten")}</h2>
+          <p className="mt-0.5 text-xs text-ink-soft">{t("expenses.agreedBudgetsDesc", "Budgetten die door beide ouders zijn goedgekeurd.")}</p>
+        </div>
+        <div className="mt-2">
+          <BudgetVoorstel filter="afgesproken" onUitgave={(b) => { setVanBudget(b); setNieuwOpen(true); }} />
+        </div>
+        <Button variant="link" onClick={() => setScherm("instellingen")} className="mt-2 px-0 text-xs text-brand font-semibold">{t("expenses.distributionAndSettlement", "Verdeling & afrekenen instellen →")}</Button>
       </section>
-      <section className="mt-7 border-t border-border pt-4">
-        <h2 className="font-display text-lg font-bold">{t("expenses.previousProposals", "Eerdere voorstellen")}</h2>
-        <p className="mt-1 text-xs text-ink-soft">{t("expenses.previousProposalsDesc", "Afgewezen of ingetrokken. Ze blijven bewaard.")}</p>
-        <BudgetVoorstel zonderKop filter="eerder" onUitgave={(b) => { setVanBudget(b); setNieuwOpen(true); }} />
+
+      {/* Eerdere voorstellen */}
+      <section className="mt-6 rounded-2xl border border-border bg-card/60 p-4">
+        <h2 className="font-display text-base font-bold text-ink">{t("expenses.previousProposals", "Eerdere voorstellen")}</h2>
+        <p className="mt-0.5 text-xs text-ink-soft">{t("expenses.previousProposalsDesc", "Afgewezen of ingetrokken. Ze blijven bewaard.")}</p>
+        <div className="mt-2">
+          <BudgetVoorstel filter="eerder" onUitgave={(b) => { setVanBudget(b); setNieuwOpen(true); }} />
+        </div>
       </section>
-      <VasteLasten />
 
       <section className="mt-6">
         <button onClick={() => setToonAlle((o) => !o)} aria-expanded={toonAlle} className="flex min-h-12 w-full items-center justify-between rounded-md border border-border px-4 text-sm font-semibold">
-          {t("expenses.allRecordedExpenses", "Alle gemaakte kosten")} <span className="text-xs font-normal text-ink-soft">{alle.length} · {toonAlle ? "–" : "›"}</span>
+          <span>{t("expenses.allRecordedExpenses", "Alle gemaakte kosten")}</span>
+          <span className="inline-flex items-center gap-1 text-xs font-normal text-ink-soft">
+            <span>{alle.length}</span>
+            <ChevronDown className={"size-4 transition-transform " + (toonAlle ? "rotate-180" : "")} />
+          </span>
         </button>
         {toonAlle ? <Transacties alle={alle} historie={historie} onOpen={setDetailId} /> : null}
       </section>
@@ -191,7 +232,7 @@ function KostenPagina() {
     {budgetDetail ? <Sheet open onOpenChange={(o) => {
       if (!o)
         setBudgetDetail(null);
-    }}><SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8 pt-4"><SheetHeader className="pr-8 text-left"><SheetTitle>{t("expenses.budgetDetailTitle", "Budgetdetails")}</SheetTitle><SheetDescription>{t("expenses.budgetDetailDesc", "Bekijk jullie budget en de bestaande afspraken.")}</SheetDescription></SheetHeader><div className="mt-3"><BudgetVoorstel doelId={budgetDetail} onKlaar={() => setBudgetDetail(null)} onUitgave={(b) => { setBudgetDetail(null); setVanBudget(b); setNieuwOpen(true); }} /></div></SheetContent></Sheet> : null}
+    }}><SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[80dvh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8 pt-4"><SheetHeader className="pr-8 text-left"><SheetTitle>{t("expenses.budgetDetailTitle", "Budgetdetails")}</SheetTitle><SheetDescription>{t("expenses.budgetDetailDesc", "Bekijk jullie budget en de bestaande afspraken.")}</SheetDescription></SheetHeader><div className="mt-3"><BudgetVoorstel doelId={budgetDetail} onKlaar={() => setBudgetDetail(null)} onUitgave={(b) => { setBudgetDetail(null); setVanBudget(b); setNieuwOpen(true); }} /></div></SheetContent></Sheet> : null}
     <KostDetail key={detailId ?? ""} startWijzig={wijzigStart} kost={alle.find((k) => k.id === detailId) ?? null} onSluit={() => { setDetailId(null); setWijzigStart(false); }} onVerrekenen={() => { setDetailId(null); setScherm("verrekenen"); }} />
   </AppShell>);
 }
@@ -234,7 +275,8 @@ function Transacties({ alle, historie, onOpen }) {
   const [status, setStatus] = useState("Alle");
   const [periode, setPeriode] = useState("Alle");
   const maanden = [...new Set(alle.map((k) => k.datum.split(" ").slice(1).join(" ")).filter(Boolean))];
-  const lijst = alle.filter((k) => (kind === "Alle" || k.kind === kind) &&
+  const lijst = alle.filter((k) => !k.isBudget && k.status !== "voorstel" &&
+    (kind === "Alle" || k.kind === kind) &&
     (cat === "Alle" || k.categorie === cat) &&
     (status === "Alle" || kostStatus(k, t).label === status) &&
     (periode === "Alle" || k.datum.endsWith(periode)));
@@ -644,7 +686,15 @@ function NieuweUitgave({ sleutels, budget: startBudget, voorinvul, voorKind, onS
             </div>
           </div>) : null}
           {!meer && <BonKeuze gekozen={bon} onKies={setBon} />}
-          {meer ? <BijlageKiezers bon={bon} bijlage={bijlage} onBon={setBon} onBijlage={setBijlage} /> : (<button type="button" onClick={() => setMeer(true)} className="min-h-11 text-sm font-semibold text-brand">{t("common.moreOptions", "Meer opties")} ›<span className="block text-[11px] font-normal text-ink-soft">{t("expenses.modal.categoryLabel", "Categorie")} ({categorie}), {t("expenses.modal.receiptOptional", "bon")}</span></button>)}
+          {meer ? <BijlageKiezers bon={bon} bijlage={bijlage} onBon={setBon} onBijlage={setBijlage} /> : (
+            <button type="button" onClick={() => setMeer(true)} className="min-h-11 text-left text-sm font-semibold text-brand">
+              <span className="inline-flex items-center gap-1">
+                <span>{t("common.moreOptions", "Meer opties")}</span>
+                <ChevronRight className="size-4" />
+              </span>
+              <span className="block text-[11px] font-normal text-ink-soft">{t("expenses.modal.categoryLabel", "Categorie")} ({categorie}), {t("expenses.modal.receiptOptional", "bon")}</span>
+            </button>
+          )}
         </div>
         <label className="mt-3 block text-xs font-semibold">{t("expenses.modal.notesOptional", "Toelichting (optioneel)")}<textarea value={toelichting} onChange={(e) => setToelichting(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2 text-sm" /></label>
         <Button onClick={opslaan} disabled={!omschrijving.trim() || bedrag <= 0 || !datum || !kind || (overschreden && !extraKeuze)} className="mt-4 w-full rounded-md bg-brand py-3 text-sm font-semibold text-primary-foreground disabled:opacity-40">
@@ -709,7 +759,7 @@ function KostDetail({ kost, onSluit, onVerrekenen, startWijzig = false }) {
       onSluit();
     }
   }}>
-    <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8 pt-4">
+    <SheetContent side="bottom" className="inset-x-0 mx-auto w-full max-w-md max-h-[80dvh] overflow-y-auto rounded-t-2xl bg-background px-5 pb-8 pt-4">
       <SheetHeader className="pr-8 text-left">
         <SheetTitle className="font-display text-2xl font-medium">{kost.omschrijving}</SheetTitle>
         <SheetDescription className="text-xs">{kost.kind} · {kost.datum} · {t("expenses.paidBy", "betaald door {{name}}", { name: kost.betaaldDoor === "sanne" ? t("expenses.modal.you", "jou") : t("expenses.otherShare", "de andere ouder") })}</SheetDescription>
@@ -743,7 +793,7 @@ function KostDetail({ kost, onSluit, onVerrekenen, startWijzig = false }) {
 
         <div className="mt-5 divide-y divide-border border-y border-border">
           {/* Geen losse betaling per uitgave: betalen gaat altijd via de gezamenlijke afrekening. */}
-          {open ? <button className={actieKnop} onClick={onVerrekenen}>{t("expenses.viewCalculation", "Bekijk gezamenlijke afrekening")}<span className="text-ink-soft">›</span></button> : null}
+          {open ? <button className={actieKnop} onClick={onVerrekenen}><span>{t("expenses.viewCalculation", "Bekijk gezamenlijke afrekening")}</span><ChevronRight className="size-5 shrink-0 text-ink-soft" /></button> : null}
           <BestandKnop label={t("expenses.modal.scanReceipt", "Bon/factuur toevoegen")} icoon={Receipt} accept="image/*,application/pdf" onKies={(n) => voegBijlageToe(kost.id, n, "bon", kost.omschrijving)} />
           <BestandKnop label={t("expenses.modal.chooseFile", "Andere bijlage toevoegen")} icoon={Paperclip} accept="image/*,application/pdf,.doc,.docx,.txt" onKies={(n) => voegBijlageToe(kost.id, n, "bijlage", kost.omschrijving)} />
           <div className="py-3">
@@ -752,7 +802,7 @@ function KostDetail({ kost, onSluit, onVerrekenen, startWijzig = false }) {
               <button disabled={!opm.trim()} onClick={() => { voegOpmerkingToe(kost.id, opm.trim(), kost.omschrijving); setOpm(""); }} className="rounded-md border border-border px-3 text-xs font-semibold disabled:opacity-40">{t("expenses.detail.send", "Plaats")}</button>
             </div>
           </div>
-          {status !== "betaald" ? (!wijzig ? (<button className={actieKnop} onClick={() => setWijzig(true)}>{t("expenses.detail.proposeCorrection", "Fout melden of correctie voorstellen")}<span className="text-ink-soft">›</span></button>) : (<div className="py-3">
+          {status !== "betaald" ? (!wijzig ? (<button className={actieKnop} onClick={() => setWijzig(true)}><span>{t("expenses.detail.proposeCorrection", "Fout melden of correctie voorstellen")}</span><ChevronRight className="size-5 shrink-0 text-ink-soft" /></button>) : (<div className="py-3">
             <p className="text-xs text-ink-soft">{t("expenses.detail.changeNotice", "Bedrag en verdeling veranderen pas als de andere ouder akkoord gaat.")}</p>
             <div className="mt-2 flex gap-2">
               <GeldInvoer value={nieuwBedrag} onChange={setNieuwBedrag} label={t("expenses.modal.amount", "Nieuw bedrag")} className="flex-1" />
@@ -794,7 +844,7 @@ function EigenKosten({ st, onNieuw }) {
   if (instellen)
     return <EigenAfspraken st={st} onTerug={() => setInstellen(false)} />;
   if (!st.kosten.length)
-    return (<EigenLeeg titel={t("expenses.title", "Kosten")} icoon="kosten" tekst={t("expenses.trackExpensesDesc", "Houd de kosten voor de kinderen bij. Een verdeling instellen kan later, dat hoeft niet eerst.")} knop={t("expenses.addFirstExpense", "Eerste uitgave toevoegen")} onKnop={onNieuw} extra={<button onClick={() => setInstellen(true)} className="mt-3 min-h-11 text-sm font-semibold text-brand">{t("expenses.setupAgreementsLink", "Kostenafspraken instellen ›")}</button>} />);
+    return (<EigenLeeg titel={t("expenses.title", "Kosten")} icoon="kosten" tekst={t("expenses.trackExpensesDesc", "Houd de kosten voor de kinderen bij. Een verdeling instellen kan later, dat hoeft niet eerst.")} knop={t("expenses.addFirstExpense", "Eerste uitgave toevoegen")} onKnop={onNieuw} extra={<button onClick={() => setInstellen(true)} className="mt-3 min-h-11 inline-flex items-center gap-1 text-sm font-semibold text-brand"><span>{t("expenses.setupAgreementsLink", "Kostenafspraken instellen")}</span><ChevronRight className="size-4" /></button>} />);
   return (<AppShell>
     <div className="flex items-start gap-3">
       {/* <BackButton terug="/" /> */}
@@ -807,10 +857,10 @@ function EigenKosten({ st, onNieuw }) {
     <p className="mt-4 text-sm text-ink-soft">{t("expenses.totalTracked", "Totaal bijgehouden")} <b className="text-ink">{euro(totaal)}</b>. {t("expenses.soloBalanceNote", "Zolang de andere ouder niet gekoppeld is, is er geen gezamenlijk saldo of betaalverzoek.")}</p>
     <button onClick={() => setInstellen(true)} className="mt-3 flex min-h-11 w-full items-center justify-between border-y border-border py-2 text-left text-sm">
       <span><span className="font-semibold">{t("expenses.expenseAgreements", "Kostenafspraken")}</span><span className="block text-xs text-ink-soft">{samenvatting} · {t("expenses.provisional", "voorlopig")}</span></span>
-      <span className="text-ink-soft">›</span>
+      <ChevronRight className="size-5 shrink-0 text-ink-soft" />
     </button>
     <Button onClick={onNieuw} className="mt-4 min-h-12 w-full"><AppIcon functie="toevoegen" vorm="kaal" />{t("expenses.addExpense", "+ Uitgave toevoegen")}</Button>
-    <Button variant="ghost" onClick={() => setHistorieOpen((v) => !v)} aria-expanded={historieOpen} className="mt-4 min-h-14 w-full justify-between border-y border-border px-0"><span>{t("expenses.allRecordedExpenses", "Alle gemaakte kosten")} · {st.kosten.length}</span><span aria-hidden>›</span></Button>
+    <Button variant="ghost" onClick={() => setHistorieOpen((v) => !v)} aria-expanded={historieOpen} className="mt-4 min-h-14 w-full justify-between border-y border-border px-0"><span>{t("expenses.allRecordedExpenses", "Alle gemaakte kosten")} · {st.kosten.length}</span><ChevronRight className="size-5 shrink-0" /></Button>
     {historieOpen ? <ul className="mt-2 divide-y divide-border">
       {st.kosten.map((k) => (<li key={k.id} className="flex items-center gap-3 py-3">
         <AppIcon functie="kosten" maat="md" />
