@@ -21,6 +21,7 @@ function BoodschappenWrap() {
     return <Boodschappen />;
 }
 function EigenBoodschappen() {
+    const { t } = useTranslation();
     const st = useStart();
     const nav = useNavigate();
     const data = useLijst([], "nog-nodig-eigen");
@@ -35,22 +36,22 @@ function EigenBoodschappen() {
     const vraagItem = data.lijst.find((i) => i.id === vraag && i.klaar);
     const inKosten = (t) => st.kosten.some((k) => k.omschrijving.trim().toLowerCase() === t.trim().toLowerCase());
     const rij = (i) => (<li key={i.id} className="flex items-center gap-3 px-3 py-3">
-      <button onClick={() => { data.toggle(i.id); setVraag(i.klaar ? null : i.id); }} aria-pressed={i.klaar} aria-label={i.klaar ? "Markeer als nog nodig" : "Markeer als gekocht"} className={`grid size-6 shrink-0 place-items-center rounded-full border ${i.klaar ? "border-brand bg-brand text-primary-foreground" : "border-ink-soft/40"}`}>{i.klaar ? "✓" : ""}</button>
+      <button onClick={() => { data.toggle(i.id); setVraag(i.klaar ? null : i.id); }} aria-pressed={i.klaar} aria-label={i.klaar ? t("groceries.markAsNeeded", "Markeer als nog nodig") : t("groceries.markAsBought", "Markeer als gekocht")} className={`grid size-6 shrink-0 place-items-center rounded-full border ${i.klaar ? "border-brand bg-brand text-primary-foreground" : "border-ink-soft/40"}`}>{i.klaar ? "✓" : ""}</button>
       <span className="min-w-0 flex-1">
         <span className={`block text-sm ${i.klaar ? "text-ink-soft line-through" : "font-semibold"}`}>{i.tekst}</span>
         <span className="block text-xs text-ink-soft">{i.kind}</span>
-        {i.deadline ? <span className="block text-xs text-ink-soft">Vóór {i.deadline}</span> : null}
+        {i.deadline ? <span className="block text-xs text-ink-soft">{t("tasks.before", "Vóór")} {i.deadline}</span> : null}
       </span>
-      {!i.klaar ? <Link to="/kosten" search={{ budget: "nieuw", benodigdheid: i.tekst, kind: i.kind }} className="text-xs font-semibold text-brand">Budget voorstellen</Link> : null}
+      {!i.klaar ? <Link to="/kosten" search={{ budget: "nieuw", benodigdheid: i.tekst, kind: i.kind }} className="text-xs font-semibold text-brand">{t("groceries.proposeBudget", "Budget voorstellen")}</Link> : null}
     </li>);
     return (<AppShell>
-      <PageHeader titel="Nog nodig" subtitel="Wat hebben de kinderen nog nodig?" actie={<Button variant="ghost" size="icon" aria-label="Iets toevoegen" onClick={() => setNieuw(!nieuw)}><AppIcon functie="toevoegen" vorm="kaal"/></Button>}/>
+      <PageHeader titel={t("groceries.titel", "Nog nodig")} subtitel={t("groceries.subtitel", "Wat hebben de kinderen nog nodig?")} actie={<Button variant="ghost" size="icon" aria-label={t("groceries.itemToevoegen", "Iets toevoegen")} onClick={() => setNieuw(!nieuw)}><AppIcon functie="toevoegen" vorm="kaal"/></Button>}/>
       {nieuw ? (<Card className="mt-4 space-y-2">
-          <input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder="Bijv. winterjas, luiers" aria-label="Wat is er nodig?" className={`w-full ${veld}`}/>
-          {st.kinderen.length ? (<select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="Voor wie" className={`w-full ${veld}`}>
+          <input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder={t("groceries.eGWinterCoatDiapers", "Bijv. winterjas, luiers")} aria-label={t("groceries.whatIsNeeded", "Wat is er nodig?")} className={`w-full ${veld}`}/>
+          {st.kinderen.length ? (<select value={kind} onChange={(e) => setKind(e.target.value)} aria-label={t("groceries.forWho", "Voor wie")} className={`w-full ${veld}`}>
               {st.kinderen.map((k) => <option key={k.id} value={k.naam}>{k.naam}</option>)}
             </select>) : null}
-          <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={alGekocht} onChange={(e) => setAlGekocht(e.target.checked)}/>Al gekocht</label>
+          <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={alGekocht} onChange={(e) => setAlGekocht(e.target.checked)}/>{t("groceries.alreadyBought", "Al gekocht")}</label>
           <button onClick={() => { if (tekst.trim()) {
             const id = data.voegToe(tekst.trim(), "Nodig", kind, alGekocht);
             if (alGekocht)
@@ -58,18 +59,18 @@ function EigenBoodschappen() {
             setAlGekocht(false);
             setTekst("");
             setNieuw(false);
-        } }} disabled={!tekst.trim()} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">Toevoegen</button>
+        } }} disabled={!tekst.trim()} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">{t("groceries.addItem2", "Toevoegen")}</button>
         </Card>) : null}
-      {vraagItem ? <div className="mt-4 border-y border-border py-3"><p className="text-sm font-semibold">{inKosten(vraagItem.tekst) ? `${vraagItem.tekst} staat al bij Kosten.` : "Ook toevoegen aan Kosten?"}</p><div className="mt-2 flex flex-wrap items-center gap-3">{!inKosten(vraagItem.tekst) ? <Link to="/kosten" search={{ uitgave: vraagItem.tekst, kind: vraagItem.kind }} className="text-sm font-semibold text-brand">Toevoegen aan Kosten</Link> : null}<Button variant="ghost" size="sm" onClick={() => setVraag(null)}>Alleen als gekocht markeren</Button></div></div> : null}
+      {vraagItem ? <div className="mt-4 border-y border-border py-3"><p className="text-sm font-semibold">{inKosten(vraagItem.tekst) ? `${vraagItem.tekst} ${t("groceries.alreadyInCosts", "staat al bij Kosten.")}` : t("groceries.wouldYouLikeToAddAn", "Ook toevoegen aan Kosten?")}</p><div className="mt-2 flex flex-wrap items-center gap-3">{!inKosten(vraagItem.tekst) ? <Link to="/kosten" search={{ uitgave: vraagItem.tekst, kind: vraagItem.kind }} className="text-sm font-semibold text-brand">{t("groceries.addToCosts", "Toevoegen aan Kosten")}</Link> : null}<Button variant="ghost" size="sm" onClick={() => setVraag(null)}>{t("groceries.onlyMarkAsBought", "Alleen als gekocht markeren")}</Button></div></div> : null}
       {!data.lijst.length && !nieuw ? (<div className="mt-10 flex flex-col items-center text-center">
-          <p className="font-display text-lg font-bold">Hier is het nog rustig</p>
-          <p className="mt-1 max-w-xs text-sm text-ink-soft">Hier zie je wat de kinderen nog nodig hebben. Je lijstje is nog leeg.</p>
-          <button onClick={() => setNieuw(true)} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">Eerste item toevoegen</button>
-          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">Terug naar Menu</button>
+          <p className="font-display text-lg font-bold">{t("items.allDoneQuiet", "Hier is het nog rustig")}</p>
+          <p className="mt-1 max-w-xs text-sm text-ink-soft">{t("groceries.hereYouSeeWhatTheChildren", "Hier zie je wat de kinderen nog nodig hebben. Je lijstje is nog leeg.")}</p>
+          <button onClick={() => setNieuw(true)} className="mt-5 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground">{t("items.addFirstItem", "Eerste item toevoegen")}</button>
+          <button onClick={() => nav({ to: "/meer" })} className="mt-3 min-h-11 text-sm font-semibold text-ink-soft">{t("items.backToMenu", "Terug naar Menu")}</button>
         </div>) : null}
       {open.length ? <ul className="mt-4 divide-y divide-border rounded-md border border-border bg-card">{open.map(rij)}</ul> : null}
       {klaar.length ? (<>
-          <h2 className="mt-5 text-[11px] font-bold uppercase tracking-wide text-ink-soft">Gekocht</h2>
+          <h2 className="mt-5 text-[11px] font-bold uppercase tracking-wide text-ink-soft">{t("groceries.purchased", "Gekocht")}</h2>
           <ul className="mt-2 divide-y divide-border rounded-md border border-border bg-card">{klaar.map(rij)}</ul>
         </>) : null}
     </AppShell>);
@@ -135,15 +136,15 @@ function Boodschappen() {
       </div> : null}
     </li>);
     return (<AppShell>
-      <PageHeader titel="Nog nodig" subtitel="Wat hebben de kinderen nog nodig?" actie={<Button variant="ghost" size="icon" aria-label="Iets toevoegen" onClick={() => setNieuw(!nieuw)}><AppIcon functie="toevoegen" vorm="kaal"/></Button>}/>
+      <PageHeader titel={t("groceries.titel", "Nog nodig")} subtitel={t("groceries.subtitel", "Wat hebben de kinderen nog nodig?")} actie={<Button variant="ghost" size="icon" aria-label={t("groceries.itemToevoegen", "Iets toevoegen")} onClick={() => setNieuw(!nieuw)}><AppIcon functie="toevoegen" vorm="kaal"/></Button>}/>
 
       {nieuw ? (<Card className="mt-4 space-y-2">
-          <input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder="Bijv. winterjas, luiers" aria-label="Wat is er nodig?" className={`w-full ${veld}`}/>
+          <input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder={t("groceries.eGWinterCoatDiapers", "Bijv. winterjas, luiers")} aria-label={t("groceries.whatIsNeeded", "Wat is er nodig?")} className={`w-full ${veld}`}/>
           <div className="flex gap-2">
-            <select value={wie} onChange={(e) => setWie(e.target.value)} aria-label="Soort" className={`flex-1 ${veld}`}><option>Nodig</option><option>Boodschap</option></select>
-            <select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="Voor wie" className={`flex-1 ${veld}`}><option>Emma</option><option>Noah</option><option>Allebei</option></select>
+            <select value={wie} onChange={(e) => setWie(e.target.value)} aria-label={t("common.type", "Soort")} className={`flex-1 ${veld}`}><option value="Nodig">{t("groceries.needed", "Nodig")}</option><option value="Boodschap">{t("groceries.grocery", "Boodschap")}</option></select>
+            <select value={kind} onChange={(e) => setKind(e.target.value)} aria-label={t("groceries.forWho", "Voor wie")} className={`flex-1 ${veld}`}><option>Emma</option><option>Noah</option><option value="Allebei">{t("groceries.both", "Allebei")}</option></select>
           </div>
-          <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={alGekocht} onChange={(e) => setAlGekocht(e.target.checked)}/>Al gekocht</label>
+          <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={alGekocht} onChange={(e) => setAlGekocht(e.target.checked)}/>{t("groceries.alreadyBought", "Al gekocht")}</label>
           <button onClick={() => { if (tekst.trim()) {
             const id = data.voegToe(tekst.trim(), wie, kind, alGekocht);
             if (alGekocht)
@@ -151,33 +152,33 @@ function Boodschappen() {
             setAlGekocht(false);
             setTekst("");
             setNieuw(false);
-        } }} disabled={!tekst.trim()} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">Toevoegen</button>
+        } }} disabled={!tekst.trim()} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">{t("groceries.addItem2", "Toevoegen")}</button>
         </Card>) : null}
 
       {vraagItem ? (<Card className="mt-4">
           <div className="flex items-start gap-2">
-            <p className="flex-1 text-sm font-semibold">{inKosten(vraagItem.tekst) ? `${vraagItem.tekst} staat al bij Kosten.` : "Ook toevoegen aan Kosten?"}</p>
-            <button onClick={() => setVraag(null)} aria-label="Sluiten" className="knop-kruis -mr-2 -mt-2 size-11">✕</button>
+            <p className="flex-1 text-sm font-semibold">{inKosten(vraagItem.tekst) ? `${vraagItem.tekst} ${t("groceries.alreadyInCosts", "staat al bij Kosten.")}` : t("groceries.wouldYouLikeToAddAn", "Ook toevoegen aan Kosten?")}</p>
+            <button onClick={() => setVraag(null)} aria-label={t("common.close", "Sluiten")} className="knop-kruis -mr-2 -mt-2 size-11">✕</button>
           </div>
           {inKosten(vraagItem.tekst) ? null : (<>
-              <p className="mt-1 text-sm text-ink-soft">Wil je het bedrag of een bonnetje toevoegen?</p>
+              <p className="mt-1 text-sm text-ink-soft">{t("groceries.wouldYouLikeToAddAn", "Wil je het bedrag of een bonnetje toevoegen?")}</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link to="/kosten" search={{ uitgave: vraagItem.tekst, kind: vraagItem.kind }} className="inline-flex min-h-11 items-center rounded-full bg-brand px-4 text-sm font-semibold text-primary-foreground">Toevoegen aan Kosten</Link>
-                <button onClick={() => setVraag(null)} className="min-h-11 px-2 text-sm font-semibold text-ink-soft">Nee, alleen als gekocht markeren</button>
+                <Link to="/kosten" search={{ uitgave: vraagItem.tekst, kind: vraagItem.kind }} className="inline-flex min-h-11 items-center rounded-full bg-brand px-4 text-sm font-semibold text-primary-foreground">{t("groceries.addToCosts", "Toevoegen aan Kosten")}</Link>
+                <button onClick={() => setVraag(null)} className="min-h-11 px-2 text-sm font-semibold text-ink-soft">{t("groceries.onlyMarkAsBought", "Nee, alleen als gekocht markeren")}</button>
               </div>
             </>)}
         </Card>) : null}
 
       <section className="mt-5">
-        <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">Op het lijstje</h2>
-        {open.length ? <ul className="mt-2 divide-y divide-border rounded-md border border-border bg-card">{open.map(rij)}</ul> : <p className="mt-2 text-sm text-ink-soft">Er is nu niets nodig.</p>}
+        <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">{t("groceries.onTheList", "Op het lijstje")}</h2>
+        {open.length ? <ul className="mt-2 divide-y divide-border rounded-md border border-border bg-card">{open.map(rij)}</ul> : <p className="mt-2 text-sm text-ink-soft">{t("groceries.nothingNeededRightNow", "Er is nu niets nodig.")}</p>}
       </section>
 
       {gekocht.length ? (<div className="mt-4">
           <button onClick={() => setGekochtOpen(!gekochtOpen)} aria-expanded={gekochtOpen} className="min-h-11 inline-flex items-center gap-1 text-sm font-semibold text-brand">
-            {gekochtOpen ? "Verberg gekocht" : (
+            {gekochtOpen ? t("groceries.hidePurchased", "Verberg gekocht") : (
               <>
-                <span>Gekocht ({gekocht.length})</span>
+                <span>{t("groceries.purchased", "Gekocht")} ({gekocht.length})</span>
                 <ChevronRight className="size-4" />
               </>
             )}

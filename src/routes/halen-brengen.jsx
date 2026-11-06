@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { AppIcon } from "@/components/AppIcon";
@@ -63,7 +64,7 @@ function HalenBrengen() {
         <Link to="/afspraken" onClick={() => markeerGebruikt("/halen-brengen")} className="flex min-h-14 items-center gap-3 px-3 py-3">
           <AppIcon functie="veiligheid" maat="md"/>
           <span className="flex-1"><span className="block text-sm font-semibold">Afspraken over halen en brengen</span><span className="block text-xs text-ink-soft">Bekijk wat jullie hebben afgesproken.</span></span>
-          <span className="text-ink-soft" aria-hidden>›</span>
+          <ChevronRight className="size-4 text-ink-soft shrink-0" />
         </Link>
       </div>
 

@@ -18,6 +18,7 @@ function MomentjesPaginaWrap() {
     return <MomentjesPagina />;
 }
 function EigenMomentjes() {
+    const { t } = useTranslation();
     const st = useStart();
     const { lijst } = useMomentjes();
     const nav = useNavigate();
@@ -99,7 +100,7 @@ function MomentjesPagina() {
     const opties = [["alle", "Alles"], ...kinderen.map((k) => [k.id, k.naam]), ["mijlpaal", "Mijlpalen"]];
     const filterNaam = opties.find(([id]) => id === filter)?.[1] ?? "Alles";
     return (<AppShell>
-      <PageHeader titel="Momentjes" subtitel="Je hoeft er niet altijd bij te zijn om er een beetje bij te zijn" terug="/meer"/>
+      <PageHeader titel={t("momentsPage.headerTitle", "Momentjes")} subtitel={t("momentsPage.headerSubtitle", "Je hoeft er niet altijd bij te zijn om er een beetje bij te zijn")} terug="/meer"/>
       <button onClick={() => setOpen(true)} className="mt-5 w-full rounded-lg bg-brand py-5 font-display text-lg font-bold text-primary-foreground shadow-lg shadow-brand/30">
         <TekenLabel waarde="💛 Deel een momentje"/>
       </button>

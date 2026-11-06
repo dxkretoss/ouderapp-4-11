@@ -52,8 +52,8 @@ export function ProfielBeeld({ beeld, naam, kleur = "#6F7F68", maat = 48 }) {
   const stijl = { width: maat, height: maat };
   if (beeld?.startsWith("avatar:"))
     return <span className="block shrink-0 overflow-hidden rounded-full" style={stijl}><AvatarSvg n={Number(beeld.slice(7))} /></span>;
-  if (beeld?.startsWith("data:image/"))
-    return <img src={beeld} alt="" className="shrink-0 rounded-full object-cover" style={stijl} />;
+  if (beeld?.startsWith("data:image/") || beeld?.startsWith("http://") || beeld?.startsWith("https://"))
+    return <img src={beeld} alt={naam || ""} className="shrink-0 rounded-full object-cover" style={stijl} />;
   return (
     <span className="grid shrink-0 place-items-center rounded-full font-display font-bold" style={{ ...stijl, fontSize: maat * 0.42, backgroundColor: `${kleur}22`, color: kleur }}>
       {(naam || "?").slice(0, 1).toUpperCase()}

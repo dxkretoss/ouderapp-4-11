@@ -37,6 +37,7 @@ import { afspraken, categorieMeta, kinderen, parents, zorgweek } from "@/lib/dem
 import { useMomentjes } from "@/lib/momentjes-store";
 import { regelStatus, toggleMee, useKring } from "@/lib/kring-store";
 import { useAuth } from "@/contexts/AuthContext";
+import { fetchChildren } from "@/lib/child-service";
 import { User, ChevronLeft, ChevronRight } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -129,6 +130,23 @@ function Dashboard() {
       }
     }
   }, [user, authLoading, nav]);
+
+  // Dynamically sync children and user state whenever authenticated user is present
+  useEffect(() => {
+    if (user?.id) {
+      if (user.name) {
+        startActies.zetNaam(user.name);
+      }
+      if (user.avatar_url) {
+        startActies.zetOuderBeeld(user.avatar_url);
+      }
+      fetchChildren(user.id).then((kids) => {
+        if (Array.isArray(kids) && kids.length > 0) {
+          startActies.zetKinderen(kids);
+        }
+      }).catch((e) => console.warn("[Dashboard] fetchChildren notice:", e));
+    }
+  }, [user?.id, user?.name, user?.avatar_url]);
 
   const currentProfileName = (user?.name || profile?.name || (eigen ? st.naam : "") || "").trim();
   const isGenericOuder = !currentProfileName || /^ouder(\s*\d+)?$/i.test(currentProfileName) || /^parent(\s*\d+)?$/i.test(currentProfileName) || currentProfileName === "0" || currentProfileName.toLowerCase() === "ouder";

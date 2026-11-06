@@ -133,8 +133,15 @@ export function AuthProvider({ children }) {
           setProfile(freshProfile);
           setSession({ user: freshProfile, token: activeToken });
 
+          if (freshProfile.name) {
+            start.zetNaam(freshProfile.name);
+          }
+          if (freshProfile.avatar_url) {
+            start.zetOuderBeeld(freshProfile.avatar_url);
+          }
+
           // Fetch fresh children & calendar events dynamically from Supabase
-          if (freshProfile.is_verified) {
+          if (freshProfile.id) {
             try {
               const [kids, events] = await Promise.all([
                 fetchChildren(freshProfile.id).catch(() => []),
@@ -215,6 +222,13 @@ export function AuthProvider({ children }) {
       setUser(loggedUser);
       setProfile(loggedUser);
       setSession({ user: loggedUser, token: authToken });
+
+      if (loggedUser?.name) {
+        start.zetNaam(loggedUser.name);
+      }
+      if (loggedUser?.avatar_url) {
+        start.zetOuderBeeld(loggedUser.avatar_url);
+      }
 
       // Dynamically populate child state and events in memory
       if (loggedUser?.id) {

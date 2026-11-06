@@ -36,7 +36,6 @@ const dagelijks = [
 const gezin = [
   { to: "/kinderen", icoon: "kinderen", titel: "Kinderen", tekst: "Profielen, school, zorg en contacten" },
   { to: "/documenten", icoon: "documenten", titel: "Documenten", tekst: "Belangrijke documenten op één plek" },
-  { to: "/instellingen", icoon: "contact", titel: "Belangrijke personen", tekst: "Verbonden familie, verzorgers en toegang" },
 ];
 const ondersteuning = [
   { to: "/verhaal", icoon: "co", titel: "Co", tekst: "Je digitale meedenker" },
@@ -105,7 +104,8 @@ const itemTranslations = {
   "Kinderen": { titel: "Children", tekst: "Profiles, school, healthcare and contacts" },
   "Kind": { titel: "Child", tekst: "Profile, school, healthcare and contacts" },
   "Documenten": { titel: "Documents", tekst: "Important documents in one place" },
-  "Belangrijke personen": { titel: "Important people", tekst: "Connected family, caregivers and access" },
+  "Belangrijke personen": { titel: "Important contacts", tekst: "Connected family, caregivers and access" },
+  "Verbonden personen": { titel: "Connected people", tekst: "Co-parents, family members and caregivers with access" },
   "Co": { titel: "Co", tekst: "Your digital co-thinker" },
   "Extra houvast": { titel: "Extra support", tekst: "A little extra reassurance while co-parenting" },
   "Professionals": { titel: "Professionals", tekst: "Collaborate with an involved professional" },

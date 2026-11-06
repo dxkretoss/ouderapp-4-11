@@ -43,7 +43,7 @@ function EigenSpullen() {
               {st.kinderen.map((k) => <button key={k.id} onClick={() => setKind(k.id)} aria-pressed={kind === k.id} className={knop(kind === k.id)}>{k.naam}</button>)}
             </div></fieldset>) : null}
           <fieldset><legend className="text-sm font-semibold">{t("items.whatWithIt", "Wat ermee?")}</legend><div className="mt-1 flex flex-wrap gap-2">
-            {["mee", "vast", "dubbel"].map((tp) => <button key={tp} onClick={() => setType(tp)} aria-pressed={type === tp} className={knop(type === tp)}>{typeLabel[tp]}</button>)}
+            {["mee", "vast", "dubbel"].map((tp) => <button key={tp} onClick={() => setType(tp)} aria-pressed={type === tp} className={knop(type === tp)}>{getTypeLabel(tp, t)}</button>)}
           </div></fieldset>
           <div className="flex gap-2">
             <button onClick={opslaan} className="min-h-11 flex-1 rounded-full bg-brand text-sm font-semibold text-primary-foreground">{t("items.add", "Toevoegen")}</button>
@@ -61,7 +61,7 @@ function EigenSpullen() {
             if (!l.length)
                 return null;
             return (<section key={tp} className="mt-5">
-            <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">{groepLabel[tp]}</h2>
+            <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">{getGroepLabel(tp, t)}</h2>
             <ul className="mt-2 divide-y divide-border rounded-md border border-border bg-card">
               {l.map((s) => (<li key={s.id} className="flex min-h-14 items-center gap-3 px-3 py-3">
                   <span className="flex-1"><span className="block text-sm font-semibold">{s.naam}</span>
@@ -87,7 +87,19 @@ export const Route = createFileRoute("/spullen")({
 });
 const typeLabel = { mee: "Wisselt mee", vast: "Vaste plek", dubbel: "In beide huizen" };
 const groepLabel = { mee: "Moet mee", vast: "Vaste plek", dubbel: "In beide huizen" };
-const plekTekst = (p) => (p === "sanne" ? "bij Sanne" : p === "joris" ? "bij Joris" : p ? `${p === "school" ? "op school" : p}` : "plek nog onbekend");
+const getTypeLabel = (tp, t) => {
+  if (tp === "mee") return t("items.wisseltMee", "Wisselt mee");
+  if (tp === "vast") return t("items.vastePlek", "Vaste plek");
+  if (tp === "dubbel") return t("items.inBeideHuizen", "In beide huizen");
+  return typeLabel[tp] || tp;
+};
+const getGroepLabel = (tp, t) => {
+  if (tp === "mee") return t("items.moetMee", "Moet mee");
+  if (tp === "vast") return t("items.vastePlek", "Vaste plek");
+  if (tp === "dubbel") return t("items.inBeideHuizen", "In beide huizen");
+  return groepLabel[tp] || tp;
+};
+const plekTekst = (p, t) => (p === "sanne" ? t("items.atPerson", "bij Sanne", { name: "Sanne" }) : p === "joris" ? t("items.atPerson", "bij Joris", { name: "Joris" }) : p ? `${p === "school" ? t("items.atSchool", "op school") : p}` : t("items.locationUnknown", "plek nog onbekend"));
 const veld = "rounded-md border border-border bg-background px-3 py-2 text-sm";
 const knop = (aan) => `min-h-11 rounded-full border px-3 text-sm ${aan ? "border-brand bg-brand-soft font-semibold" : "border-border"}`;
 const paklijsten = {
@@ -117,7 +129,7 @@ function Spullen() {
     if (gekozen)
         return <AppShell><SpulDetail s={gekozen} terug={() => setOpen(null)}/></AppShell>;
     return (<AppShell>
-      <PageHeader titel="Spullen" subtitel="Wat moet mee en waar zijn belangrijke spullen?" actie={<button aria-label="Nieuw spul" onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
+      <PageHeader titel={t("items.headerTitle", "Spullen")} subtitel={t("items.headerSubtitle", "Wat moet mee en waar zijn belangrijke spullen?")} actie={<button aria-label={t("items.newItemAria", "Nieuw spul")} onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
 
       {nieuw ? <NieuwSpul onKlaar={() => setNieuw(false)}/> : null}
 
@@ -126,25 +138,25 @@ function Spullen() {
             if (!l.length)
                 return null;
             return (<section key={type} className="mt-5">
-            <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">{groepLabel[type]}</h2>
+            <h2 className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">{getGroepLabel(type, t)}</h2>
             <ul className="mt-2 divide-y divide-border rounded-md border border-border bg-card">
               {l.map((s) => (<li key={s.id}>
                   <button onClick={() => setOpen(s.id)} className="flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left">
                     <span className="flex-1"><span className="block text-sm font-semibold">{s.naam}</span>
-                      <span className="block text-xs text-ink-soft">{s.kind === "emma" ? "Emma" : "Noah"}{type === "mee" ? " · volgende overdracht" : type === "vast" ? ` · ${plekTekst(s.plek)}` : ""}</span></span>
+                      <span className="block text-xs text-ink-soft">{s.kind === "emma" ? "Emma" : "Noah"}{type === "mee" ? ` · ${t("items.nextTransfer", "volgende overdracht")}` : type === "vast" ? ` · ${plekTekst(s.plek, t)}` : ""}</span></span>
                     <ChevronRight className="size-5 shrink-0 text-ink-soft" />
                   </button>
                 </li>))}
             </ul>
           </section>);
         })}
-      <Link to="/overdracht" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand"><span>Overdracht bekijken</span><ChevronRight className="size-4" /></Link>
+      <Link to="/overdracht" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand"><span>{t("items.viewChangeover", "Overdracht bekijken")}</span><ChevronRight className="size-4" /></Link>
 
       <div className="mt-4">
-        <Sectie titel="Niet vergeten" sub="Wat terug moet naar het andere huis">
-          <Lijst data={vergeten} wieOpties={["Terug naar Joris", "Terug naar Sanne"]} labels={["Moet terug", "Terug"]} placeholder="Bijv. knuffel, jas"/>
+        <Sectie titel={t("items.doNotForget", "Niet vergeten")} sub={t("items.whatBackToOtherHouse", "Wat terug moet naar het andere huis")}>
+          <Lijst data={vergeten} wieOpties={["Terug naar Joris", "Terug naar Sanne"]} labels={[t("items.mustReturn", "Moet terug"), t("items.returned", "Terug")]} placeholder={t("items.placeholder", "Bijv. knuffel, jas")}/>
         </Sectie>
-        <Sectie titel="Paklijsten">{(<>
+        <Sectie titel={t("items.packingListsTitle", "Paklijsten")}>{(<>
             <div className="mt-4 grid grid-cols-2 gap-2">
               {Object.keys(paklijsten).map((p) => <button key={p} onClick={() => { setPak(p); setIngepakt(new Set()); }} className={`min-h-11 rounded-md px-3 text-sm ${pak === p ? "bg-brand-soft font-semibold text-brand" : "border border-border"}`}>{p}</button>)}
             </div>
@@ -159,11 +171,11 @@ function Spullen() {
                     <span className={ingepakt.has(s) ? "text-ink-soft line-through" : ""}>{s}</span>
                   </button></li>))}
               </ul>
-              <p className="mt-3 text-xs text-ink-soft">{ingepakt.size} van {(paklijsten[pak] ?? []).length} ingepakt</p>
+              <p className="mt-3 text-xs text-ink-soft">{ingepakt.size} {t("items.of", "van")} {(paklijsten[pak] ?? []).length} {t("items.packed", "ingepakt")}</p>
             </Card>
           </>)}</Sectie>
-        <Sectie titel="Vaste spullen per dag" sub="Wat elke week mee moet">{(<ul className="mt-4 divide-y divide-border rounded-md border border-border bg-card">
-            {routines.map((r) => <li key={r.dag} className="px-3 py-3"><p className="text-[11px] font-semibold uppercase text-ink-soft">Elke {r.dag.toLowerCase()}</p><p className="text-sm">{r.tekst}</p></li>)}
+        <Sectie titel={t("items.routinesTitle", "Vaste spullen per dag")} sub={t("items.routinesSub", "Wat elke week mee moet")}>{(<ul className="mt-4 divide-y divide-border rounded-md border border-border bg-card">
+            {routines.map((r) => <li key={r.dag} className="px-3 py-3"><p className="text-[11px] font-semibold uppercase text-ink-soft">{t("items.every", "Elke")} {r.dag.toLowerCase()}</p><p className="text-sm">{r.tekst}</p></li>)}
           </ul>)}</Sectie>
       </div>
     </AppShell>);

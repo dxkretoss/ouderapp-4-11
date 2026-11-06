@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { bewaarOnderdelen, demoTranscript, moduleLabels, useGesprekken, voegGesprekToe, werkOpnameBij, zetBewaar, zetModule, } from "@/lib/gesprekken-store";
@@ -195,7 +195,7 @@ function Opnames() {
                 <p className="text-sm font-semibold">Sanne & Joris · {g.datum}</p>
                 <p className="text-xs text-ink-soft">{o.start}–{o.eind} · {g.duur}{o.kind ? ` · over ${o.kind}` : ""}</p>
               </div>
-              <span className="text-ink-soft">{isOpen ? "▾" : "›"}</span>
+              <ChevronDown className={`size-4 text-ink-soft transition-transform ${isOpen ? "rotate-180" : ""}`} />
             </button>
             {isOpen && (<div className="space-y-3 border-t border-border pt-3">
                 <div className="rounded-md bg-muted/60 p-3 text-xs">

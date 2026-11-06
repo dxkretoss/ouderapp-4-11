@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FilterBalk } from "@/components/ui-kit";
 import { AppShell, Card, PageHeader } from "@/components/AppShell";
 import { AppIcon } from "@/components/AppIcon";
@@ -46,7 +47,7 @@ function Tijdlijn() {
     const [cat, setCat] = useState("Alles");
     const zicht = regels.filter((r) => cat === "Alles" || r.cat === cat);
     return (<AppShell>
-      <PageHeader titel="Terugkijken" subtitel="Feitelijk overzicht van wat er is veranderd."/>
+      <PageHeader titel={t("timeline.title", "Terugkijken")} subtitel={t("timeline.subtitle", "Feitelijk overzicht van wat er is veranderd.")} terug="/extra-ondersteuning"/>
       <FilterBalk className="mt-5" opties={cats} waarde={cat} onChange={setCat}/>
       <ol className="mt-4 space-y-3 border-l-2 border-brand-soft pl-4">
         {zicht.map((r) => (<li key={r.key}>

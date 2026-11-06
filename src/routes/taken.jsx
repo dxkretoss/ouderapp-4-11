@@ -117,7 +117,7 @@ function Taken() {
     const klaar = taken.filter((t) => t.klaar);
     const rij = (t) => <TaakRij key={t.id} t={t} open={open === t.id} onOpen={() => setOpen(open === t.id ? null : t.id)}/>;
     return (<AppShell>
-      <PageHeader titel="Taken" subtitel="Wie regelt wat en wat moet nog gebeuren." actie={<button aria-label="Nieuwe taak" onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
+      <PageHeader titel={t("tasks.headerTitle", "Taken")} subtitel={t("tasks.headerSubtitle", "Wie regelt wat en wat moet nog gebeuren.")} actie={<button aria-label={t("tasks.newTaskAria", "Nieuwe taak")} onClick={() => setNieuw(true)} className="inline-flex size-11 items-center justify-center rounded-full text-xl font-semibold text-brand hover:bg-muted">+</button>}/>
 
       <HulpVragen open={hulpOpen} onOpenChange={setHulpOpen}/>
 
@@ -198,12 +198,12 @@ function NieuweTaak({ onKlaar }) {
     };
     const knop = (aan) => `min-h-11 rounded-full border px-3 text-sm ${aan ? "border-brand bg-brand-soft font-semibold" : "border-border"}`;
     return (<Card className="mt-4 space-y-3">
-      <p className="font-display text-lg font-bold">Nieuwe taak</p>
+      <p className="font-display text-lg font-bold">{t("tasks.newTask", "Nieuwe taak")}</p>
       {berichtId ? <p className="text-xs text-ink-soft">Controleer het verzoek. Kies zelf het kind en wie dit regelt. Een verzoek is nog geen toezegging.{dag ? ` Welke datum bedoel je met “${dag}”?` : ""}</p> : null}
       {wie === "joris" ? <p className="text-xs text-ink-soft">De andere ouder wordt gevraagd. Wacht op antwoord; er is nog niemand toegewezen.</p> : null}
-      <label className="block text-sm font-semibold">Wat moet er gebeuren?<input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder="Bijv. schoolformulier invullen" className={`mt-1 w-full font-normal ${veld}`}/></label>
-      <fieldset><legend className="text-sm font-semibold">Voor wie?</legend><div className="mt-1 flex flex-wrap gap-2">
-        {[["emma", "Emma"], ["noah", "Noah"], ["beide", "Beide kinderen"]].map(([k, l]) => <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k} className={knop(kind === k)}>{l}</button>)}
+      <label className="block text-sm font-semibold">{t("tasks.whatNeedsDoing", "Wat moet er gebeuren?")}<input value={tekst} onChange={(e) => setTekst(e.target.value)} placeholder={t("tasks.placeholder", "Bijv. schoolformulier invullen")} className={`mt-1 w-full font-normal ${veld}`}/></label>
+      <fieldset><legend className="text-sm font-semibold">{t("tasks.forWhom", "Voor wie?")}</legend><div className="mt-1 flex flex-wrap gap-2">
+        {[["emma", "Emma"], ["noah", "Noah"], ["beide", t("tasks.allChildren", "Beide kinderen")]].map(([k, l]) => <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k} className={knop(kind === k)}>{l}</button>)}
       </div></fieldset>
       <fieldset><legend className="text-sm font-semibold">{t("tasks.whoArrangesThis", "Wie regelt dit?")}</legend><div className="mt-1 flex flex-wrap gap-2">
         <button onClick={() => setWie("sanne")} aria-pressed={wie === "sanne"} className={knop(wie === "sanne")}>{t("tasks.iArrange", "Ik")}</button>
@@ -214,10 +214,10 @@ function NieuweTaak({ onKlaar }) {
         <button onClick={() => setMetDatum(true)} aria-pressed={metDatum} className={knop(metDatum)}>{t("tasks.dateBtn", "Datum")}</button>
         <button onClick={() => setMetDatum(false)} aria-pressed={!metDatum} className={knop(!metDatum)}>{t("tasks.noDateBtn", "Geen datum")}</button>
       </div>
-        {metDatum ? <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} aria-label="Datum" className={`mt-2 w-full ${veld}`}/> : null}
-        {metDatum && deadline ? <select value={herinner} onChange={(e) => setHerinner(Number(e.target.value))} aria-label="Herinner mij" className={`mt-2 w-full ${veld}`}><option value={0}>{t("tasks.noReminder", "Geen herinnering")}</option><option value={1}>{t("tasks.reminder1Day", "1 dag vooraf")}</option><option value={3}>{t("tasks.reminder3Days", "3 dagen vooraf")}</option><option value={7}>{t("tasks.reminder1Week", "1 week vooraf")}</option></select> : null}
+        {metDatum ? <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} aria-label={t("tasks.dateBtn", "Datum")} className={`mt-2 w-full ${veld}`}/> : null}
+        {metDatum && deadline ? <select value={herinner} onChange={(e) => setHerinner(Number(e.target.value))} aria-label={t("tasks.reminderLabel", "Herinner mij")} className={`mt-2 w-full ${veld}`}><option value={0}>{t("tasks.noReminder", "Geen herinnering")}</option><option value={1}>{t("tasks.reminder1Day", "1 dag vooraf")}</option><option value={3}>{t("tasks.reminder3Days", "3 dagen vooraf")}</option><option value={7}>{t("tasks.reminder1Week", "1 week vooraf")}</option></select> : null}
       </fieldset>
-      <fieldset><legend className="text-sm font-semibold">Herhaling?</legend><div className="mt-1 flex flex-wrap gap-2">
+      <fieldset><legend className="text-sm font-semibold">{t("tasks.repetition", "Herhaling?")}</legend><div className="mt-1 flex flex-wrap gap-2">
         <button onClick={() => setHerhaling("eenmalig")} aria-pressed={herhaling === "eenmalig"} className={knop(herhaling === "eenmalig")}>{t("tasks.singleTime", "Eenmalig")}</button>
         <button onClick={() => setHerhaling(herhaling === "eenmalig" ? "wekelijks" : herhaling)} aria-pressed={herhaling !== "eenmalig"} className={knop(herhaling !== "eenmalig")}>{t("tasks.recurring", "Terugkerend")}</button>
       </div>
@@ -226,6 +226,6 @@ function NieuweTaak({ onKlaar }) {
       </fieldset>
       <HulpKnop voorstel={{ kind, wat: tekst, ...(metDatum && deadline ? { datum: deadline } : {}) }}/>
       <button onClick={opslaan} disabled={!tekst.trim() || !kind || (!!dag && metDatum && !deadline)} className="min-h-11 w-full rounded-full bg-brand text-sm font-semibold text-primary-foreground disabled:opacity-40">{t("tasks.addTaskBtn", "Taak toevoegen")}</button>
-      <button onClick={onKlaar} className="min-h-11 w-full text-sm font-semibold text-ink-soft">Annuleren</button>
+      <button onClick={onKlaar} className="min-h-11 w-full text-sm font-semibold text-ink-soft">{t("common.cancel", "Annuleren")}</button>
     </Card>);
 }

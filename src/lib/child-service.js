@@ -21,7 +21,7 @@ export async function fetchChildren(parentId) {
         body: { action: "list", parent_id: parentId },
       });
 
-      if (!error && data?.success && Array.isArray(data.children)) {
+      if (!error && data?.success && Array.isArray(data.children) && data.children.length > 0) {
         dbChildren = data.children.map(mapChildFromDb);
         return dbChildren;
       }
@@ -29,13 +29,46 @@ export async function fetchChildren(parentId) {
       console.warn("[child-service] manage-children Edge Function notice:", edgeErr);
     }
 
-    // 2. Fallback: PostgreSQL RPC
+    // 2. Direct database query via child_parents join
+    try {
+      const { data, error } = await supabase
+        .from("child_parents")
+        .select("child_id, role, can_edit, children(*)")
+        .eq("parent_id", parentId);
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const joinedKids = data
+          .filter((row) => row.children)
+          .map((row) => mapChildFromDb({ ...row.children, role: row.role, can_edit: row.can_edit }));
+        if (joinedKids.length > 0) {
+          return joinedKids;
+        }
+      }
+    } catch (directErr) {
+      console.warn("[child-service] direct child_parents query notice:", directErr);
+    }
+
+    // 3. Direct database query via children table (created_by)
+    try {
+      const { data, error } = await supabase
+        .from("children")
+        .select("*")
+        .eq("created_by", parentId);
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data.map(mapChildFromDb);
+      }
+    } catch (kidsErr) {
+      console.warn("[child-service] direct children query notice:", kidsErr);
+    }
+
+    // 4. Fallback: PostgreSQL RPC
     try {
       const { data, error } = await supabase.rpc("custom_get_my_children", {
         p_parent_id: parentId,
       });
 
-      if (!error && data?.success && Array.isArray(data.children)) {
+      if (!error && data?.success && Array.isArray(data.children) && data.children.length > 0) {
         dbChildren = data.children.map(mapChildFromDb);
         return dbChildren;
       }
@@ -44,8 +77,6 @@ export async function fetchChildren(parentId) {
     }
   }
   return dbChildren;
-
-  return [];
 }
 
 export async function createChild(parentId, childData) {
@@ -376,6 +407,7 @@ function mapChildFromDb(c, currentUserId = null) {
     achternaam: c.last_name || c.achternaam || "",
     geboortedatum: c.date_of_birth || "",
     avatar: c.avatar_url || null,
+    beeld: c.avatar_url || null,
     school: c.school || "",
     opvang: c.daycare || "",
     arts: c.doctor || "",

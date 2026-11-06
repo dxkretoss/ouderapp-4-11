@@ -99,16 +99,48 @@ export function useStart() {
 }
 export const start = {
     begin: (naam, gebruik) => zet({ ...leeg, eigen: true, naam: naam.trim(), gebruik }),
-    kindToevoegen: (naam, geboortedatum, beeld) => zet({ kinderen: [...state.kinderen, { id: `k-${Date.now()}`, naam: naam.trim(), geboortedatum: geboortedatum || undefined, kleur: standaardKindKleur(state.kinderen.length), beeld }] }),
+    zetNaam: (naam) => zet({ naam: (naam || "").trim() }),
+    zetKinderen: (kinderen) => {
+        const kids = Array.isArray(kinderen) ? kinderen : [];
+        const update = { kinderen: kids };
+        if (!state.regeling) {
+            const kidWithSchedule = kids.find((k) => k.care_schedule);
+            if (kidWithSchedule?.care_schedule) {
+                try {
+                    const parsed = typeof kidWithSchedule.care_schedule === "string" 
+                        ? JSON.parse(kidWithSchedule.care_schedule) 
+                        : kidWithSchedule.care_schedule;
+                    if (geldigeRegeling(parsed)) {
+                        update.regeling = parsed;
+                    }
+                } catch {}
+            }
+        }
+        if (!state.gezag) {
+            const kidWithCustody = kids.find((k) => k.custody);
+            if (kidWithCustody?.custody) {
+                update.gezag = { situatie: kidWithCustody.custody, ingevuldDoor: state.naam || "jij", bevestigdDoorAnder: true };
+            }
+        }
+        zet(update);
+    },
+    kindToevoegen: (naam, geboortedatum, beeld) => zet({ kinderen: [...state.kinderen, { id: `k-${Date.now()}`, naam: naam.trim(), geboortedatum: geboortedatum || undefined, kleur: standaardKindKleur(state.kinderen.length), beeld, avatar: beeld }] }),
+    kindBijwerken: (id, childData) => zet({
+        kinderen: state.kinderen.map((k) => (k.id === id || k.naam === id ? { ...k, ...childData, beeld: childData.avatar || childData.beeld || k.beeld, avatar: childData.avatar || childData.beeld || k.avatar } : k))
+    }),
+    kindVerwijderen: (idOrName) => zet({
+        kinderen: state.kinderen.filter((k) => k.id !== idOrName && k.naam !== idOrName)
+    }),
     /** Alleen de eigen ouder van dit gezin beheert de kindafbeelding; andere personen hebben hier geen invoer. */
-    zetKindBeeld: (id, beeld) => zet({ kinderen: state.kinderen.map((k) => (k.id === id ? { ...k, beeld } : k)) }),
+    zetKindBeeld: (id, beeld) => zet({ kinderen: state.kinderen.map((k) => (k.id === id ? { ...k, beeld, avatar: beeld } : k)) }),
     zetOuderBeeld: (beeld) => zet({ beeld }),
     zetKindKleur: (id, kleur) => zet({ kinderen: state.kinderen.map((k) => (k.id === id ? { ...k, kleur } : k)) }),
     zetKindRegio: (id, schoolRegio) => zet({ kinderen: state.kinderen.map((k) => k.id === id ? { ...k, schoolRegio } : k) }),
+    zetKindRegeling: (id, regeling) => zet({ regeling }),
     zetGezag: (situatie) => zet({ gezag: { situatie, ingevuldDoor: state.naam || "jij", bevestigdDoorAnder: false } }),
     regeling: (r) => zet({ regeling: r }),
     markeer: (p) => zet(p),
-    zetAgenda: (f) => zet({ agenda: f(state.agenda) }),
+    zetAgenda: (f) => zet({ agenda: typeof f === "function" ? f(state.agenda) : Array.isArray(f) ? f : state.agenda }),
     onderwerpToevoegen: (naam) => { const id = `eigen-${Date.now()}`; zet({ onderwerpen: [{ id, naam: naam.trim() }, ...state.onderwerpen] }); return id; },
     kostToevoegen: (k) => zet({ kosten: [k, ...state.kosten] }),
     zetKostenAfspraak: (p) => zet({ kostenAfspraak: { ...state.kostenAfspraak, ...p } }),
@@ -120,6 +152,7 @@ export const start = {
         try { localStorage.removeItem("onzeapp_demo_mode"); } catch {}
         zet({ eigen: true });
     },
+    reset: () => zet(leeg),
 };
 const I = "ik", A = "ander";
 /** 14 dagen, maandag t/m zondag, twee weken. Neutrale startpunten — iedere regeling is gelijkwaardig. */
