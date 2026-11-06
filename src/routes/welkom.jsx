@@ -85,47 +85,6 @@ function Welkom() {
                 <span>{t("auth.registreren", "Nieuw account aanmaken")}</span>
               </Link>
             </div>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-3 text-ink-soft font-semibold">
-                  {t("common.or", "Of snelle start zonder account")}
-                </span>
-              </div>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (naam.trim()) setStap(1);
-              }}
-            >
-              <label className="block text-sm text-ink-soft">
-                {t("onboarding.welcomeSubtitle", "Hoe mogen we je noemen?")}
-                <input
-                  value={naam}
-                  onChange={(e) => setNaam(e.target.value)}
-                  placeholder={t("onboarding.namePlaceholder", "Voornaam")}
-                  autoComplete="given-name"
-                  className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-3 text-base text-ink outline-none focus:border-brand"
-                />
-              </label>
-              <button type="submit" disabled={!naam.trim()} className={knop}>
-                <span>{t("common.continue", "Verder")}</span>
-                <ArrowRight className="size-4" />
-              </button>
-            </form>
-
-            <button
-              type="button"
-              onClick={startDemo}
-              className="mt-4 block w-full text-center text-xs font-semibold text-ink-soft hover:text-brand transition cursor-pointer"
-            >
-              {t("onboarding.viewExample", "Eerst het voorbeeldgezin bekijken")}
-            </button>
           </div>
         ) : stap === 1 ? (
           <>

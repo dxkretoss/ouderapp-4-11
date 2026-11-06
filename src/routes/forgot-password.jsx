@@ -217,7 +217,7 @@ export function ForgotPasswordPage() {
   const { titel, subtitel } = getTitles();
 
   return (
-    <AuthLayout titel={titel} subtitel={subtitel}>
+    <AuthLayout titel={titel} subtitel={subtitel} backTo="/login">
       {/* Error alert */}
       {error && (
         <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-xs font-medium text-destructive">

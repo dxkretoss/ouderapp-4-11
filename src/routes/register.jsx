@@ -286,6 +286,7 @@ export function RegisterPage() {
   if (success) {
     return (
       <AuthLayout
+        backTo={isVerified ? null : "/register"}
         titel={
           isVerified
             ? t("auth.accountGeverifieerd", "Account geverifieerd!")
